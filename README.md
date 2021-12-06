@@ -12,7 +12,7 @@
 
 
 <p align="center">
-  <img width="90%" src="https://raw.githubusercontent.com/AstraZeneca/chemicalx/master/images/chemicalx_logo.jpg?sanitize=true" />
+  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/chemicalx_logo.jpg?sanitize=true" />
 </p>
 
 --------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ We also provide [detailed examples]() for each of the models.
 
 
 <p align="center">
-  <img width="90%" src="https://raw.githubusercontent.com/AstraZeneca/chemicalx/master/images/pair_scoring.jpg?sanitize=true" />
+  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/pair_scoring.jpg?sanitize=true" />
 </p>
 
 
