@@ -128,6 +128,10 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 | **Windows** | ✅    | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |
 
+<details>
+<summary><b>Expand to see installation guides for other PyTorch versions...</b></summary>
+
+
 **PyTorch 1.8.0**
 
 To install the binaries for PyTorch 1.8.0, simply run
@@ -192,6 +196,9 @@ where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101` or `cu102` d
 | **Linux**   | ✅    | ✅    | ✅     | ✅      |
 | **Windows** | ✅    | ❌    | ✅     | ✅      |
 | **macOS**   | ✅    |        |         |         |
+
+
+</details>
 
 --------------------------------------------------------------------------------
 
