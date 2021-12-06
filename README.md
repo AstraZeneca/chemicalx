@@ -12,7 +12,7 @@
 
 
 <p align="center">
-  <img width="90%" src="https://raw.githubusercontent.com/AstraZeneca/chemicalx/master/docs/source/_static/img/text_logo.jpg?sanitize=true" />
+  <img width="90%" src="https://raw.githubusercontent.com/AstraZeneca/chemicalx/master/images/chemicalx_logo.jpg?sanitize=true" />
 </p>
 
 --------------------------------------------------------------------------------
@@ -22,13 +22,13 @@
 [![Code Coverage][coverage-image]][coverage-url]
 [![Build Status][build-image]][build-url]
 
-**[Documentation](https://pytorch-geometric-temporal.readthedocs.io)** | **[External Resources](https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/resources.html)** | **[Datasets](https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/introduction.html#discrete-time-datasets)**
+**[Documentation](https://chemicalx.readthedocs.io)** | **[External Resources](https://chemicalx.readthedocs.io/en/latest/notes/resources.html)** | **[Datasets](https://chemicalx.readthedocs.io/en/latest/notes/introduction.html#datasets)**
 
-*PyTorch Geometric Temporal* is a temporal (dynamic) extension library for [PyTorch Geometric](https://github.com/rusty1s/pytorch_geometric).
+*ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect and synergy prediction.
 
-<p align="justify">The library consists of various dynamic and temporal geometric deep learning, embedding, and spatio-temporal regression methods from a variety of published research papers. Moreover, it comes with an easy-to-use dataset loader, train-test splitter and temporal snaphot iterator for dynamic and temporal graphs. The framework naturally provides GPU support. It also comes with a number of benchmark datasets from the epidemological forecasting, sharing economy, energy production and web traffic management domains. Finally, you can also create your own datasets.</p>
+<p align="justify">The library consists of ...</p>
 
-The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/benedekrozemberczki/pytorch_geometric_temporal/blob/master/examples/recurrent/lightning_example.py) of using PyTorch Geometric Temporal with Pytorch Lighning.
+The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/AstraZeneca/chemicalx/blob/master/examples/polypharmacy_example.py) of using ChemicalX with Pytorch Lighning.
 
 We also provide [detailed examples]() for each of the models.
 
@@ -36,30 +36,30 @@ We also provide [detailed examples]() for each of the models.
 
 **Drug Pair Scoring Explained**
 
+
+<p align="center">
+  <img width="90%" src="https://raw.githubusercontent.com/AstraZeneca/chemicalx/master/images/pair_scoring.jpg?sanitize=true" />
+</p>
+
+
 --------------------------------------------------------------------------------
 
 **Case Study Tutorials**
 
-We provide in-depth case study tutorials in the [Documentation](https://pytorch-geometric-temporal.readthedocs.io/en/latest/), each covers an aspect of PyTorch Geometric Temporal’s functionality.
-
-**Incremental Training**: [Epidemiological Forecasting Case Study](https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/introduction.html#epidemiological-forecasting)
-
-**Cumulative Training**: [Web Traffic Management Case Study](https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/introduction.html#web-traffic-prediction)
+We provide in-depth case study tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
 
 --------------------------------------------------------------------------------
 
 **Citing**
 
 
-If you find *PyTorch Geometric Temporal* and the new datasets useful in your research, please consider adding the following citation:
+If you find *ChemicalX* and the new datasets useful in your research, please consider adding the following citation:
 
 ```bibtex
-@inproceedings{rozemberczki2021pytorch,
-               author = {Benedek Rozemberczki and Paul Scherer and Yixuan He and George Panagopoulos and Alexander Riedel and Maria Astefanoaei and Oliver Kiss and Ferenc Beres and Guzman Lopez and Nicolas Collignon and Rik Sarkar},
-               title = {{PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models}},
-               year = {2021},
-               booktitle={Proceedings of the 30th ACM International Conference on Information and Knowledge Management},
-               pages = {4564–4573},
+@inproceedings{chemicalx,
+               author = {Name Name and Name Name},
+               title = {{ChemicalX}},
+               year = {2022},
 }
 ```
 
