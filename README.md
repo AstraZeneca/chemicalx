@@ -129,7 +129,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 | **macOS**   | ✅    |         |         |
 
 <details>
-<summary><b>Expand to see installation guides for other PyTorch versions...</b></summary>
+<summary><b>Expand to see installation guides for older PyTorch versions...</b></summary>
 
 
 **PyTorch 1.8.0**
