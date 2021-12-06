@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        stages: [commit]
+        language: system
+        entry: black -l 120 chemicalx/.
+        types: [python]
+
+      - id: flake8
+        name: flake8
+        stages: [commit]
+        language: system
+        entry: flake8 --max-line-length 120
+        types: [python]
+        files: chemicalx/.
+
