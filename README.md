@@ -78,35 +78,45 @@ ChemicalX
 
 In detail, the following temporal graph neural networks were implemented.
 
-* **[DeepCCI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+**2017**
 
-* **[DeepDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[DeepCCI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[DeepSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+**2018**
 
-* **[MRH-GNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[DeepDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[MHCADDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[DeepSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[CASTER](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+**2019**
 
-* **[SSI-DDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[MRH-GNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[EPGCN-DS](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[MHCADDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[AuDNNSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[CASTER](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[DeepDrug](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+**2020**
 
-* **[GCN-BMP](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[SSI-DDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[DPDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[EPGCN-DS](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[SmileGNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[AuDNNSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[DeepDDS](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[DeepDrug](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
-* **[MatchMaker](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[GCN-BMP](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+
+**2021**
+
+* **[DPDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+
+* **[SmileGNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+
+* **[DeepDDS](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+
+* **[MatchMaker](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
 
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.
