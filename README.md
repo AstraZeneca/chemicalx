@@ -58,7 +58,7 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 ```bibtex
 @inproceedings{chemicalx,
                author = {Name Name and Name Name},
-               title = {{ChemicalX}},
+               title = {{ChemicalX: A Deep Learning Library fo Drug Pair Scoring}},
                year = {2022},
 }
 ```
@@ -78,22 +78,35 @@ ChemicalX
 
 In detail, the following temporal graph neural networks were implemented.
 
+* **[DeepCCI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-**Recurrent Graph Convolutions**
+* **[DeepDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[DeepSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[MRH-GNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
-  
-**Attention Aggregated Temporal Graph Convolutions**
+* **[MHCADDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[CASTER](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[SSI-DDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
-* **[Paper](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+* **[EPGCN-DS](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[AuDNNSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[DeepDrug](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[GCN-BMP](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[DPDDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[SmileGNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[DeepDDS](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
+
+* **[MatchMaker](docs)** from Authors *et al.*: [Time](paper_link) (Venue 2222)
 
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.
