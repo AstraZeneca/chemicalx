@@ -80,41 +80,41 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2017**
 
-* **[DeepCCI](docs)** from Kwon *et al.*: [DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction](https://arxiv.org/abs/1704.08432) (ACM BCB)
+* **[DeepCCI](docs)** from [DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction](https://arxiv.org/abs/1704.08432) (ACM BCB)
 
 **2018**
 
-* **[DeepDDI](docs)** from Ryu *et al.*: [Deep Learning Improves Prediction of Drug–Drug and Drug–Food Interactions](https://www.pnas.org/content/115/18/E4304) (PNAS)
+* **[DeepDDI](docs)** from [Deep Learning Improves Prediction of Drug–Drug and Drug–Food Interactions](https://www.pnas.org/content/115/18/E4304) (PNAS)
 
-* **[DeepSynergy](docs)** from Preuer *et al.*: [DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning](https://academic.oup.com/bioinformatics/article/34/9/1538/4747884) (Bioinformatics)
+* **[DeepSynergy](docs)** from [DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning](https://academic.oup.com/bioinformatics/article/34/9/1538/4747884) (Bioinformatics)
 
 **2019**
 
-* **[MRH-GNN](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[MRH-GNN](docs)** from [Time](paper_link) (Venue)
 
-* **[MHCADDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[MHCADDI](docs)** from [Time](paper_link) (Venue)
 
-* **[CASTER](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[CASTER](docs)** from [Time](paper_link) (Venue)
 
 **2020**
 
-* **[SSI-DDI](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[SSI-DDI](docs)** from [Time](paper_link) (Venue)
 
-* **[EPGCN-DS](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[EPGCN-DS](docs)** from [Time](paper_link) (Venue)
 
-* **[AuDNNSynergy](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[AuDNNSynergy](docs)** from [Time](paper_link) (Venue)
 
-* **[DeepDrug](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[DeepDrug](docs)** from [Time](paper_link) (Venue)
 
-* **[GCN-BMP](docs)** from Authors *et al.*: [Time](paper_link) (Venue)
+* **[GCN-BMP](docs)** from [Time](paper_link) (Venue)
 
 **2021**
 
-* **[DPDDI](docs)** from Feng *et al.*: [DPDDI: a Deep Predictor for Drug-Drug Interactions](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x) (BMC Bioinformatics)
+* **[DPDDI](docs)** from [DPDDI: a Deep Predictor for Drug-Drug Interactions](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x) (BMC Bioinformatics)
 
-* **[DeepDDS](docs)** from Wang *et al.*: [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
+* **[DeepDDS](docs)** from [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
 
-* **[MatchMaker](docs)** from Kuru *et al.*: [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
+* **[MatchMaker](docs)** from [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
 
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.
