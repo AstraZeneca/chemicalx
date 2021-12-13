@@ -98,15 +98,15 @@ In detail, the following temporal graph neural networks were implemented.
 
 * **[CASTER](docs)** from [CASTER: Predicting Drug Interactions with Chemical Substructure Representation](https://arxiv.org/abs/1911.06446) (AAAI)
 
-* **[SSI-DDI](docs)** from [Time](paper_link) (Venue)
+* **[SSI-DDI](docs)** from [SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction](https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181) (Briefings in Bioinformatics)
 
-* **[EPGCN-DS](docs)** from [Time](paper_link) (Venue)
+* **[EPGCN-DS](docs)** from [Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets](https://ojs.aaai.org/index.php/AAAI/article/view/7236) (AAAI)
 
-* **[AuDNNSynergy](docs)** from [Time](paper_link) (Venue)
+* **[AuDNNSynergy](docs)** from [Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models](https://pubmed.ncbi.nlm.nih.gov/32926369/) (Methods in Molecular Biology)
 
-* **[DeepDrug](docs)** from [Time](paper_link) (Venue)
+* **[DeepDrug](docs)** from [DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction](https://europepmc.org/article/ppr/ppr236757) (PMC)
 
-* **[GCN-BMP](docs)** from [Time](paper_link) (Venue)
+* **[GCN-BMP](docs)** from [GCN-BMP: Investigating graph representation learning for DDI prediction task](https://www.sciencedirect.com/science/article/pii/S1046202320300608) (Methods)
 
 **2021**
 
