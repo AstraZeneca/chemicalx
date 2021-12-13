@@ -90,13 +90,13 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2019**
 
-* **[MRH-GNN](docs)** from [Time](paper_link) (Venue)
+* **[MRH-GNN](docs)** from [MR-GNN: Multi-Resolution and Dual Graph Neural Network for Predicting Structured Entity Interactions](https://arxiv.org/abs/1905.09558) (IJCAI)
 
-* **[MHCADDI](docs)** from [Time](paper_link) (Venue)
-
-* **[CASTER](docs)** from [Time](paper_link) (Venue)
+* **[MHCADDI](docs)** from [Drug-Drug Adverse Effect Prediction with Graph Co-Attention](https://arxiv.org/pdf/1905.00534v1.pdf) (ICML)
 
 **2020**
+
+* **[CASTER](docs)** from [CASTER: Predicting Drug Interactions with Chemical Substructure Representation](https://arxiv.org/abs/1911.06446) (AAAI)
 
 * **[SSI-DDI](docs)** from [Time](paper_link) (Venue)
 
