@@ -36,6 +36,10 @@ We also provide [detailed examples]() for each of the models.
 
 **Drug Pair Scoring Explained**
 
+Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. This context could interaction, the presence of a polypharmacy side effect or synergistic behaviour when it comes to treating a certain disease. Deep learning models which solve this task have an architecture with distinctive parts:
+
+1. A drug encoder layer which takes a pair of drugs as an input (blue and red drugs).
+2. A head layer which outputs scores in the administration context - this is polypharmacy in our explanatory figure.
 
 <p align="center">
   <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/pair_scoring.jpg?sanitize=true" />
@@ -115,6 +119,15 @@ In detail, the following temporal graph neural networks were implemented.
 * **[DeepDDS](docs)** from [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
 
 * **[MatchMaker](docs)** from [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
+
+--------------------------------------------------------------------------------
+
+**Auxiliary Layers**
+
+
+
+--------------------------------------------------------------------------------
+
 
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.
