@@ -36,10 +36,10 @@ We also provide [detailed examples]() for each of the models.
 
 **Drug Pair Scoring Explained**
 
-Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. This context could interaction, the presence of a polypharmacy side effect or synergistic behaviour when it comes to treating a certain disease. Deep learning models which solve this task have an architecture with distinctive parts:
+Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. This context could be interaction, polypharmacy side effects or synergistic behaviour when it comes to treating a certain disease. Deep learning models which solve this task have an architecture with distinctive parts:
 
 1. A drug encoder layer which takes a pair of drugs as an input (blue and red drugs).
-2. A head layer which outputs scores in the administration context - this is polypharmacy in our explanatory figure.
+2. A head layer which outputs scores in the administration context - polypharmacy in our explanatory figure.
 
 <p align="center">
   <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/pair_scoring.jpg?sanitize=true" />
