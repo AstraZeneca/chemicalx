@@ -5,7 +5,7 @@ repos:
         name: black
         stages: [commit]
         language: system
-        entry: black -l 120 chemicalx/. tests/ setup.py
+        entry: black -l 120 ./chemicalx/. ./tests/. setup.py
         types: [python]
 
       - id: flake8
@@ -14,7 +14,7 @@ repos:
         language: system
         entry: flake8 --max-line-length 120
         types: [python]
-        files: chemicalx/. tests/. setup.py
+        files: ./chemicalx/. ./tests/. setup.py
 
 
       - id: flake8-isort
@@ -23,4 +23,4 @@ repos:
         language: system
         entry: isort
         types: [python]
-        files: chemicalx/. tests/. setup.py
+        files: ./chemicalx/. ./tests/. setup.py

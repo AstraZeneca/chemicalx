@@ -2,7 +2,7 @@ import unittest
 
 from chemicalx.models import (
     CASTER,
-    DEEPCCI,
+    DeepCCI,
     DPDDI,
     EPGCNDS,
     GCNBMP,
