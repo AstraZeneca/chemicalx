@@ -1,20 +1,20 @@
 import unittest
 
 from chemicalx.models import (
-    MRHGNN,
-    SSIDDI,
-    MatchMaker,
-    MHCADDI,
-    GCNBMP,
-    EPGCNDS,
-    DPDDI,
-    DeepSynergy,
-    DeepDrug,
-    DeepDDS,
-    DeepDDI,
     CASTER,
     DEEPCCI,
+    DPDDI,
+    EPGCNDS,
+    GCNBMP,
+    MHCADDI,
+    MRHGNN,
+    SSIDDI,
     AuDNNSynergy,
+    DeepDDI,
+    DeepDDS,
+    DeepDrug,
+    DeepSynergy,
+    MatchMaker,
 )
 
 
