@@ -9,7 +9,7 @@ from chemicalx.models import (
     MHCADDI,
     MRHGNN,
     SSIDDI,
-    AuDNNSynergy,
+    AUDNNSynergy,
     DeepDDI,
     DeepDDS,
     DeepDrug,
