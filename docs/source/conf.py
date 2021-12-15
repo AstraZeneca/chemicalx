@@ -24,7 +24,7 @@ extensions = [
 source_suffix = ".rst"
 master_doc = "index"
 
-author = "Benedek Rozemberczki & Charles Tapley Hoyt & Benjamin Gyori"
+author = "Benedek Rozemberczki, Charles Tapley Hoyt, and Benjamin Gyori"
 project = "chemicalx"
 copyright = "{}, {}".format(datetime.datetime.now().year, author)
 
