@@ -12,7 +12,7 @@
 
 
 <p align="center">
-  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/chemicalx_logo.jpg?sanitize=true" />
+  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/main/images/chemicalx_logo.jpg?sanitize=true" />
 </p>
 
 --------------------------------------------------------------------------------
