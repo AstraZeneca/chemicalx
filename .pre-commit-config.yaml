@@ -16,3 +16,11 @@ repos:
         types: [python]
         files: chemicalx/.
 
+
+      - id: flake8-isort
+        name: flake8-isort
+        stages: [commit]
+        language: system
+        entry: isort
+        types: [python]
+        files: chemicalx/.
