@@ -1,0 +1,11 @@
+tqdm
+numpy
+sphinx==4.0.2
+sphinx_rtd_theme==0.5.2
+sklearn
+scipy
+pandas
+six
+nbsphinx
+nbsphinx_link
+jupyter-sphinx
