@@ -1,0 +1,55 @@
+name: CI
+
+on:
+
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7.12
+      - uses: s-weigand/setup-conda@v1
+        with:
+          activate-conda: true
+          python-version: 3.7
+      - run: conda --version
+      - run: which python
+      - name: Run installation.
+        run: |
+         conda install -y scipy
+         pip install codecov
+         pip install pytest
+         pip install tox
+         python setup.py install
+      - name: Run code quality tests
+        run: |
+          tox -e flake8
+      - name: Run type checking
+        run: |
+          tox -e mypy
+      - name: Install main package
+        run: |
+          pip install -e .[test]
+      - name: Run test-suite
+        run: |
+          python -m pytest
+      - name: Generate coverage report
+        if: success()
+        run: |
+          pip install coverage
+          coverage run -m pytest
+          coverage xml
+      - name: Upload coverage report to codecov
+        uses: codecov/codecov-action@v1
+        if: success()
+        with:
+          file: coverage.xml
