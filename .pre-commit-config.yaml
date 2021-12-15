@@ -14,7 +14,7 @@ repos:
         language: system
         entry: flake8 --max-line-length 120
         types: [python]
-        files: chemicalx/.
+        files: chemicalx/. tests/. setup.py
 
 
       - id: flake8-isort
@@ -23,4 +23,4 @@ repos:
         language: system
         entry: isort
         types: [python]
-        files: chemicalx/.
+        files: chemicalx/. tests/. setup.py
