@@ -26,19 +26,19 @@
 
 *ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect and synergy prediction.
 
-<p align="justify">The library consists of ...</p>
+<p align="justify">The library consists of data loaders and integrated benchmark datasets for drug-drug interaction, polypharmacy side effect prediction and synergy scoring. It includes state-of-the-art deep neural network architectures that solve the **drug pair scoring task** from word leading artifical intelligence and machine learning conferences (e.g. [AAAI](), [IJCAI](), [ICML]()). Implemented methods cover traditional SMILES string based techniques and neural message passing based models.</p>
 
 The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/AstraZeneca/chemicalx/blob/main/examples/polypharmacy_example.py) of using ChemicalX with Pytorch Lighning.
 
-We also provide [detailed examples]() for each of the models.
+We also provide [detailed examples](https://github.com/AstraZeneca/chemicalx/blob/main/examples/) for each of the models implemented in our framework.
 
 --------------------------------------------------------------------------------
 
 **Drug Pair Scoring Explained**
 
-Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. This context could be interaction, polypharmacy side effects or synergistic behaviour when it comes to treating a certain disease. Deep learning models which solve this task have an architecture with distinctive parts:
+Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. This context could be interaction, polypharmacy side effects or synergistic behaviour when it comes to treating a certain disease. Deep learning models which solve this task have an architecture with two distinctive parts:
 
-1. A drug encoder layer which takes a pair of drugs as an input (blue and red drugs).
+1. A drug encoder layer which takes a pair of drugs as an input (blue and red drugs below).
 2. A head layer which outputs scores in the administration context - polypharmacy in our explanatory figure.
 
 <p align="center">
@@ -61,7 +61,7 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 
 ```bibtex
 @inproceedings{chemicalx,
-               author = {Name Name and Name Name},
+               author = {Benedek Rozemberczki and Charles Tapley Hoyt and Benjamin Gyori},
                title = {{ChemicalX: A Deep Learning Library fo Drug Pair Scoring}},
                year = {2022},
 }
