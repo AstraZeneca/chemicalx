@@ -1,4 +1,4 @@
-from chemicalx.models import (  # noqa:F401
+from chemicalx.models import (  # noqa:F401,F403
     audnnsynergy,
     caster,
     deepcci,
