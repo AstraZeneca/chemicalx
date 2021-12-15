@@ -1,14 +1,16 @@
-Rexmex
+ChemicalX
 ==================
 
 .. contents:: Contents
     :local:
 
 
-Score Cards
+Models
 --------------------
 
 .. automodule:: chemicalx.models
     :members:
     :undoc-members:
+
+
 
