@@ -1,3 +1,16 @@
-from chemicalx.models import (audnnsynergy, caster, deepcci, deepddi, deepdds,
-                              deepdrug, deepsynergy, dpddi, epgcnds, gcnbmp,
-                              matchmaker, mhcaddi, mrhgnn, ssiddi)
+from chemicalx.models import (  # noqa:F401
+    audnnsynergy,
+    caster,
+    deepcci,
+    deepddi,
+    deepdds,
+    deepdrug,
+    deepsynergy,
+    dpddi,
+    epgcnds,
+    gcnbmp,
+    matchmaker,
+    mhcaddi,
+    mrhgnn,
+    ssiddi,
+)

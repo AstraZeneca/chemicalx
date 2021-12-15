@@ -5,7 +5,7 @@ repos:
         name: black
         stages: [commit]
         language: system
-        entry: black -l 120 chemicalx/.
+        entry: black -l 120 chemicalx/. tests/ setup.py
         types: [python]
 
       - id: flake8
