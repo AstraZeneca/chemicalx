@@ -2,7 +2,6 @@ import unittest
 
 from chemicalx.models import (
     CASTER,
-    DeepCCI,
     DPDDI,
     EPGCNDS,
     GCNBMP,
@@ -10,6 +9,7 @@ from chemicalx.models import (
     MRHGNN,
     SSIDDI,
     AUDNNSynergy,
+    DeepCCI,
     DeepDDI,
     DeepDDS,
     DeepDrug,
