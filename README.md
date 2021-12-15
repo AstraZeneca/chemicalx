@@ -24,9 +24,7 @@
 
 **[Documentation](https://chemicalx.readthedocs.io)** | **[External Resources](https://chemicalx.readthedocs.io/en/latest/notes/resources.html)** | **[Datasets](https://chemicalx.readthedocs.io/en/latest/notes/introduction.html#datasets)**
 
-*ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect and synergy prediction.
-
-<p align="justify">The library consists of data loaders and integrated benchmark datasets for drug-drug interaction, polypharmacy side effect prediction and synergy scoring. It includes state-of-the-art deep neural network architectures that solve the **drug pair scoring task** from word leading artifical intelligence and machine learning conferences (e.g. [AAAI](), [IJCAI](), [ICML]()). Implemented methods cover traditional SMILES string based techniques and neural message passing based models.</p>
+*ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect and synergy prediction. The library consists of data loaders and integrated benchmark datasets. It also includes state-of-the-art deep neural network architectures that solve the [drug pair scoring task](https://arxiv.org/pdf/2111.02916v4.pdf). Implemented methods cover traditional SMILES string based techniques and neural message passing based models.
 
 The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/AstraZeneca/chemicalx/blob/main/examples/polypharmacy_example.py) of using ChemicalX with Pytorch Lighning.
 
@@ -70,8 +68,6 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 --------------------------------------------------------------------------------
 
 **A simple example**
-
-ChemicalX
 
 ```python
 
