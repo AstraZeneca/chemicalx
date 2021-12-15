@@ -1,13 +1,13 @@
 [pypi-image]: https://badge.fury.io/py/chemicalx.svg
 [pypi-url]: https://pypi.python.org/pypi/chemicalx
 [size-image]: https://img.shields.io/github/repo-size/AstraZeneca/chemicalx.svg
-[size-url]: https://github.com/AstraZeneca/chemicalx/archive/master.zip
+[size-url]: https://github.com/AstraZeneca/chemicalx/archive/main.zip
 [build-image]: https://github.com/AstraZeneca/chemicalx/workflows/CI/badge.svg
 [build-url]: https://github.com/AstraZeneca/chemicalx/actions?query=workflow%3ACI
 [docs-image]: https://readthedocs.org/projects/chemicalx/badge/?version=latest
 [docs-url]: https://chemicalx.readthedocs.io/en/latest/?badge=latest
-[coverage-image]: https://codecov.io/gh/AstraZeneca/chemicalx/branch/master/graph/badge.svg
-[coverage-url]: https://codecov.io/github/AstraZeneca/chemicalx?branch=master
+[coverage-image]: https://codecov.io/gh/AstraZeneca/chemicalx/branch/main/graph/badge.svg
+[coverage-url]: https://codecov.io/github/AstraZeneca/chemicalx?branch=main
 
 
 
@@ -28,7 +28,7 @@
 
 <p align="justify">The library consists of ...</p>
 
-The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/AstraZeneca/chemicalx/blob/master/examples/polypharmacy_example.py) of using ChemicalX with Pytorch Lighning.
+The package interfaces well with [Pytorch Lightning](https://pytorch-lightning.readthedocs.io) which allows training on CPUs, single and multiple GPUs out-of-the-box. Take a look at this [introductory example](https://github.com/AstraZeneca/chemicalx/blob/main/examples/polypharmacy_example.py) of using ChemicalX with Pytorch Lighning.
 
 We also provide [detailed examples]() for each of the models.
 
@@ -42,7 +42,7 @@ Our framework solves the so called [drug pair scoring task](https://arxiv.org/ab
 2. A head layer which outputs scores in the administration context - polypharmacy in our explanatory figure.
 
 <p align="center">
-  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/master/images/pair_scoring.jpg?sanitize=true" />
+  <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/main/images/pair_scoring.jpg?sanitize=true" />
 </p>
 
 
@@ -245,4 +245,4 @@ $ python setup.py test
 
 **License**
 
-- [Apache 2.0 License](https://github.com/AstraZeneca/chemicalx/blob/master/LICENSE)
+- [Apache 2.0 License](https://github.com/AstraZeneca/chemicalx/blob/main/LICENSE)
