@@ -11,6 +11,6 @@ from chemicalx.models import (  # noqa:F401,F403
     gcnbmp,
     matchmaker,
     mhcaddi,
-    mrhgnn,
+    mrgnn,
     ssiddi,
 )
