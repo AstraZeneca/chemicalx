@@ -10,8 +10,7 @@ Models
 * Nuo Xu, Pinghui Wang, Long Chen, Jing Tao, Junzhou Zhao: **MR-GNN: Multi-Resolution and Dual Graph Neural Network for Predicting Structured Entity Interactions** `Paper  <https://arxiv.org/abs/1905.09558>`_
 * Andreea Deac, Yu-Hsiang Huang, Petar Veličković, Pietro Liò, Jian Tang: **Drug-Drug Adverse Effect Prediction with Graph Co-Attention** `Paper <https://arxiv.org/abs/1905.00534>`_
 * Kexin Huang, Cao Xiao, Trong Nghia Hoang, Lucas M. Glass, Jimeng Sun: **CASTER: Predicting Drug Interactions with Chemical Substructure Representation** `Paper <https://arxiv.org/abs/1911.06446>`_
-* Arnold K Nyamabo, Hui Yu, Jian-Yu Shi
-: **SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction** `Paper <https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181>`_
+* Arnold K Nyamabo, Hui Yu, Jian-Yu Shi: **SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction** `Paper <https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181>`_
 * Mengying Sun, Fei Wang, Olivier Elemento, Jiayu Zhou: **Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets** `Paper <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
 * Tianyu Zhang, Liwei Zhang, Philip Payne, Fuhai Li: **Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models** `Paper  <https://pubmed.ncbi.nlm.nih.gov/32926369/>`_
 * Xusheng Cao, Rui Fan, Wanwen Zeng: **DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction** `Paper <https://www.biorxiv.org/content/10.1101/2020.11.09.375626v1>`_
