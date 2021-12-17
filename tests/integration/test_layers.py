@@ -6,7 +6,7 @@ from chemicalx.models import (
     EPGCNDS,
     GCNBMP,
     MHCADDI,
-    MRHGNN,
+    MRGNN,
     SSIDDI,
     AUDNNSynergy,
     DeepCCI,
@@ -22,6 +22,14 @@ class TestLayers(unittest.TestCase):
     def setUp(self):
         self.x = 2
 
-    def test_MRHGNN(self):
-        model = MRHGNN(x=2)
+    def test_CASTER(self):
+        model = CASTER(x=2)
+        assert model.x == 2
+
+    def test_DPDDI(self):
+        model = DPDDI(x=2)
+        assert model.x == 2
+
+    def test_MRGNN(self):
+        model = MRGNN(x=2)
         assert model.x == 2
