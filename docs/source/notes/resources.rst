@@ -14,11 +14,11 @@ Models
 : **SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction** `Paper <https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181>`_
 * Mengying Sun, Fei Wang, Olivier Elemento, Jiayu Zhou: **Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets** `Paper <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
 * Tianyu Zhang, Liwei Zhang, Philip Payne, Fuhai Li: **Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models** `Paper  <https://pubmed.ncbi.nlm.nih.gov/32926369/>`_
-* Name Name, Name Name, Name Name: **DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction** `Paper <>`_
-* Name Name, Name Name, Name Name: **GCN-BMP: Investigating Graph Representation Learning for DDI Prediction Task** `Paper <>`_
-* Name Name, Name Name, Name Name: **DPDDI: a Deep Predictor for Drug-Drug Interactions** `Paper <>`_
-* Name Name, Name Name, Name Name: **DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations** `Paper <>`_
-* Name Name, Name Name, Name Name: **MatchMaker: A Deep Learning Framework for Drug Synergy Prediction ** `Paper <>`_
+* Xusheng Cao, Rui Fan, Wanwen Zeng: **DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction** `Paper <https://www.biorxiv.org/content/10.1101/2020.11.09.375626v1>`_
+* Xin Chen, Xien Liu, Ji Wuab: **GCN-BMP: Investigating Graph Representation Learning for DDI Prediction Task** `Paper <https://www.sciencedirect.com/science/article/pii/S1046202320300608>`_
+* Yue-Hua Feng, Shao-Wu Zhang, Jian-Yu Shi: **DPDDI: a Deep Predictor for Drug-Drug Interactions** `Paper <https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x>`_
+* Jinxian Wang, Xuejun Liu, Siyuan Shen, Lei Deng, Hui Liu: **DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations** `Paper <https://academic.oup.com/bib/advance-article-abstract/doi/10.1093/bib/bbab390/6375262?redirectedFrom=fulltext>`_
+* Halil Ibrahim Kuru, Oznur Tastan, Ercument Cicek: **MatchMaker: A Deep Learning Framework for Drug Synergy Prediction ** `Paper <https://pubmed.ncbi.nlm.nih.gov/34086576/>`_
 
 Datasets
 --------------------
