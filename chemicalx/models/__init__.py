@@ -10,5 +10,5 @@ from .epgcnds import *  # noqa:F401,F403
 from .gcnbmp import *  # noqa:F401,F403
 from .matchmaker import *  # noqa:F401,F403
 from .mhcaddi import *  # noqa:F401,F403
-from .mrhgnn import *  # noqa:F401,F403
+from .mrgnn import *  # noqa:F401,F403
 from .ssiddi import *  # noqa:F401,F403
