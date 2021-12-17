@@ -30,6 +30,46 @@ class TestLayers(unittest.TestCase):
         model = DPDDI(x=2)
         assert model.x == 2
 
+    def test_EPGCNDS(self):
+        model = EPGCNDS(x=2)
+        assert model.x == 2
+
+    def test_GCNBMP(self):
+        model = GCNBMP(x=2)
+        assert model.x == 2
+
+    def test_MHCADDI(self):
+        model = MHCADDI(x=2)
+        assert model.x == 2
+
     def test_MRGNN(self):
         model = MRGNN(x=2)
+        assert model.x == 2
+
+    def test_SSIDDI(self):
+        model = SSIDDI(x=2)
+        assert model.x == 2
+
+    def test_AUDNNSynergy(self):
+        model = AUDNNSynergy(x=2)
+        assert model.x == 2
+
+    def test_DeepCCI(self):
+        model = DeepCCI(x=2)
+        assert model.x == 2
+
+    def test_DeepDDI(self):
+        model = DeepDDI(x=2)
+        assert model.x == 2
+
+    def test_DeepDrug(self):
+        model = DeepDrug(x=2)
+        assert model.x == 2
+
+    def test_DeepSynergy(self):
+        model = DeepSynergy(x=2)
+        assert model.x == 2
+
+    def test_MatchMaker(self):
+        model = MatchMaker(x=2)
         assert model.x == 2
