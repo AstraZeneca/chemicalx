@@ -17,7 +17,7 @@ Models
 * Xin Chen, Xien Liu, Ji Wuab: **GCN-BMP: Investigating Graph Representation Learning for DDI Prediction Task** `Paper <https://www.sciencedirect.com/science/article/pii/S1046202320300608>`_
 * Yue-Hua Feng, Shao-Wu Zhang, Jian-Yu Shi: **DPDDI: a Deep Predictor for Drug-Drug Interactions** `Paper <https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x>`_
 * Jinxian Wang, Xuejun Liu, Siyuan Shen, Lei Deng, Hui Liu: **DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations** `Paper <https://academic.oup.com/bib/advance-article-abstract/doi/10.1093/bib/bbab390/6375262?redirectedFrom=fulltext>`_
-* Halil Ibrahim Kuru, Oznur Tastan, Ercument Cicek: **MatchMaker: A Deep Learning Framework for Drug Synergy Prediction ** `Paper <https://pubmed.ncbi.nlm.nih.gov/34086576/>`_
+* Halil Ibrahim Kuru, Oznur Tastan, Ercument Cicek: **MatchMaker: A Deep Learning Framework for Drug Synergy Predictio ** `Paper <https://pubmed.ncbi.nlm.nih.gov/34086576/>`_
 
 Datasets
 --------------------
