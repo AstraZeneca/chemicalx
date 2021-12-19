@@ -1,6 +1,10 @@
 External resources
 ==================
 
+.. contents:: Contents
+    :local:
+
+
 Models
 --------------------
 
@@ -23,6 +27,18 @@ Models
 Related Software
 --------------------
 
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 
