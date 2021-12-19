@@ -5,7 +5,7 @@ External resources
     :local:
 
 
-Models
+Model Architectures
 --------------------
 
 * Sunyoung Kwon, Sungroh Yoon: **DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction** `Paper <https://arxiv.org/abs/1704.08432>`_
@@ -42,7 +42,7 @@ Related Software
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 
-Datasets
+Public Datasets
 --------------------
 
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Link <>`_
