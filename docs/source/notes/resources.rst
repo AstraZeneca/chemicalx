@@ -20,6 +20,11 @@ Models
 * Halil Ibrahim Kuru, Oznur Tastan, Ercument Cicek: **MatchMaker: A Deep Learning Framework for Drug Synergy Prediction** `Paper <https://pubmed.ncbi.nlm.nih.gov/34086576/>`_, `Code <https://github.com/tastanlab/matchmaker>`_
 * Hui Yu, ShiYu Zhao, JianYu Shi: **STNN-DDI: A Substructure-aware Tensor Neural Network to Predict Drug-Drug Interactions** `Paper <https://arxiv.org/abs/2111.05708>`_, `Code <https://github.com/zsy-9/STNN-DDI>`_
 
+Related Software
+--------------------
+
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 
 Datasets
 --------------------
@@ -27,9 +32,3 @@ Datasets
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Link <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Link <>`_
 
-
-Related Software
---------------------
-
-* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
