@@ -1,3 +1,3 @@
-class ZhanDDIDataset(object):
+class ZhangDDIDataset(object):
     def __init__(self):
         pass
