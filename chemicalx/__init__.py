@@ -4,7 +4,7 @@ from chemicalx.dataset import (  # noqa:F401,F403
     dataset,
     dpddione,
     drugcomb,
-    drugcomdb,
+    drugcombdb,
     oncolypharm,
     synergyxdb,
     twosides,
