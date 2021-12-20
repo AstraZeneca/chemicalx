@@ -1,9 +1,4 @@
-from chemicalx.data import (  # noqa:F401,F403
-    contextfeatureset,
-    drugfeatureset,
-    labelset,
-)
-
+from chemicalx.data import contextfeatureset, drugfeatureset, labelset  # noqa:F401,F403
 from chemicalx.dataset import (  # noqa:F401,F403
     chchminer,
     dataset,
@@ -15,7 +10,6 @@ from chemicalx.dataset import (  # noqa:F401,F403
     twosides,
     zhangddi,
 )
-
 from chemicalx.models import (  # noqa:F401,F403
     audnnsynergy,
     caster,
