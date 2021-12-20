@@ -8,7 +8,18 @@ setup_requires = ["pytest-runner"]
 tests_require = ["pytest", "pytest-cov", "mock", "unittest"]
 
 keywords = [
-    "bla",
+    "drug",
+    "deep-learning",
+    "deep-chemistry",
+    "deep-ai",
+    "torch-drug",
+    "synergy-prediction",
+    "synergy",
+    "drug-combination",
+    "deep-synergy",
+    "drug-interaction",
+    "chemistry",
+    "pharma",
 ]
 
 

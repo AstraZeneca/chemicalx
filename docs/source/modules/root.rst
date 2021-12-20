@@ -23,7 +23,41 @@ Data Structures
 Integrated Public Datasets
 --------------------
 
-.. automodule:: chemicalx.dataset
+.. autoclass:: chemicalx.dataset.basedataset.BaseDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.chchminer.ChChMinerDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.dpddione.DPDDIOneDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.drugcomb.DrugCombDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.drugcombdb.DrugCombDBDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.oncolypharm.OncolyPharmDataset
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.dataset.synergyxdb.SynergyXDBDataset
+    :members:
+    :undoc-members:
+
+
+.. autoclass:: chemicalx.dataset.twosides.TwoSidesDataset
+    :members:
+    :undoc-members:
+
+
+.. autoclass:: chemicalx.dataset.zhangddi.ZhangDDIDataset
     :members:
     :undoc-members:
 
