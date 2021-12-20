@@ -8,7 +8,15 @@ ChemicalX
 Data Structures
 --------------------
 
-.. automodule:: chemicalx.data
+.. automodule:: chemicalx.data.drugfeatureset.DrugFeatureSet
+    :members:
+    :undoc-members:
+
+.. automodule:: chemicalx.data.labelset.LabelSet
+    :members:
+    :undoc-members:
+
+.. automodule:: chemicalx.data.contextfeatureset.ContextFeatureSet
     :members:
     :undoc-members:
 
