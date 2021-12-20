@@ -34,7 +34,7 @@ Related Software
 * Abe Motoki, Mihai Mororiu, Tomoya Otabi, Kenshin Abe: **Chainer Chemistry: A Library for Deep Learning in Biology and Chemistry** `Code <https://github.com/chainer/chainer-chemistry>`_
 * Jonathan Godwin, Thomas Keck, Peter Battaglia, Victor Bapst, Thomas Kipf, Yujia Li, Kimberly Stachenfeld, Petar Velickovic, Alvaro Sanchez-Gonzalez: **Jraph: A Library for Graph Neural Networks in Jax** `Code <http://github.com/deepmind/jraph>`_
 * Daniele Grattarola, Cesare Alippi: **Graph Neural Networks in TensorFlow and Keras with Spektral** `Paper <https://arxiv.org/abs/2006.12138>`_, `Code <https://github.com/danielegrattarola/spektral>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
+* Meng Liu, Youzhi Luo, Limei Wang, Yaochen Xie, Hao Yuan, Shurui Gui, Haiyang Yu, Zhao Xu, Jingtun Zhang, Yi Liu, Keqiang Yan, Haoran Liu, Cong Fu, Bora M Oztekin, Xuan Zhang, Shuiwang Ji: **DIG: A Turnkey Library for Diving into Graph Deep Learning Research** `Paper <https://jmlr.org/papers/v22/21-0343.html>`_, `Code <https://github.com/divelab/DIG>`_
 * Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
