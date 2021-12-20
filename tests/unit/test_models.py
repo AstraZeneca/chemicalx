@@ -18,7 +18,7 @@ from chemicalx.models import (
 )
 
 
-class TestLayers(unittest.TestCase):
+class TestModels(unittest.TestCase):
     def setUp(self):
         self.x = 2
 
