@@ -27,8 +27,10 @@ Model Architectures
 Related Software
 --------------------
 
-* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
+* Jan Eric Lenssen and Matthias Fey: **Fast Graph Representation Learning with PyTorch Geometric* `Paper <https://arxiv.org/abs/1903.02428>`_, `Code <https://github.com/pyg-team/pytorch_geometric>`_
+* Minjie Wang
+https://dblp.org/search/pid/api?q=author:Minjie_Wang:
+, Lingfan Yu, Da Zheng, Quan Gan, Yu Gai, Zihao Ye, Mufei Li, Jinjing Zhou, Qi Huang, Chao Ma, Ziyue Huang, Qipeng Guo, Hao Zhang, Haibin Lin, Junbo Zhao, Jinyang Li, Alexander J. Smola, Zheng Zhang: **Deep Graph Library: Towards Efficient and Scalable Deep Learning on Graphs* `Paper <https://openreview.net/forum?id=q9RwOO-Ci5_>`_, `Code <https://github.com/dmlc/dgl>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
 * Name Name, Name Name, Name Name: **Title* `Paper <>`_, `Code <>`_
