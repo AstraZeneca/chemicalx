@@ -2,7 +2,7 @@ from chemicalx.data import contextfeatureset, drugfeatureset, labelset  # noqa:F
 from chemicalx.dataset import (  # noqa:F401,F403
     chchminer,
     dataset,
-    dpddi,
+    dpddione,
     drugcomb,
     drugcomdb,
     oncolypharm,
