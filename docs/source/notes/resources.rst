@@ -36,10 +36,7 @@ Related Software
 * Daniele Grattarola, Cesare Alippi: **Graph Neural Networks in TensorFlow and Keras with Spektral** `Paper <https://arxiv.org/abs/2006.12138>`_, `Code <https://github.com/danielegrattarola/spektral>`_
 * Meng Liu, Youzhi Luo, Limei Wang, Yaochen Xie, Hao Yuan, Shurui Gui, Haiyang Yu, Zhao Xu, Jingtun Zhang, Yi Liu, Keqiang Yan, Haoran Liu, Cong Fu, Bora M Oztekin, Xuan Zhang, Shuiwang Ji: **DIG: A Turnkey Library for Diving into Graph Deep Learning Research** `Paper <https://jmlr.org/papers/v22/21-0343.html>`_, `Code <https://github.com/divelab/DIG>`_
 * Zhaocheng Zhu, Shengchao Liu, Chence Shi: **TorchDrug: A Powerful and Flexible Machine Learning Platform for Drug Discovery** `Paper <https://torchdrug.ai/>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
-* Name Name, Name Name, Name Name: **Title** `Paper <>`_, `Code <>`_
+* Yukuo Cen, Zhenyu Hou, Yan Wang, Qibin Chen, Yizhen Luo, Xingcheng Yao, Aohan Zeng, Shiguang Guo, Yang Yang, Peng Zhang, Guohao Dai, Yu Wang, Chang Zhou, Hongxia Yang, Jie Tang: **CogDL: An Extensive Toolkit for Deep Learning on Graphs** `Paper <https://arxiv.org/abs/2103.00959>`_, `Code <https://github.com/THUDM/cogdl>`_
+* Jun Hu, Shengsheng Qian, Quan Fang, Youze Wang, Quan Zhao, Huaiwen Zhang, Changsheng Xu: **Efficient Graph Deep Learning in TensorFlow with TF Geometric** `Paper <https://arxiv.org/pdf/2101.11552.pdf>`_, `Code <https://github.com/CrawlScript/tf_geometric>`_
+* Mufei Li, Jinjing Zhou, Jiajing Hu, Wenxuan Fan, Yangkang Zhang, Yaxin Gu, George Karypis: **DGL-LifeSci: An Open-Source Toolkit for Deep Learning on Graphs in Life Science** `Paper <https://arxiv.org/abs/2106.14232>`_, `Code <https://github.com/awslabs/dgl-lifesci>`_
 
