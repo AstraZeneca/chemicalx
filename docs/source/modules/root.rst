@@ -64,7 +64,7 @@ Integrated Public Datasets
 Pair Scoring Models
 --------------------
 
-.. autoclass:: chemicalx.models.audnnsynergy.AuDNNSynergy
+.. autoclass:: chemicalx.models.audnnsynergy.AUDNNSynergy
     :members:
     :undoc-members:
 
