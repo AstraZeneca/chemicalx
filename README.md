@@ -104,11 +104,11 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2021**
 
-* **[DPDDI](docs)** from [DPDDI: a Deep Predictor for Drug-Drug Interactions](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x) (BMC Bioinformatics)
+* **[DPDDI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.dpddi.DPDDI)** from [DPDDI: a Deep Predictor for Drug-Drug Interactions](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x) (BMC Bioinformatics)
 
-* **[DeepDDS](docs)** from [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
+* **[DeepDDS](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepdds.DeepDDS)** from [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
 
-* **[MatchMaker](docs)** from [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
+* **[MatchMaker](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.matchmaker.MatchMaker)** from [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
 
 --------------------------------------------------------------------------------
 
