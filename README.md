@@ -90,17 +90,17 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2020**
 
-* **[CASTER](docs)** from [CASTER: Predicting Drug Interactions with Chemical Substructure Representation](https://arxiv.org/abs/1911.06446) (AAAI)
+* **[CASTER](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.caster.CASTER)** from [CASTER: Predicting Drug Interactions with Chemical Substructure Representation](https://arxiv.org/abs/1911.06446) (AAAI)
 
-* **[SSI-DDI](docs)** from [SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction](https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181) (Briefings in Bioinformatics)
+* **[SSI-DDI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.ssiddi.SSIDDI)** from [SSI–DDI: Substructure–Substructure Interactions for Drug–Drug Interaction Prediction](https://academic.oup.com/bib/article-abstract/22/6/bbab133/6265181) (Briefings in Bioinformatics)
 
-* **[EPGCN-DS](docs)** from [Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets](https://ojs.aaai.org/index.php/AAAI/article/view/7236) (AAAI)
+* **[EPGCN-DS](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.epgcnds.EPGCNDS)** from [Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets](https://ojs.aaai.org/index.php/AAAI/article/view/7236) (AAAI)
 
-* **[AuDNNSynergy](docs)** from [Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models](https://pubmed.ncbi.nlm.nih.gov/32926369/) (Methods in Molecular Biology)
+* **[AuDNNSynergy](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.audnnsynergy.AUDNNSynergy)** from [Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models](https://pubmed.ncbi.nlm.nih.gov/32926369/) (Methods in Molecular Biology)
 
-* **[DeepDrug](docs)** from [DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction](https://europepmc.org/article/ppr/ppr236757) (PMC)
+* **[DeepDrug](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepdrug.DeepDrug)** from [DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction](https://europepmc.org/article/ppr/ppr236757) (PMC)
 
-* **[GCN-BMP](docs)** from [GCN-BMP: Investigating graph representation learning for DDI prediction task](https://www.sciencedirect.com/science/article/pii/S1046202320300608) (Methods)
+* **[GCN-BMP](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.gcnbmp.GCNBMP)** from [GCN-BMP: Investigating graph representation learning for DDI prediction task](https://www.sciencedirect.com/science/article/pii/S1046202320300608) (Methods)
 
 **2021**
 
