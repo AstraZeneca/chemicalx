@@ -78,7 +78,7 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2018**
 
-* **[DeepDDI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepddii.DeepDDI)** from [Deep Learning Improves Prediction of Drug–Drug and Drug–Food Interactions](https://www.pnas.org/content/115/18/E4304) (PNAS)
+* **[DeepDDI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepddi.DeepDDI)** from [Deep Learning Improves Prediction of Drug–Drug and Drug–Food Interactions](https://www.pnas.org/content/115/18/E4304) (PNAS)
 
 * **[DeepSynergy](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepsynergy.DeepSynergy)** from [DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning](https://academic.oup.com/bioinformatics/article/34/9/1538/4747884) (Bioinformatics)
 
