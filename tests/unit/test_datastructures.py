@@ -1,10 +1,6 @@
 import unittest
 
-from chemicalx.data import (
-    ContextFeatureSet,
-    DrugFeatureSet,
-    LabelSet,
-)
+from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabelSet
 
 
 class TestDataStructures(unittest.TestCase):
