@@ -70,6 +70,10 @@ class TestModels(unittest.TestCase):
         model = DeepSynergy(x=2)
         assert model.x == 2
 
+    def test_DeepDDS(self):
+        model = DeepDDS(x=2)
+        assert model.x == 2
+
     def test_MatchMaker(self):
         model = MatchMaker(x=2)
         assert model.x == 2
