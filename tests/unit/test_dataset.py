@@ -62,6 +62,10 @@ class TestDataset(unittest.TestCase):
         model = DeepDDI(x=2)
         assert model.x == 2
 
+    def test_DeepDDS(self):
+        model = DeepDDS(x=2)
+        assert model.x == 2
+
     def test_DeepDrug(self):
         model = DeepDrug(x=2)
         assert model.x == 2
