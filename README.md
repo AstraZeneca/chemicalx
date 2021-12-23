@@ -74,7 +74,7 @@ In detail, the following temporal graph neural networks were implemented.
 
 **2017**
 
-* **[DeepCCI](docs)** from [DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction](https://arxiv.org/abs/1704.08432) (ACM BCB)
+* **[DeepCCI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepcci.DeepCCI)** from [DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction](https://arxiv.org/abs/1704.08432) (ACM BCB)
 
 **2018**
 
