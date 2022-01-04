@@ -9,8 +9,10 @@ To help us integrate your changes, please follow our standard process:
 ## Development Process:
 
 1. Make a new issue (or use an existing one). You will need the issue number when you create a branch.
-2. Clone this repo
-    - `git clone https://github.com/AstraZeneca/chemicalx`
+2. Fork and clone this repo
+    - Go to https://github.com/AstraZeneca/chemicalx and click on Fork on the top right to create
+      a fork to your personal account.
+    - Then clone your fork as `git clone git@github.com:<your user name>/chemicalx.git` where `<your user name>` is your Github account name.
 3. Create a new branch. The branch name must include the issue number.
     - `git checkout main`
     - `git branch <your branch name>`
@@ -29,9 +31,11 @@ To help us integrate your changes, please follow our standard process:
     - Add new classes or modules to API documents.
     - Add new/changed functionality to the tutorials or quickstart.
     - Add code snippets (these are tested when docs are built so make them small and quick to run).
-8. When finished, make a Pull Request (PR).
-    - Use our PR template located at: ./pull_request_template.md.
-    - Describe change and clearly highlight any major or breaking changes.
+8. When finished, push your branch and make a Pull Request (PR).
+    - `git push origin <your branch name>` to push the branch
+    - Go to https://github.com/AstraZeneca/chemicalx/pulls and use our PR template located at: ./pull_request_template.md.
+      to open a PR from <your branch name>.
+    - Describe changes and clearly highlight any major or breaking changes.
     - If any errors occur on the test builds, please fix them.
     - You are responsible for getting your PR merged so please chase down your reviewers.
 9. Adjust your PR based on any feedback
