@@ -134,15 +134,15 @@ class ContextFeatureSet(dict):
         """Getting the number of feature dimensions.
 
         Returns:
-            int: The number of feature dimensions.
+            feature_count (int): The number of feature dimensions.
         """
+        feature_count = None
         if len(self.__dict__) > 0:
             contexts = list(self.keys())
             first_context = contexts[0]
             feature_vector = self.__dict__[first_context]
-            return feature_vector.shape[1]
-        else:
-            return 0
+            feature_count = feature_vector.shape[1]
+        return feature_count
 
     def get_feature_matrix(self, contexts: List[str]) -> np.ndarray:
         """Getting the feature matrix for a list of contexts.
