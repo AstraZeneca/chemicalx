@@ -4,7 +4,7 @@ install_requires = [
     "numpy",
     "torch",
     "torchdrug",
-    "pandas",
+    "pandas<=1.3.5",
     "scipy",
     "tqdm",
     "six",
