@@ -20,7 +20,7 @@ class TestContextFeatureSet(unittest.TestCase):
         assert len(self.context_feature_set.features()) == 2
 
     def test_basic_statistics(self):
-        assert self.context_feature_set.get_context_count() == 3
+        assert self.context_feature_set.get_context_count() == 2
         assert self.context_feature_set.get_context_feature_count() == 3
 
     def test_denstiy(self):
