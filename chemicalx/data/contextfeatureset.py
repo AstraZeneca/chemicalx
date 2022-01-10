@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict
+from typing import Dict, List
 
 
 class ContextFeatureSet(dict):
@@ -144,7 +144,7 @@ class ContextFeatureSet(dict):
         else:
             return 0
 
-    def get_features_in_contexts(self, contexts: List[str]) -> np.ndarray:
+    def get_features_in_context(self, contexts: List[str]) -> np.ndarray:
         """Getting the feature matrix for a list of contexts.
 
         Args:
@@ -164,7 +164,7 @@ class ContextFeatureSet(dict):
         feature_matrix_density = None
         if len(self.__dict__) > 0:
             all_features = self.features()
-            feature_matrix = self.get_features_in_contexts(all_contexts)
+            feature_matrix = self.get_features_in_context(all_contexts)
             non_zero_count = np.sum(feature_matrix == 0)
             feature_count = self.get_context_feature_count()
             context_count = self.get_context_count()
