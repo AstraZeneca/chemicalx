@@ -10,7 +10,18 @@ class TestContextFeatureSet(unittest.TestCase):
         self.context_feature_set["context_2"] = np.array([0, 1, 2])
 
     def test_ContextFeatureSet(self):
+
         assert self.context_feature_set["context_2"].shape == (3,)
+
+        assert len(self.context_feature_set) == 2
+
+        assert len(self.context_feature_set.contexts()) == 2
+        assert len(self.context_feature_set.features()) == 2
+
+        assert self.context_feature_set.get_context_count() == 3
+        assert self.context_feature_set.get_context_feature_count() == 3
+        feature_matrix = self.context_feature_set.get_feature_density_rate()
+        assert feature_matrix.shape == (2, 3)
 
 
 class TestDrugFeatureSet(unittest.TestCase):
