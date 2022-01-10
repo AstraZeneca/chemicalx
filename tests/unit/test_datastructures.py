@@ -18,10 +18,8 @@ class TestContextFeatureSet(unittest.TestCase):
         assert ("context_2" in self.context_feature_set) == True
         assert self.context_feature_set.has_context("context_2") == True
 
-    def test_copy(self):
-        self.another_context_feature_set = self.context_feature_set.copy()
-        assert len(self.another_context_feature_set) == len(self.context_feature_set)
-
+    def test_delete(self):
+        self.another_context_feature_set = self.context_feature_set
         del self.another_context_feature_set["context_1"]
         del self.another_context_feature_set["context_2"]
         assert self.another_context_feature_set.get_context_feature_count() == None

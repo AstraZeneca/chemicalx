@@ -26,9 +26,6 @@ class ContextFeatureSet(dict):
         """
         return self.__dict__[context]
 
-    def __repr__(self):
-        return repr(self.__dict__)
-
     def __len__(self):
         """Getting the number of biological/chemical contexts.
 
@@ -52,14 +49,6 @@ class ContextFeatureSet(dict):
             ContextFeatureSet: An empty context feature set.
         """
         return self.__dict__.clear()
-
-    def copy(self):
-        """Creating a deep copy of the context feature set.
-
-        Returns:
-            ContextFeatureSet: A deep copy of the context feature set.
-        """
-        return self.__dict__.copy()
 
     def has_context(self, context: str):
         """Checking whether a context feature set contains a context.
