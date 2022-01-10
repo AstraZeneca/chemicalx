@@ -13,7 +13,7 @@ class TestContextFeatureSet(unittest.TestCase):
         assert self.context_feature_set["context_2"].shape == (3,)
 
 
-class DrugFeatureSet(unittest.TestCase):
+class TestDrugFeatureSet(unittest.TestCase):
     def setUp(self):
         self.x = 2
 
@@ -22,7 +22,7 @@ class DrugFeatureSet(unittest.TestCase):
         assert data.x == 2
 
 
-class LabelSet(unittest.TestCase):
+class TestLabelSet(unittest.TestCase):
     def setUp(self):
         self.x = 2
 
