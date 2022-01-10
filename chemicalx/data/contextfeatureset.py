@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 from typing import Dict
 
@@ -15,7 +14,7 @@ class ContextFeatureSet(dict):
             context (str): Biological or chemical context identifier.
             features (np.ndarray): Feature vector for the context.
         """
-        self.__dict__[context] = torch.FloatTensor(features).view(1, -1)
+        self.__dict__[context] = features.reshape(1, -1)
 
     def __getitem__(self, context: str):
         """Getting the feature vector for a biological context key.
@@ -79,9 +78,7 @@ class ContextFeatureSet(dict):
         Returns:
             ContextFeatureSet: The updated context feature set.
         """
-        return self.__dict__.update(
-            {context: torch.FloatTensor(features.view(1, -1)) for context, features in data.items()}
-        )
+        return self.__dict__.update({context: features.reshape(1, -1) for context, features in data.items()})
 
     def contexts(self):
         """Retrieving the list of biological / chemical contexts in a feature set.
@@ -153,6 +150,11 @@ class ContextFeatureSet(dict):
         Returns:
             float: The ratio of non zero entries in the whole context feature matrix.
         """
+        feature_matrix_density = None
         if len(self.__dict__) > 0:
-            feature_matrix = torch.cat(self.features(), dim=1)
-        return feature_matrix
+            feature_matrix = np.concatenate(self.features(), dim=0)
+            non_zero_count = np.sum(feature_matrix == 0)
+            feature_count = self.get_context_feature_count()
+            context_count = self.get_context_count()
+            feature_matrix_density = non_zero_count / (feature_count * context_count)
+        return feature_matrix_density

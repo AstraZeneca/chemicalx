@@ -24,8 +24,8 @@ class TestContextFeatureSet(unittest.TestCase):
         assert self.context_feature_set.get_context_feature_count() == 3
 
     def test_denstiy(self):
-        feature_matrix = self.context_feature_set.get_feature_density_rate()
-        assert feature_matrix.shape == (2, 3)
+        density = self.context_feature_set.get_feature_density_rate()
+        assert density == (4 / 6)
 
 
 class TestDrugFeatureSet(unittest.TestCase):
