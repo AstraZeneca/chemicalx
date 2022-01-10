@@ -4,6 +4,10 @@ from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabelSet
 
 
 class TestContextFeatureSet(unittest.TestCase):
+    """
+    Testing the context feature set methods.
+    """
+
     def setUp(self):
         self.context_feature_set = ContextFeatureSet()
         self.context_feature_set["context_1"] = np.array([0.0, 1.8, 2.1])
@@ -23,12 +27,16 @@ class TestContextFeatureSet(unittest.TestCase):
         assert self.context_feature_set.get_context_count() == 2
         assert self.context_feature_set.get_context_feature_count() == 3
 
-    def test_denstiy(self):
+    def test_density(self):
         density = self.context_feature_set.get_feature_density_rate()
         assert density == (4 / 6)
 
 
 class TestDrugFeatureSet(unittest.TestCase):
+    """
+    Testing the drug feature set methods.
+    """
+
     def setUp(self):
         self.x = 2
 
@@ -38,6 +46,10 @@ class TestDrugFeatureSet(unittest.TestCase):
 
 
 class TestLabelSet(unittest.TestCase):
+    """
+    Testing the label set methods.
+    """
+
     def setUp(self):
         self.x = 2
 

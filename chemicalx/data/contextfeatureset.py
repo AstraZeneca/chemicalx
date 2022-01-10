@@ -144,6 +144,17 @@ class ContextFeatureSet(dict):
         else:
             return 0
 
+    def get_features_in_contexts(self, contexts: List[str]) -> np.ndarray:
+        """Getting the feature matrix for a list of contexts.
+
+        Args:
+            contexts (list): A list of context identifiers.
+        Return:
+            features (np.ndarray): A matrix of context features.
+        """
+        features = np.concatenate([self.__dict__[context] for context in contexts])
+        return features
+
     def get_feature_density_rate(self) -> float:
         """Getting the ratio of non zero features.
 
@@ -152,7 +163,8 @@ class ContextFeatureSet(dict):
         """
         feature_matrix_density = None
         if len(self.__dict__) > 0:
-            feature_matrix = np.concatenate(self.features(), dim=0)
+            all_features = self.features()
+            feature_matrix = self.get_features_in_contexts(all_contexts)
             non_zero_count = np.sum(feature_matrix == 0)
             feature_count = self.get_context_feature_count()
             context_count = self.get_context_count()
