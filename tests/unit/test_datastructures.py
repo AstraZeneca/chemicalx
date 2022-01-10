@@ -34,7 +34,7 @@ class TestContextFeatureSet(unittest.TestCase):
     def test_update_and_delete(self):
         self.context_feature_set.update({"context_3": np.array([1.1, 2.2, 3.4])})
         assert len(self.context_feature_set) == 3
-        del self.self.context_feature_set["context_3"]
+        del context_feature_set["context_3"]
         assert len(self.context_feature_set) == 2
 
 
