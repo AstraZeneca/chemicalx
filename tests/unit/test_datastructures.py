@@ -10,7 +10,7 @@ class TestContextFeatureSet(unittest.TestCase):
         self.context_feature_set["context_2"] = np.array([0, 1, 2])
 
     def test_get(self):
-        assert self.context_feature_set["context_2"].shape == (3,)
+        assert self.context_feature_set["context_2"].shape == (1, 3)
 
     def test_len(self):
         assert len(self.context_feature_set) == 2

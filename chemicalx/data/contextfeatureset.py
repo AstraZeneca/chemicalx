@@ -15,7 +15,7 @@ class ContextFeatureSet(dict):
             context (str): Biological or chemical context identifier.
             features (np.ndarray): Feature vector for the context.
         """
-        self.__dict__[context] = torch.FloatTensor(features)
+        self.__dict__[context] = torch.FloatTensor(features).view(1, -1)
 
     def __getitem__(self, context: str):
         """Getting the feature vector for a biological context key.
@@ -79,7 +79,9 @@ class ContextFeatureSet(dict):
         Returns:
             ContextFeatureSet: The updated context feature set.
         """
-        return self.__dict__.update({context: torch.FloatTensor(features) for context, features in data.items()})
+        return self.__dict__.update(
+            {context: torch.FloatTensor(features.view(1, -1)) for context, features in data.items()}
+        )
 
     def contexts(self):
         """Retrieving the list of biological / chemical contexts in a feature set.
@@ -141,7 +143,7 @@ class ContextFeatureSet(dict):
             contexts = self.contexts()
             first_context = contexts[0]
             feature_vector = self.__dict__[first_context]
-            return feature_vector.shape[0]
+            return feature_vector.shape[1]
         else:
             return 0
 
