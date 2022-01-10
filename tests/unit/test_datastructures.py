@@ -14,18 +14,18 @@ class TestContextFeatureSet(unittest.TestCase):
 
 
 class DrugFeatureSet(unittest.TestCase):
-    def setUp(self, x):
+    def setUp(self):
         self.x = 2
 
     def test_DrugFeatureSet(self):
-        data = DrugFeatureSet(x=2)
+        data = DrugFeatureSet(x=self.x)
         assert data.x == 2
 
 
 class LabelSet(unittest.TestCase):
-    def setUp(self, x):
+    def setUp(self):
         self.x = 2
 
     def test_LabelSet(self):
-        data = LabelSet(x=2)
+        data = LabelSet(x=self.x)
         assert data.x == 2
