@@ -20,8 +20,9 @@ class TestContextFeatureSet(unittest.TestCase):
         assert len(self.context_feature_set) == 2
 
     def test_contexts_features(self):
-        assert len(list(self.context_feature_set.contexts())) == 2
-        assert len(list(self.context_feature_set.features())) == 2
+        assert len(list(self.context_feature_set.keys())) == 2
+        assert len(list(self.context_feature_set.values())) == 2
+        assert len(list(self.context_feature_set.items())) == 2
 
     def test_basic_statistics(self):
         assert self.context_feature_set.get_context_count() == 2
@@ -36,6 +37,11 @@ class TestContextFeatureSet(unittest.TestCase):
         assert len(self.context_feature_set) == 3
         del context_feature_set["context_3"]
         assert len(self.context_feature_set) == 2
+
+    def test_iteration(self):
+        for context in self.context_feature_set:
+            feature_vector = self.context_feature_set[context]
+            assert feature_vector.shape == (1, 3)
 
 
 class TestDrugFeatureSet(unittest.TestCase):
