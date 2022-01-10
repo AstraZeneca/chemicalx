@@ -2,8 +2,9 @@ from setuptools import find_packages, setup
 
 install_requires = [
     "numpy",
-    "torch",
+    "torch>1.10.0",
     "torchdrug",
+    "torch-scatter>=2.0.8",
     "pandas<=1.3.5",
     "scipy",
     "tqdm",
@@ -44,7 +45,7 @@ setup(
     keywords=keywords,
     install_requires=install_requires,
     setup_requires=setup_requires,
-    tests_require=tests_require,
+    tests_require=tests_require + install_requires,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
