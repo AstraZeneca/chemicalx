@@ -14,7 +14,7 @@ class TestContextFeatureSet(unittest.TestCase):
 
 
 class DrugFeatureSet(unittest.TestCase):
-    def setUp(self):
+    def setUp(self, x):
         self.x = 2
 
     def test_DrugFeatureSet(self):
@@ -23,7 +23,7 @@ class DrugFeatureSet(unittest.TestCase):
 
 
 class LabelSet(unittest.TestCase):
-    def setUp(self):
+    def setUp(self, x):
         self.x = 2
 
     def test_LabelSet(self):
