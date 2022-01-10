@@ -20,8 +20,8 @@ class TestContextFeatureSet(unittest.TestCase):
         assert len(self.context_feature_set) == 2
 
     def test_contexts_features(self):
-        assert len(self.context_feature_set.contexts()) == 2
-        assert len(self.context_feature_set.features()) == 2
+        assert len(list(self.context_feature_set.contexts())) == 2
+        assert len(list(self.context_feature_set.features())) == 2
 
     def test_basic_statistics(self):
         assert self.context_feature_set.get_context_count() == 2
@@ -30,6 +30,12 @@ class TestContextFeatureSet(unittest.TestCase):
     def test_density(self):
         density = self.context_feature_set.get_feature_density_rate()
         assert density == (4 / 6)
+
+    def test_update_and_delete(self):
+        self.context_feature_set.update({"context_3": np.array([1.1, 2.2, 3.4])})
+        assert len(self.context_feature_set) == 3
+        del self.self.context_feature_set["context_3"]
+        assert len(self.context_feature_set) == 2
 
 
 class TestDrugFeatureSet(unittest.TestCase):

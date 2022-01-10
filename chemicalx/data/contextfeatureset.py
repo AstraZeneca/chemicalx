@@ -80,29 +80,29 @@ class ContextFeatureSet(dict):
         """
         return self.__dict__.update({context: features.reshape(1, -1) for context, features in data.items()})
 
-    def contexts(self):
+    def keys(self):
         """Retrieving the list of biological / chemical contexts in a feature set.
 
         Returns:
-            list: A list of context identifiers.
+            list: An iterator of context identifiers.
         """
-        return list(self.__dict__.keys())
+        return self.__dict__.keys()
 
-    def features(self):
-        """Retrieving the list of context feature vectors.
+    def values(self):
+        """Retrieving the iterator of context feature vectors.
 
         Returns:
-            list: A list of feature vectors.
+            list: Feature vector iterator.
         """
-        return list(self.__dict__.values())
+        return self.__dict__.values()
 
-    def context_features(self):
-        """Retrieving the list of tuples containing context identifier - feature vector pairs.
+    def items(self):
+        """Retrieving the iterator of tuples containing context identifier - feature vector pairs.
 
         Returns:
-            list: A list of (context - feature vector) tuples.
+            list: An iterator of (context - feature vector) tuples.
         """
-        return list(self.__dict__.items())
+        return self.__dict__.items()
 
     def __contains__(self, context: str):
         """A data class method which allows the use of the 'in' operator.
@@ -137,14 +137,14 @@ class ContextFeatureSet(dict):
             int: The number of feature dimensions.
         """
         if len(self.__dict__) > 0:
-            contexts = self.contexts()
+            contexts = list(self.keys())
             first_context = contexts[0]
             feature_vector = self.__dict__[first_context]
             return feature_vector.shape[1]
         else:
             return 0
 
-    def get_features_in_contexts(self, contexts: List[str]) -> np.ndarray:
+    def get_feature_matrix(self, contexts: List[str]) -> np.ndarray:
         """Getting the feature matrix for a list of contexts.
 
         Args:
@@ -163,8 +163,8 @@ class ContextFeatureSet(dict):
         """
         feature_matrix_density = None
         if len(self.__dict__) > 0:
-            all_contexts = self.contexts()
-            feature_matrix = self.get_features_in_contexts(all_contexts)
+            all_contexts = list(self.keys())
+            feature_matrix = self.get_feature_matrix(all_contexts)
             non_zero_count = np.sum(feature_matrix != 0)
             feature_count = self.get_context_feature_count()
             context_count = self.get_context_count()
