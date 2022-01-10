@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 install_requires = [
     "numpy",
-    "torch>1.10.0",
+    "torch>=1.10.0",
     "torchdrug",
     "torch-scatter>=2.0.8",
     "pandas<=1.3.5",
