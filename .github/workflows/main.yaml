@@ -26,7 +26,6 @@ jobs:
       - name: Run installation.
         run: |
          conda install -y scipy
-         pip install torch==1.10.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
          pip install torchvision==0.11.2+cpu -f https://download.pytorch.org/whl/torch_stable.html
          pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.10.0+cpu.html
          pip install torchdrug
