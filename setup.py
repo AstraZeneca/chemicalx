@@ -41,7 +41,7 @@ setup(
     author="Benedek Rozemberczki and Charles Hoyt",
     author_email="",
     url="https://github.com/AstraZeneca/chemicalx",
-    download_url="https://github.com/AstraZeneca/chemicalx/archive/v.0.0.4.tar.gz",
+    download_url="https://github.com/AstraZeneca/chemicalx/archive/v0.0.4.tar.gz",
     keywords=keywords,
     install_requires=install_requires,
     setup_requires=setup_requires,
