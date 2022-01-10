@@ -152,5 +152,5 @@ class ContextFeatureSet(dict):
             float: The ratio of non zero entries in the whole context feature matrix.
         """
         if len(self.__dict__) > 0:
-            feature_matrix = torch.cat(self.features())
+            feature_matrix = torch.cat(self.features(), dim=1)
         return feature_matrix
