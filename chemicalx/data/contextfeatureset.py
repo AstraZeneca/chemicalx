@@ -163,9 +163,9 @@ class ContextFeatureSet(dict):
         """
         feature_matrix_density = None
         if len(self.__dict__) > 0:
-            all_features = self.features()
+            all_contexts = self.features()
             feature_matrix = self.get_features_in_context(all_contexts)
-            non_zero_count = np.sum(feature_matrix == 0)
+            non_zero_count = np.sum(feature_matrix != 0)
             feature_count = self.get_context_feature_count()
             context_count = self.get_context_count()
             feature_matrix_density = non_zero_count / (feature_count * context_count)
