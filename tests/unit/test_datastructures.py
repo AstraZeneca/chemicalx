@@ -15,6 +15,11 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def test_get(self):
         assert self.context_feature_set["context_2"].shape == (1, 3)
+        assert ("context_2" in self.context_feature_set) == True
+
+    def test_copy(self):
+        self.another_context_feature_set = self.context_feature_set.copy()
+        assert len(self.another_context_feature_set) == len(self.context_feature_set)
 
     def test_len(self):
         assert len(self.context_feature_set) == 2
