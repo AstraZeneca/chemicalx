@@ -32,7 +32,7 @@ jobs:
          pip install torchdrug
          pip install codecov
          pip install pytest
-         pip install setup.py install
+         python setup.py install
       - name: Run code quality tests
         run: |
           tox -e flake8
