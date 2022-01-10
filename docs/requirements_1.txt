@@ -3,7 +3,7 @@ numpy
 sphinx==4.0.2
 sphinx_rtd_theme==0.5.2
 https://download.pytorch.org/whl/cpu/torch-1.10.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
-https://s3.eu-central-1.amazonaws.com/pytorch-geometric.com/whl/torch-1.10.0/torch_scatter-latest%2Bcpu-cp37-cp37m-linux_x86_64.whl
+https://data.pyg.org/whl/torch-1.10.0%2Bcpu/torch_scatter-2.0.9-cp38-cp38-linux_x86_64.whl
 torchdrug
 sklearn
 scipy
@@ -12,4 +12,3 @@ six
 nbsphinx
 nbsphinx_link
 jupyter-sphinx
-pandas
