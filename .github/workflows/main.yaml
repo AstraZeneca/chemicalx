@@ -31,6 +31,7 @@ jobs:
          pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.10.0+cpu.html
          pip install torchdrug
          pip install codecov
+         pip install tox
          pip install pytest
          python setup.py install
       - name: Run code quality tests
