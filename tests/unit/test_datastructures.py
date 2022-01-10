@@ -6,20 +6,24 @@ from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabelSet
 class TestContextFeatureSet(unittest.TestCase):
     def setUp(self):
         self.context_feature_set = ContextFeatureSet()
-        self.context_feature_set["context_1"] = np.array([0, 1, 2])
+        self.context_feature_set["context_1"] = np.array([0.0, 1.8, 2.1])
         self.context_feature_set["context_2"] = np.array([0, 1, 2])
 
-    def test_ContextFeatureSet(self):
-
+    def test_get(self):
         assert self.context_feature_set["context_2"].shape == (3,)
 
+    def test_len(self):
         assert len(self.context_feature_set) == 2
 
+    def test_contexts_features(self):
         assert len(self.context_feature_set.contexts()) == 2
         assert len(self.context_feature_set.features()) == 2
 
+    def test_basic_statistics(self):
         assert self.context_feature_set.get_context_count() == 3
         assert self.context_feature_set.get_context_feature_count() == 3
+
+    def test_denstiy(self):
         feature_matrix = self.context_feature_set.get_feature_density_rate()
         assert feature_matrix.shape == (2, 3)
 

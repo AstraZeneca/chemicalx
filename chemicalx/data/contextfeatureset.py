@@ -141,7 +141,7 @@ class ContextFeatureSet(dict):
             contexts = self.contexts()
             first_context = contexts[0]
             feature_vector = self.__dict__[first_context]
-            return feature_vector.shape[0]
+            return feature_vector.shape[1]
         else:
             return 0
 
