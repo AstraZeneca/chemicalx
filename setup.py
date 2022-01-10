@@ -1,6 +1,14 @@
 from setuptools import find_packages, setup
 
-install_requires = []
+install_requires = [
+    "numpy",
+    "torch",
+    "torchdrug",
+    "pandas",
+    "scipy",
+    "tqdm",
+    "six",
+]
 
 
 setup_requires = ["pytest-runner"]
