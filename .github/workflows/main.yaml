@@ -34,14 +34,8 @@ jobs:
          pip install pytest
          pip install tox
          python setup.py install
-      - name: Run code quality tests
-        run: |
           tox -e flake8
-      - name: Run type checking
-        run: |
           tox -e mypy
-      - name: Install main package
-        run: |
           pip install -e .[test]
       - name: Run test-suite
         run: |
