@@ -4,7 +4,7 @@ install_requires = [
     "numpy",
     "torch>=1.10.0",
     "torchdrug",
-    "torch-scatter==2.0.8",
+    "torch-scatter>=2.0.8",
     "pandas<=1.3.5",
     "scipy",
     "tqdm",
@@ -45,7 +45,7 @@ setup(
     keywords=keywords,
     install_requires=install_requires,
     setup_requires=setup_requires,
-    tests_require=tests_require + install_requires,
+    tests_require=tests_require,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
