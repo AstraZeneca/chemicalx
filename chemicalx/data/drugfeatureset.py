@@ -72,7 +72,7 @@ class DrugFeatureSet(dict):
         """
         return self.__dict__.update(
             {
-                drug: {"smiles": features["smiles"], "features": features["features"].reshape(1, -1)}
+                drug: {"smiles": features["smiles"], "features": features["features"].reshape(-1, 1)}
                 for drug, features in data.items()
             }
         )

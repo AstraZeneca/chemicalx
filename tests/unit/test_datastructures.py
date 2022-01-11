@@ -112,7 +112,7 @@ class TestDrugFeatureSet(unittest.TestCase):
         assert len(self.drug_feature_set) == 0
 
     def test_get_smiles(self):
-        smiles_strings = self.drug_feature_set.get_smiles_strings()
+        smiles_strings = self.drug_feature_set.get_smiles_strings(list(self.drug_feature_set.keys()))
         assert len(smiles_strings) == 2
 
 
