@@ -1,4 +1,4 @@
-from chemicalx.data import contextfeatureset, drugfeatureset, labelset, datasetloader  # noqa:F401,F403
+from chemicalx.data import contextfeatureset, drugfeatureset, labeledtriples, datasetloader  # noqa:F401,F403
 
 from chemicalx.models import (  # noqa:F401,F403
     audnnsynergy,

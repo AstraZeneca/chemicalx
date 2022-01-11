@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabelSet
+from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
 class TestContextFeatureSet(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestContextFeatureSet(unittest.TestCase):
         self.another_context_feature_set = self.context_feature_set
         del self.another_context_feature_set["context_1"]
         del self.another_context_feature_set["context_2"]
-        assert self.another_context_feature_set.get_context_feature_count() == None
+        assert self.another_context_feature_set.get_context_feature_count() == 0
 
     def test_len(self):
         assert len(self.context_feature_set) == 2
@@ -76,7 +76,7 @@ class TestDrugFeatureSet(unittest.TestCase):
         self.another_drug_feature_set = self.drug_feature_set
         del self.another_drug_feature_set["drug_1"]
         del self.another_drug_feature_set["drug_2"]
-        assert self.another_drug_feature_set.get_drug_feature_count() == None
+        assert self.another_drug_feature_set.get_drug_feature_count() == 0
 
     def test_len(self):
         assert len(self.drug_feature_set) == 2
@@ -116,14 +116,13 @@ class TestDrugFeatureSet(unittest.TestCase):
         assert len(smiles_strings) == 2
 
 
-class TestLabelSet(unittest.TestCase):
+class TestLabeledTriples(unittest.TestCase):
     """
-    Testing the label set methods.
+    Testing the labeled triples methods.
     """
 
     def setUp(self):
-        self.x = 2
+        self.labeled_triples = LabeleledTriples()
 
-    def test_LabelSet(self):
-        data = LabelSet(x=self.x)
-        assert data.x == 2
+    def test_one(self):
+        assert 2 == 2

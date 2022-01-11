@@ -133,7 +133,7 @@ class DrugFeatureSet(dict):
         Returns:
             feature_count (int): The number of drug feature dimensions.
         """
-        feature_count = None
+        feature_count = 0
         if len(self.__dict__) > 0:
             drugs = list(self.keys())
             first_drug = drugs[0]

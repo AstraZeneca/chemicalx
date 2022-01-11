@@ -126,7 +126,7 @@ class ContextFeatureSet(dict):
         Returns:
             feature_count (int): The number of feature dimensions.
         """
-        feature_count = None
+        feature_count = 0
         if len(self.__dict__) > 0:
             contexts = list(self.keys())
             first_context = contexts[0]
