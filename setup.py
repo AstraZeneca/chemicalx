@@ -9,6 +9,7 @@ install_requires = [
     "scipy",
     "tqdm",
     "six",
+    "scikit-learn",
 ]
 
 
