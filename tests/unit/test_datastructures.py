@@ -122,7 +122,7 @@ class TestLabeledTriples(unittest.TestCase):
     """
 
     def setUp(self):
-        self.labeled_triples = LabeleledTriples()
+        self.labeled_triples = LabeledTriples()
 
     def test_one(self):
         assert 2 == 2
