@@ -67,16 +67,24 @@ class TestDrugFeatureSet(unittest.TestCase):
         self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([1, 0, 8])}
 
     def test_get(self):
-        assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
+        assert self.drug_feature_set["drug_1"]["features"].shape == (3, 1)
         assert len(self.drug_feature_set["drug_1"]["smiles"]) == 6
         assert ("drug_2" in self.drug_feature_set) == True
         assert self.drug_feature_set.has_context("drug_2") == True
 
     def test_delete(self):
         self.another_drug_feature_set = self.drug_feature_set
-        del self.another_drug_feature_set["context_1"]
-        del self.another_drug_feature_set["context_2"]
+        del self.another_drug_feature_set["drug_1"]
+        del self.another_drug_feature_set["drug_2"]
         assert self.another_drug_feature_set.get_drug_feature_count() == None
+
+    def test_len(self):
+        assert len(self.drug_feature_set) == 2
+
+    def test_drug_features(self):
+        assert len(list(self.drug_feature_set.keys())) == 2
+        assert len(list(self.drug_feature_set.values())) == 2
+        assert len(list(self.drug_feature_set.items())) == 2
 
 
 class TestLabelSet(unittest.TestCase):
