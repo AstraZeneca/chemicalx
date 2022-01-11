@@ -62,11 +62,10 @@ class TestDrugFeatureSet(unittest.TestCase):
     """
 
     def setUp(self):
-        self.x = 2
+        self.drug_feature_set = DrugFeatureSet()
 
-    def test_DrugFeatureSet(self):
-        data = DrugFeatureSet(x=self.x)
-        assert data.x == 2
+    def test_drug_feature_set(self):
+        assert 2 == 2
 
 
 class TestLabelSet(unittest.TestCase):

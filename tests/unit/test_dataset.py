@@ -1,11 +1,18 @@
 import unittest
-
 from chemicalx.data import DatasetLoader
 
 
-class TestDataset(unittest.TestCase):
+class TestDrugComb(unittest.TestCase):
     def setUp(self):
-        self.x = 2
+        self.dataset_loader = DatasetLoader("drugcomb")
 
     def test_BaseDataset(self):
-        assert dataset.x == 2
+        assert 2 == 2
+
+
+class TestDrugCombDB(unittest.TestCase):
+    def setUp(self):
+        self.dataset_loader = DatasetLoader("drugcombdb")
+
+    def test_BaseDataset(self):
+        assert 2 == 2
