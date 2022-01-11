@@ -7,7 +7,7 @@ class LabeledTriples:
     def __init__(self):
         self.columns = ["drug_1", "drug_2", "context", "label"]
         self.types = {"drug_1": str, "drug_2": str, "context": str, "label": float}
-        self.data = pd.DataFrame(columns=self.columns)
+        self.data = pd.DataFrame(columns=self.columns).astype(self.types)
 
     def drop_duplicates(self):
         self.data = self.data.drop_duplicates()
@@ -16,7 +16,7 @@ class LabeledTriples:
         self.data = pd.concat([self.data, data])
 
     def update_from_list(self, data: List[List]):
-        data = pd.DataFrame(data, columns=self.columns, dtype=self.types)
+        data = pd.DataFrame(data, columns=self.columns)
         self.data = pd.concat([self.data, data])
 
     def __add__(self, value):
