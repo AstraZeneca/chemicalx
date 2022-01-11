@@ -146,3 +146,14 @@ class TestLabeledTriples(unittest.TestCase):
         assert labeled_triples.data.shape == (4, 4)
         labeled_triples.drop_duplicates()
         assert labeled_triples.data.shape == (3, 4)
+
+    def test_split(self):
+        labeled_triples = self.other_labeled_triples + self.labeled_triples
+        train_triples, test_triples = labeled_triples.train_test_split(train_size=0.5, random_state=42)
+
+        assert train_triples.data.shape == (2, 4)
+        assert test_triples.data.shape == (2, 4)
+
+    def test_counts(self):
+        labeled_triples = self.other_labeled_triples + self.labeled_triples
+        train_triples, test_triples = labeled_triples.train_test_split(train_size=0.5, random_state=42)
