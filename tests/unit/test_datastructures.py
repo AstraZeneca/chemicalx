@@ -126,17 +126,19 @@ class TestLabeledTriples(unittest.TestCase):
         self.labeled_triples = LabeledTriples()
         self.other_labeled_triples = LabeledTriples()
 
-    def test_from_pandas(self):
         data = pd.DataFrame(
             [["drug_a", "drug_b", "context_a", 1], ["drug_b", "drug_c", "context_b", 0]],
             columns=["drug_1", "drug_2", "context", "label"],
         )
         self.labeled_triples.update_from_pandas(data)
+
+        data = [["drug_a", "drug_b", "context_a", 1], ["drug_a", "drug_c", "context_b", 0]]
+        self.other_labeled_triples.update_from_list(data)
+
+    def test_from_pandas(self):
         assert self.labeled_triples.data.shape == (2, 4)
 
     def test_from_list(self):
-        data = [["drug_a", "drug_b", "context_a", 1], ["drug_a", "drug_c", "context_b", 0]]
-        self.other_labeled_triples.update_from_list(data)
         assert self.other_labeled_triples.data.shape == (2, 4)
 
     def test_add_and_drops(self):
