@@ -62,6 +62,7 @@ class ContextFeatureSet(dict):
 
     def update(self, data: Dict[str, np.ndarray]):
         """Updating a dictionary of context keys - feature vector values to a context set.
+
         Args:
             data (dict): A dictionary of context keys with feature vector values.
         Returns:

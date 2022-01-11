@@ -5,7 +5,7 @@ ChemicalX
     :local:
 
 
-Data Structures
+Data Structures and Loaders
 --------------------
 
 .. autoclass:: chemicalx.data.drugfeatureset.DrugFeatureSet
@@ -20,44 +20,7 @@ Data Structures
     :members:
     :undoc-members:
 
-Integrated Public Datasets
---------------------
-
-.. autoclass:: chemicalx.dataset.basedataset.BaseDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.chchminer.ChChMinerDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.dpddione.DPDDIOneDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.drugcomb.DrugCombDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.drugcombdb.DrugCombDBDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.oncolypharm.OncolyPharmDataset
-    :members:
-    :undoc-members:
-
-.. autoclass:: chemicalx.dataset.synergyxdb.SynergyXDBDataset
-    :members:
-    :undoc-members:
-
-
-.. autoclass:: chemicalx.dataset.twosides.TwoSidesDataset
-    :members:
-    :undoc-members:
-
-
-.. autoclass:: chemicalx.dataset.zhangddi.ZhangDDIDataset
+.. autoclass:: chemicalx.data.datasetloader.DatasetLoader
     :members:
     :undoc-members:
 
