@@ -156,4 +156,12 @@ class TestLabeledTriples(unittest.TestCase):
 
     def test_counts(self):
         labeled_triples = self.other_labeled_triples + self.labeled_triples
-        train_triples, test_triples = labeled_triples.train_test_split(train_size=0.5, random_state=42)
+        assert labeled_triples.get_drug_count() == 3
+        assert labeled_triples.get_combination_count() == 3
+        assert labeled_triples.get_context_count() == 2
+        assert labeled_triples.get_labeled_triple_count() == 4
+        assert labeled_triples.get_context_count() == 2
+        assert labeled_triples.get_positive_count() == 2
+        assert labeled_triples.get_negative_count() == 2
+        assert labeled_triples.get_positive_rate() == 0.5
+        assert labeled_triples.get_negative_rate() == 0.5
