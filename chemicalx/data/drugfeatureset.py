@@ -16,7 +16,7 @@ class DrugFeatureSet(dict):
         """
         self.__dict__[drug] = {}
         self.__dict__[drug]["smiles"] = features["smiles"]
-        self.__dict__[drug]["features"] = features["features"].reshape(-1, 1)
+        self.__dict__[drug]["features"] = features["features"].reshape(1, -1)
 
     def __getitem__(self, drug: str):
         """Getting the features for a drug key.
@@ -160,8 +160,8 @@ class DrugFeatureSet(dict):
         Return:
             smiles_strings (list): A list of smiles strings for the drugs.
         """
-        features = np.concatenate([self.__dict__[drug]["smiles"] for drug in drugs])
-        return features
+        smiles_strings = [self.__dict__[drug]["smiles"] for drug in drugs]
+        return smiles_strings
 
     def get_feature_density_rate(self) -> float:
         """Getting the ratio of non-zero drug feature values in the drug feature matrix.
