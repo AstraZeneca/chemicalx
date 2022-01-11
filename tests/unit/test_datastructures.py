@@ -145,4 +145,4 @@ class TestLabeledTriples(unittest.TestCase):
         labeled_triples = self.other_labeled_triples + self.other_labeled_triples
         assert labeled_triples.data.shape == (4, 4)
         labeled_triples.drop_duplicates()
-        assert labeled_triples.shape == (3, 4)
+        assert labeled_triples.data.shape == (3, 4)
