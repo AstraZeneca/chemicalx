@@ -67,10 +67,10 @@ class TestDrugFeatureSet(unittest.TestCase):
         self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([1, 0, 8])}
 
     def test_get(self):
-        assert self.drug_feature_set["drug_1"]["features"].shape == (3, 1)
+        assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
         assert len(self.drug_feature_set["drug_1"]["smiles"]) == 6
         assert ("drug_2" in self.drug_feature_set) == True
-        assert self.drug_feature_set.has_context("drug_2") == True
+        assert self.drug_feature_set.has_drug("drug_2") == True
 
     def test_delete(self):
         self.another_drug_feature_set = self.drug_feature_set
@@ -85,6 +85,35 @@ class TestDrugFeatureSet(unittest.TestCase):
         assert len(list(self.drug_feature_set.keys())) == 2
         assert len(list(self.drug_feature_set.values())) == 2
         assert len(list(self.drug_feature_set.items())) == 2
+
+    def test_basic_statistics(self):
+        assert self.drug_feature_set.get_drug_count() == 2
+        assert self.drug_feature_set.get_drug_feature_count() == 3
+
+    def test_density(self):
+        density = self.drug_feature_set.get_feature_density_rate()
+        assert density == (4 / 6)
+
+    def test_update_and_delete(self):
+        self.drug_feature_set.update(
+            {"drug_3": {"smiles": " CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "features": np.array([1.1, 2.2, 3.4])}}
+        )
+        assert len(self.drug_feature_set) == 3
+        del self.drug_feature_set["drug_3"]
+        assert len(self.drug_feature_set) == 2
+
+    def test_iteration(self):
+        for drug in self.drug_feature_set:
+            features = self.drug_feature_set[drug]
+            assert len(features) == 2
+
+    def test_clearing(self):
+        self.drug_feature_set.clear()
+        assert len(self.drug_feature_set) == 0
+
+    def test_get_smiles(self):
+        smiles_strings = self.drug_feature_set.get_smiles_strings()
+        assert len(smiles_strings) == 2
 
 
 class TestLabelSet(unittest.TestCase):
