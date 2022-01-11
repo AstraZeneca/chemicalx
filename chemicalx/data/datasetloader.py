@@ -28,7 +28,7 @@ class DatasetLoader:
         raw_data = pd.read_csv(io.BytesIO(data_bytes), encoding="utf8", sep=",", dtype=types)
         return raw_data
 
-    def get_context_features(self) -> Dict:
+    def get_context_features(self):
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {k: np.array(v) for k, v in raw_data.items()}
@@ -36,7 +36,7 @@ class DatasetLoader:
         context_feature_set.update(raw_data)
         return context_feature_set
 
-    def get_drug_features(self) -> Dict:
+    def get_drug_features(self):
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {k: {"smiles": v["smiles"], "features": np.array(v["features"])} for k, v in raw_data.items()}
@@ -44,7 +44,7 @@ class DatasetLoader:
         drug_feature_set.update(raw_data)
         return drug_feature_set
 
-    def get_labeled_triples(self) -> pd.DataFrame:
+    def get_labeled_triples(self):
         path = self.generate_path("labeled_triples.csv")
         raw_data = self.load_raw_csv_data(path)
         labeled_triple_set = LabeledTriples()
