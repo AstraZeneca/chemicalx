@@ -1,7 +1,8 @@
 import math
 import torch
+from typing import List
 from torchdrug.data import Graph
-from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet
+from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet, DrugPairBatch
 
 
 class BatchGenerator:
@@ -12,34 +13,18 @@ class BatchGenerator:
         drug_features: bool,
         drug_molecules: bool,
         labels: bool,
-        labeled_triples,
-        drug_feature_set,
-        context_feature_set,
     ):
         self.batch_size = batch_size
         self.context_features = context_features
         self.drug_features = drug_features
         self.drug_molecules = drug_molecules
-
         self.labels = labels
-        self.labeled_triples = labeled_triples
-        self.drug_feature_set = drug_feature_set
+
+    def set_data(self, contex_feature_set: None, drug_feature_set: None, labeled_triples: None):
+
         self.context_feature_set = context_feature_set
-
-    def reset_labeled_triples(self, labeled_triples):
-        self.labeled_triples = labeled_triples
-
-    def reset_drug_feature_set(self, drug_feature_set):
         self.drug_feature_set = drug_feature_set
-
-    def reset_context_feature_set(self, contex_feature_set):
-        self.context_feature_set = context_feature_set
-
-    def __iter__(self):
-        self.labeled_triples.data = self.labeled_triples.data.sample(frac=1.0)
-        self.sample_count = self.labeled_triples.data.shape[0]
-        self.lower_frame_index = 0
-        return self
+        self.labeled_triples = labeled_triples
 
     def _get_context_features(self, context_identifiers: List):
         context_features = None
@@ -86,6 +71,12 @@ class BatchGenerator:
         )
 
         return batch
+
+    def __iter__(self):
+        self.labeled_triples.data = self.labeled_triples.data.sample(frac=1.0)
+        self.sample_count = self.labeled_triples.data.shape[0]
+        self.lower_frame_index = 0
+        return self
 
     def __len__(self):
         return math.ceil(self.labeled_triples.data.shape[0] / self.batch_size)
