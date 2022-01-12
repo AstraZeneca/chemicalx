@@ -171,6 +171,13 @@ class DrugFeatureSet(dict):
         return smiles_strings
 
     def get_molecules(self, drugs):
+        """Getting the molecular structures.
+
+        Args:
+            drugs (list): A list of drug identifiers.
+        Return:
+            molecules (list): A list of drug molecules as torchdrug.Molecule objects.
+        """
         molecules = [self.__dict__[drug]["molecule"] for drug in drugs]
         return molecules
 
