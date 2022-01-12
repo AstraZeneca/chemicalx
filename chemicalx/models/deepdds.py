@@ -6,4 +6,7 @@ __all__ = [
 
 
 class DeepDDS(Model):
-    pass
+    """An implementation of the DeepDDS model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/19
+    """

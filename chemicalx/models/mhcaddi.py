@@ -6,4 +6,7 @@ __all__ = [
 
 
 class MHCADDI(Model):
-    pass
+    """An implementation of the MHCADDI model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/13
+    """

@@ -6,4 +6,7 @@ __all__ = [
 
 
 class MatchMaker(Model):
-    pass
+    """An implementation of the MatchMaker model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/23
+    """

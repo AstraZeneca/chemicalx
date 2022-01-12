@@ -6,4 +6,7 @@ __all__ = [
 
 
 class SSIDDI(Model):
-    pass
+    """An implementation of the SSI-DDI model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/11
+    """

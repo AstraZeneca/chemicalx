@@ -6,4 +6,7 @@ __all__ = [
 
 
 class GCNBMP(Model):
-    pass
+    """An implementation of the GCNBMP model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/21
+    """

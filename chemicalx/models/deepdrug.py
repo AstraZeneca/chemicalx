@@ -6,4 +6,7 @@ __all__ = [
 
 
 class DeepDrug(Model):
-    pass
+    """An implementation of the DeepDrug model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/14
+    """

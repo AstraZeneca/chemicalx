@@ -6,4 +6,7 @@ __all__ = [
 
 
 class DPDDI(Model):
-    pass
+    """An implementation of the DPDDI model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/20
+    """

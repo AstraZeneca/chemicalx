@@ -6,4 +6,7 @@ __all__ = [
 
 
 class EPGCNDS(Model):
-    pass
+    """An implementation of the EPGCNDS model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/22
+    """

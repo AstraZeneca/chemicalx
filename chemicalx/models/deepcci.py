@@ -6,4 +6,7 @@ __all__ = [
 
 
 class DeepCCI(Model):
-    pass
+    """An implementation of the DeepCCI model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/1
+    """

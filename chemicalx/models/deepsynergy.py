@@ -6,4 +6,7 @@ __all__ = [
 
 
 class DeepSynergy(Model):
-    pass
+    """An implementation of the DeepSynergy model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/16
+    """

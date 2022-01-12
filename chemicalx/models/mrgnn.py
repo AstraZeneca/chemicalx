@@ -6,4 +6,7 @@ __all__ = [
 
 
 class MRGNN(Model):
-    pass
+    """An implementation of the MR-GNN model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/12
+    """
