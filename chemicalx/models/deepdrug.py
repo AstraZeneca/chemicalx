@@ -1,3 +1,12 @@
-class DeepDrug:
-    def __init__(self, x: int):
-        self.x = x
+from .base import Model
+
+__all__ = [
+    "DeepDrug",
+]
+
+
+class DeepDrug(Model):
+    """An implementation of the DeepDrug model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/14
+    """

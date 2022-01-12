@@ -10,6 +10,7 @@ install_requires = [
     "tqdm",
     "six",
     "scikit-learn",
+    "class-resolver",
 ]
 
 
