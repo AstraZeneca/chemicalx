@@ -1,6 +1,7 @@
 import math
 import torch
 import pandas as pd
+import numpy as np
 from typing import List
 from torchdrug.data import Graph
 from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet, DrugPairBatch
