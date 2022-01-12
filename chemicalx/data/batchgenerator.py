@@ -21,8 +21,8 @@ class BatchGenerator:
         self.drug_molecules = drug_molecules
         self.labels = labels
 
-    def set_context_feature_set(self, contex_feature_set: None):
-        self.contex_feature_set = contex_feature_set
+    def set_context_feature_set(self, context_feature_set: None):
+        self.context_feature_set = context_feature_set
 
     def set_drug_feature_set(self, drug_feature_set: None):
         self.drug_feature_set = drug_feature_set
