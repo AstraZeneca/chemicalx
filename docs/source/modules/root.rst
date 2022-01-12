@@ -24,6 +24,14 @@ Data Structures and Loaders
     :members:
     :undoc-members:
 
+.. autoclass:: chemicalx.data.batchgenerator.BatchGenerator
+    :members:
+    :undoc-members:
+
+.. autoclass:: chemicalx.data.drugpairbatch.DrugPairBatch
+    :members:
+    :undoc-members:
+
 Pair Scoring Models
 --------------------
 
