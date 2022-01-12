@@ -9,7 +9,7 @@ class DrugPairBatch:
         context_features=None,
         labels=None,
     ):
-        self.identifiers = idenifiers
+        self.identifiers = identifiers
         self.drug_features_left = drug_features_left
         self.drug_molecules_left = drug_molecules_left
         self.drug_features_right = drug_features_right
