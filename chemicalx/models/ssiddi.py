@@ -1,3 +1,9 @@
-class SSIDDI:
-    def __init__(self, x: int):
-        self.x = x
+from .base import Model
+
+__all__ = [
+    "SSIDDI",
+]
+
+
+class SSIDDI(Model):
+    pass
