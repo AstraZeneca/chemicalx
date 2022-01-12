@@ -26,7 +26,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
 
     def set_all_false(self):
         generator = BatchGenerator(
-            batch_size=4096, context_features=True, drug_features=True, drug_molecules=True, labels=True
+            batch_size=4096, context_features=False, drug_features=False, drug_molecules=False, labels=False
         )
 
         generator.set_data(
@@ -36,5 +36,4 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
         )
 
         for batch in generator:
-            assert batch.drug_features_left.shape[1] == 256
-            assert (batch.drug_features_left.shape[0] == 2975) or (batch.drug_features_left.shape[0] == 4096)
+            assert batch.drug_features_left is None
