@@ -1,5 +1,6 @@
 import math
 import torch
+import pandas as pd
 from typing import List
 from torchdrug.data import Graph
 from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet, DrugPairBatch
@@ -20,11 +21,20 @@ class BatchGenerator:
         self.drug_molecules = drug_molecules
         self.labels = labels
 
+    def set_context_feature_set(self, contex_feature_set: None):
+        self.contex_feature_set = contex_feature_set
+
+    def set_context_feature_set(self, drug_feature_set: None):
+        self.drug_feature_set = drug_feature_set
+
+    def set_labeled_triples(self, labeled_triples: None):
+        self.labeled_triples = labeled_triples
+
     def set_data(self, contex_feature_set: None, drug_feature_set: None, labeled_triples: None):
 
-        self.context_feature_set = context_feature_set
-        self.drug_feature_set = drug_feature_set
-        self.labeled_triples = labeled_triples
+        self.set_context_feature_set(contex_feature_set)
+        self.set_drug_feature_set(set_drug_feature_set)
+        self.set_labeled_triples(labeled_triples)
 
     def _get_context_features(self, context_identifiers: List):
         context_features = None
