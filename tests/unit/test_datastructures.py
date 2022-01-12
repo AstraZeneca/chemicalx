@@ -106,7 +106,7 @@ class TestDrugFeatureSet(unittest.TestCase):
     def test_iteration(self):
         for drug in self.drug_feature_set:
             features = self.drug_feature_set[drug]
-            assert len(features) == 2
+            assert len(features) == 3
 
     def test_clearing(self):
         self.drug_feature_set.clear()
@@ -115,6 +115,10 @@ class TestDrugFeatureSet(unittest.TestCase):
     def test_get_smiles(self):
         smiles_strings = self.drug_feature_set.get_smiles_strings(list(self.drug_feature_set.keys()))
         assert len(smiles_strings) == 2
+
+    def test_get_molecules(self):
+        molecules = self.drug_feature_set.get_molecules(list(self.drug_feature_set.keys()))
+        assert len(molecules) == 2
 
 
 class TestLabeledTriples(unittest.TestCase):
