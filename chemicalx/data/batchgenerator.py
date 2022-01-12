@@ -31,7 +31,6 @@ class BatchGenerator:
         self.labeled_triples = labeled_triples
 
     def set_data(self, contex_feature_set: None, drug_feature_set: None, labeled_triples: None):
-
         self.set_context_feature_set(contex_feature_set)
         self.set_drug_feature_set(set_drug_feature_set)
         self.set_labeled_triples(labeled_triples)
@@ -77,7 +76,13 @@ class BatchGenerator:
         labels = self._get_labels(batch_frame["label"])
 
         batch = DrugPairBatch(
-            drug_features_left, drug_molecules_left, drug_features_right, drug_molecules_right, context_features, labels
+            batch_frame,
+            drug_features_left,
+            drug_molecules_left,
+            drug_features_right,
+            drug_molecules_right,
+            context_features,
+            labels,
         )
 
         return batch

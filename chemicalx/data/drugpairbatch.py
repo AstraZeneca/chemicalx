@@ -1,6 +1,7 @@
 class DrugPairBatch:
     def __init__(
         self,
+        identifiers=None,
         drug_features_left=None,
         drug_molecules_left=None,
         drug_features_right=None,
@@ -8,7 +9,7 @@ class DrugPairBatch:
         context_features=None,
         labels=None,
     ):
-
+        self.identifiers = idenifiers
         self.drug_features_left = drug_features_left
         self.drug_molecules_left = drug_molecules_left
         self.drug_features_right = drug_features_right
