@@ -32,7 +32,7 @@ class BatchGenerator:
 
     def set_data(self, context_feature_set: None, drug_feature_set: None, labeled_triples: None):
         self.set_context_feature_set(context_feature_set)
-        self.set_drug_feature_set(set_drug_feature_set)
+        self.set_drug_feature_set(drug_feature_set)
         self.set_labeled_triples(labeled_triples)
 
     def _get_context_features(self, context_identifiers: List):
