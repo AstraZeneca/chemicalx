@@ -1,5 +1,6 @@
 import numpy as np
 from typing import List, Dict, Union
+from torchdrug.data import Molecule
 
 
 class DrugFeatureSet(dict):
@@ -17,6 +18,7 @@ class DrugFeatureSet(dict):
         self.__dict__[drug] = {}
         self.__dict__[drug]["smiles"] = features["smiles"]
         self.__dict__[drug]["features"] = features["features"].reshape(1, -1)
+        self.__dict__[drug]["molecule"] = Molecule.from_smiles(features["smiles"])
 
     def __getitem__(self, drug: str):
         """Getting the features for a drug key.
@@ -72,7 +74,11 @@ class DrugFeatureSet(dict):
         """
         return self.__dict__.update(
             {
-                drug: {"smiles": features["smiles"], "features": features["features"].reshape(-1, 1)}
+                drug: {
+                    "smiles": features["smiles"],
+                    "features": features["features"].reshape(1, -1),
+                    "molecule": Molecule.from_smiles(features["smiles"]),
+                }
                 for drug, features in data.items()
             }
         )
@@ -149,7 +155,8 @@ class DrugFeatureSet(dict):
         Return:
             features (np.ndarray): A matrix of drug features.
         """
-        features = np.concatenate([self.__dict__[drug]["features"] for drug in drugs])
+        features = [self.__dict__[drug]["features"] for drug in drugs]
+        features = np.concatenate(features, axis=0)
         return features
 
     def get_smiles_strings(self, drugs: List[str]) -> List[str]:
@@ -162,6 +169,10 @@ class DrugFeatureSet(dict):
         """
         smiles_strings = [self.__dict__[drug]["smiles"] for drug in drugs]
         return smiles_strings
+
+    def get_molecules(self, drugs):
+        molecules = [self.__dict__[drug]["molecule"] for drug in drugs]
+        return molecules
 
     def get_feature_density_rate(self) -> float:
         """Getting the ratio of non-zero drug feature values in the drug feature matrix.
