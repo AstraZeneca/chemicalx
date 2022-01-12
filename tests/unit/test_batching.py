@@ -21,5 +21,5 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
         )
 
         for batch in generator:
-            assert batch.drug_features_left.shape[0] == 4096
             assert batch.drug_features_left.shape[1] == 256
+            assert (batch.drug_features_left.shape[0] == 2975) or (batch.drug_features_left.shape[0] == 4096)
