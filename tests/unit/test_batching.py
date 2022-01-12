@@ -1,7 +1,8 @@
+import unittest
 from chemicalx.data import DatasetLoader, BatchGenerator
 
 
-class TestDrugComb(unittest.TestCase):
+class TestGeneratorDrugCombDB(unittest.TestCase):
     def setUp(self):
         loader = DatasetLoader("drugcombdb")
         self.drug_feature_set = loader.get_drug_features()
