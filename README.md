@@ -63,8 +63,55 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 
 **A simple example**
 
+We are going to overview a short example of training a machine learning model on DrugCombDB. In the first part of this illustrative example
+we import the base PyTorch library, data loaders and the DeepSynergy model from ChemicalX. We load the feature sets, triples and create a generator for the training split that we create. We will use this to train the DeepSynergy model.
+
+```python
+import torch
+from chemicalx.model import DeepSynergy
+from chemicalx.data import DatasetLoader, BatchGenerator
+
+loader = DatasetLoader("drugcombdb")
+
+drug_feature_set = loader.get_drug_features()
+context_feature_set = loader.get_context_features()
+labeled_triples = loader.get_labeled_triples()
+
+train_triples, test_triples = labeled_triples.train_test_split()
+
+generator = BatchGenerator(batch_size=5120,
+                           context_features=True,
+                           drug_features=True,
+                           drug_molecules=False,
+                           labels=True)
+
+generator.set_data(context_feature_set, drug_feature_set, train_triples)
+```
+
+We define the DeepSynergy model - DrugCombDB has 288 context and 256 drug features. Other hyperparameters of the model are left as defaults. We define
+an Adap optimizer instance, set the model to be in training model. We generate batches from the training data generator and train the model by
+minimizing binary cross entropy. 
+
 ```python
 
+model = DeepSynergy(context_channels=288, drug_channels=256)
+
+optimizer = torch.optim.Adam(model.parameters())
+
+model.train()
+
+loss = torch.nn.BCELoss()
+
+for batch in generator:
+    optimizer.zero_grad()
+
+    prediction = model(batch.context_features,
+                       batch.drug_features_left,
+                       batch.drug_features_right)
+
+    loss_value = loss(prediction, batch.labels)
+    loss_value.backward()
+    optimizer.step()
 ```
 --------------------------------------------------------------------------------
 
