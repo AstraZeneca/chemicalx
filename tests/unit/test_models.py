@@ -78,7 +78,7 @@ class TestModels(unittest.TestCase):
     def test_DeepSynergy(self):
 
         model = DeepSynergy(
-            context_channels=112,
+            context_channels=288,
             drug_channels=256,
             input_hidden_channels=32,
             middle_hidden_channels=16,
