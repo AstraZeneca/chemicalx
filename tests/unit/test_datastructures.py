@@ -95,7 +95,7 @@ class TestDrugFeatureSet(unittest.TestCase):
     def test_iteration(self):
         for drug in self.drug_feature_set:
             features = self.drug_feature_set[drug]
-            assert len(features) == 3
+            assert len(features) == 2
 
     def test_clearing(self):
         self.drug_feature_set.clear()
