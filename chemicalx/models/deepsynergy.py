@@ -38,7 +38,7 @@ class DeepSynergy(torch.nn.Module):
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
 
-        hidden = torch.cat([drug_features_left, drug_features_right, context_features], dim=1)
+        hidden = torch.cat([context_features, drug_features_left, drug_features_right], dim=1)
         hidden = self.encoder(hidden)
         hidden = F.relu(hidden)
         hidden = self.hidden_first(hidden)

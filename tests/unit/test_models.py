@@ -78,8 +78,8 @@ class TestModels(unittest.TestCase):
     def test_DeepSynergy(self):
 
         model = DeepSynergy(
-            context_channels=64,
-            drug_channels=32,
+            context_channels=112,
+            drug_channels=256,
             input_hidden_channels=32,
             middle_hidden_channels=16,
             final_hidden_channels=16,
@@ -87,6 +87,7 @@ class TestModels(unittest.TestCase):
         )
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
         loss = torch.nn.BCELoss()
         for batch in self.generator:
             optimizer.zero_grad()
@@ -94,6 +95,7 @@ class TestModels(unittest.TestCase):
             output = loss(prediction, batch.labels)
             output.backward()
             optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_DeepDDS(self):
         model = DeepDDS(x=2)
