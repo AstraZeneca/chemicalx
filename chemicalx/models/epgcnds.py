@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
+from torchdrug.data import PackedGraph
 
 
 class EPGCNDS(torch.nn.Module):
@@ -21,9 +22,7 @@ class EPGCNDS(torch.nn.Module):
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
 
-    def forward(
-        self, molecules_left: torchdrug.data.PackedGraph, molecules_right: torchdrug.data.PackedGraph
-    ) -> torch.FloatTensor:
+    def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
         A forward pass of the EPGCN-DS model.
 
