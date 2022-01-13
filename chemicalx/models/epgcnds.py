@@ -1,8 +1,8 @@
 import torch
 import torch.nn.functional as F
+from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
-from torchdrug.data import PackedGraph
 
 
 class EPGCNDS(torch.nn.Module):
