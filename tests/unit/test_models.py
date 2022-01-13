@@ -40,8 +40,19 @@ class TestModels(unittest.TestCase):
         assert model.x == 2
 
     def test_EPGCNDS(self):
-        model = EPGCNDS(x=2)
-        assert model.x == 2
+
+        model = EPGCNDS(in_channels=69)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_GCNBMP(self):
         model = GCNBMP(x=2)

@@ -5,6 +5,15 @@ from torchdrug.models import GraphConvolutionalNetwork
 
 
 class EPGCNDS(torch.nn.Module):
+    r"""The EPGCN-DS model from the `"Structure-Based Drug-Drug Interaction Detection
+    via Expressive Graph Convolutional Networks and Deep Sets " <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_ paper.
+
+    Args:
+        in_channels (int): The number of molecular features.
+        hidden_channels (int): The number of graph convolutional filters.
+        out_channels (int): The number of hidden layer neurons in the last layer.
+    """
+
     def __init__(self, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
         super(EPGCNDS, self).__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(in_channels, hidden_channels)
@@ -12,7 +21,16 @@ class EPGCNDS(torch.nn.Module):
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
 
-    def forward(self, molecules_left, molecules_right):
+    def forward(self, molecules_left: torch.PackedGraph, molecules_right: torch.PackedGraph) -> torch.FloatTensor:
+        """
+        A forward pass of the EPGCN-DS model.
+
+        Args:
+            molecules_left (torch.FloatTensor): Batched molecules for the left side drugs.
+            molecules_right (torch.FloatTensor): Batched molecules for the right side drugs.
+        Returns:
+            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+        """
         features_left = self.graph_convolution_in(molecules_left, molecules_left.data_dict["node_feature"])[
             "node_feature"
         ]
