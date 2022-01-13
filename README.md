@@ -103,13 +103,6 @@ In detail, the following drug pair scoring models were implemented.
 
 --------------------------------------------------------------------------------
 
-**Auxiliary Layers**
-
-
-
---------------------------------------------------------------------------------
-
-
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.
 
