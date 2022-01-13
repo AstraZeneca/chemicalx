@@ -21,7 +21,9 @@ class EPGCNDS(torch.nn.Module):
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
 
-    def forward(self, molecules_left: torch.PackedGraph, molecules_right: torch.PackedGraph) -> torch.FloatTensor:
+    def forward(
+        self, molecules_left: torchdrug.data.PackedGraph, molecules_right: torchdrug.data.PackedGraph
+    ) -> torch.FloatTensor:
         """
         A forward pass of the EPGCN-DS model.
 
