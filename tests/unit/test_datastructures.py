@@ -1,6 +1,8 @@
 import unittest
+
 import numpy as np
 import pandas as pd
+
 from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 

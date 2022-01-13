@@ -23,6 +23,12 @@ jobs:
           python-version: 3.7
       - run: conda --version
       - run: which python
+      - name: Install general requirements
+        run: |
+          pip install tox
+      - name: Run flake8
+        run: |
+          tox -e flake8
       - name: Run installation.
         run: |
          conda install -y scipy

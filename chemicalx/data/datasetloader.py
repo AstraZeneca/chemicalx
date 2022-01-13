@@ -1,10 +1,12 @@
 import io
 import json
-import numpy as np
-import pandas as pd
 import urllib.request
 from typing import Dict
-from chemicalx.data import DrugFeatureSet, ContextFeatureSet, LabeledTriples
+
+import numpy as np
+import pandas as pd
+
+from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
 class DatasetLoader:
