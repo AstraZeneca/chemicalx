@@ -94,7 +94,7 @@ minimizing binary cross entropy.
 
 ```python
 
-model = DeepSynergy(context_channels=288, drug_channels=256)
+model = DeepSynergy(context_channels=112, drug_channels=256)
 
 optimizer = torch.optim.Adam(model.parameters())
 
