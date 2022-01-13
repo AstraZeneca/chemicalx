@@ -42,7 +42,7 @@ Our framework solves the so called [drug pair scoring task](https://arxiv.org/ab
 
 **Case Study Tutorials**
 
-We provide in-depth case study tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
+We provide in-depth case study like tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
 
 --------------------------------------------------------------------------------
 
@@ -58,60 +58,6 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
                year = {2022},
 }
 ```
-
---------------------------------------------------------------------------------
-
-**A simple example**
-
-We are going to overview a short example of training a machine learning model on DrugCombDB. In the first part of this illustrative example
-we import the base PyTorch library, data loaders and the DeepSynergy model from ChemicalX. We load the feature sets, triples and create a generator for the training split that we created. We will use the generator to train the DeepSynergy model.
-
-```python
-import torch
-from chemicalx.model import DeepSynergy
-from chemicalx.data import DatasetLoader, BatchGenerator
-
-loader = DatasetLoader("drugcombdb")
-
-drug_feature_set = loader.get_drug_features()
-context_feature_set = loader.get_context_features()
-labeled_triples = loader.get_labeled_triples()
-
-train_triples, test_triples = labeled_triples.train_test_split()
-
-generator = BatchGenerator(batch_size=5120,
-                           context_features=True,
-                           drug_features=True,
-                           drug_molecules=False,
-                           labels=True)
-
-generator.set_data(context_feature_set, drug_feature_set, train_triples)
-```
-
-We define the DeepSynergy model - DrugCombDB has 112 context and 256 drug features. Other hyperparameters of the model are left as defaults. We define an Adam optimizer instance, set the model to be in training model. We generate batches from the previosuly defined training data generator and train the model by minimizing the binary cross entropy of batches. 
-
-```python
-
-model = DeepSynergy(context_channels=112, drug_channels=256)
-
-optimizer = torch.optim.Adam(model.parameters())
-
-model.train()
-
-loss = torch.nn.BCELoss()
-
-for batch in generator:
-    optimizer.zero_grad()
-
-    prediction = model(batch.context_features,
-                       batch.drug_features_left,
-                       batch.drug_features_right)
-
-    loss_value = loss(prediction, batch.labels)
-    loss_value.backward()
-    optimizer.step()
-```
---------------------------------------------------------------------------------
 
 **Methods Included**
 
