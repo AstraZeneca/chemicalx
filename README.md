@@ -88,8 +88,7 @@ generator = BatchGenerator(batch_size=5120,
 generator.set_data(context_feature_set, drug_feature_set, train_triples)
 ```
 
-We define the DeepSynergy model - DrugCombDB has 112 context and 256 drug features. Other hyperparameters of the model are left as defaults. We define an Adam optimizer instance, set the model to be in training model. We generate batches from the training data generator and train the model by
-minimizing binary cross entropy. 
+We define the DeepSynergy model - DrugCombDB has 112 context and 256 drug features. Other hyperparameters of the model are left as defaults. We define an Adam optimizer instance, set the model to be in training model. We generate batches from the training data generator and train the model by minimizing binary cross entropy. 
 
 ```python
 
@@ -116,7 +115,7 @@ for batch in generator:
 
 **Methods Included**
 
-In detail, the following temporal graph neural networks were implemented.
+In detail, the following drug pair scoring models were implemented.
 
 **2017**
 
