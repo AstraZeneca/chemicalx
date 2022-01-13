@@ -11,8 +11,8 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def setUp(self):
         self.context_feature_set = ContextFeatureSet()
-        self.context_feature_set["context_1"] = np.array([0.0, 1.8, 2.1])
-        self.context_feature_set["context_2"] = np.array([0, 1, 2])
+        self.context_feature_set["context_1"] = np.array([[0.0, 1.8, 2.1]])
+        self.context_feature_set["context_2"] = np.array([[0, 1, 2]])
 
     def test_get(self):
         assert self.context_feature_set["context_2"].shape == (1, 3)
@@ -35,14 +35,9 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def test_basic_statistics(self):
         assert self.context_feature_set.get_context_count() == 2
-        assert self.context_feature_set.get_context_feature_count() == 3
-
-    def test_density(self):
-        density = self.context_feature_set.get_feature_density_rate()
-        assert density == (4 / 6)
 
     def test_update_and_delete(self):
-        self.context_feature_set.update({"context_3": np.array([1.1, 2.2, 3.4])})
+        self.context_feature_set.update({"context_3": np.array([[1.1, 2.2, 3.4]])})
         assert len(self.context_feature_set) == 3
         del self.context_feature_set["context_3"]
         assert len(self.context_feature_set) == 2
@@ -69,7 +64,6 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_get(self):
         assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
-        assert len(self.drug_feature_set["drug_1"]["smiles"]) == 6
         assert ("drug_2" in self.drug_feature_set) == True
         assert self.drug_feature_set.has_drug("drug_2") == True
 
@@ -89,11 +83,6 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_basic_statistics(self):
         assert self.drug_feature_set.get_drug_count() == 2
-        assert self.drug_feature_set.get_drug_feature_count() == 3
-
-    def test_density(self):
-        density = self.drug_feature_set.get_feature_density_rate()
-        assert density == (4 / 6)
 
     def test_update_and_delete(self):
         self.drug_feature_set.update(
@@ -111,10 +100,6 @@ class TestDrugFeatureSet(unittest.TestCase):
     def test_clearing(self):
         self.drug_feature_set.clear()
         assert len(self.drug_feature_set) == 0
-
-    def test_get_smiles(self):
-        smiles_strings = self.drug_feature_set.get_smiles_strings(list(self.drug_feature_set.keys()))
-        assert len(smiles_strings) == 2
 
     def test_get_molecules(self):
         molecules = self.drug_feature_set.get_molecules(list(self.drug_feature_set.keys()))

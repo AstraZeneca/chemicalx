@@ -1,6 +1,8 @@
+import torch
+import torchdrug
 import numpy as np
 from typing import List, Dict, Union
-from torchdrug.data import Molecule
+from torchdrug.data import Molecule, Graph, PackedGraph
 
 
 class DrugFeatureSet(dict):
@@ -8,7 +10,7 @@ class DrugFeatureSet(dict):
     Drug feature set for compunds.
     """
 
-    def __setitem__(self, drug: str, features: Dict[str, Union[str, np.ndarray]]):
+    def __setitem__(self, drug: str, features: Dict[str, Union[str, torch.FloatTensor]]):
         """Setting the features for a compound key
 
         Args:
@@ -16,8 +18,7 @@ class DrugFeatureSet(dict):
             features (dict): Dictionary of smiles string and molecular features.
         """
         self.__dict__[drug] = {}
-        self.__dict__[drug]["smiles"] = features["smiles"]
-        self.__dict__[drug]["features"] = features["features"].reshape(1, -1)
+        self.__dict__[drug]["features"] = torch.FloatTensor(features["features"])
         self.__dict__[drug]["molecule"] = Molecule.from_smiles(features["smiles"])
 
     def __getitem__(self, drug: str):
@@ -64,7 +65,7 @@ class DrugFeatureSet(dict):
         """
         return drug in self.__dict__
 
-    def update(self, data: Dict[str, Dict[str, Union[str, np.ndarray]]]):
+    def update(self, data: Dict[str, Dict]):
         """Adding a dictionary of drug keys - feature dictionaries to a drug set.
 
         Args:
@@ -75,8 +76,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.update(
             {
                 drug: {
-                    "smiles": features["smiles"],
-                    "features": features["features"].reshape(1, -1),
+                    "features": torch.FloatTensor(features["features"]),
                     "molecule": Molecule.from_smiles(features["smiles"]),
                 }
                 for drug, features in data.items()
@@ -133,65 +133,24 @@ class DrugFeatureSet(dict):
         """
         return len(self.__dict__)
 
-    def get_drug_feature_count(self) -> int:
-        """Getting the number of drug feature dimensions.
-
-        Returns:
-            feature_count (int): The number of drug feature dimensions.
-        """
-        feature_count = 0
-        if len(self.__dict__) > 0:
-            drugs = list(self.keys())
-            first_drug = drugs[0]
-            feature_vector = self.__dict__[drugs[0]]["features"]
-            feature_count = feature_vector.shape[1]
-        return feature_count
-
-    def get_feature_matrix(self, drugs: List[str]) -> np.ndarray:
+    def get_feature_matrix(self, drugs: List[str]) -> torch.FloatTensor:
         """Getting the drug feature matrix for a list of drugs.
 
         Args:
             drugs (list): A list of drug identifiers.
         Return:
-            features (np.ndarray): A matrix of drug features.
+            features (torch.FloatTensor): A matrix of drug features.
         """
-        features = [self.__dict__[drug]["features"] for drug in drugs]
-        features = np.concatenate(features, axis=0)
+        features = torch.cat([self.__dict__[drug]["features"] for drug in drugs])
         return features
 
-    def get_smiles_strings(self, drugs: List[str]) -> List[str]:
-        """Getting the list of drugs.
-
-        Args:
-            drugs (list): A list of drug identifiers.
-        Return:
-            smiles_strings (list): A list of smiles strings for the drugs.
-        """
-        smiles_strings = [self.__dict__[drug]["smiles"] for drug in drugs]
-        return smiles_strings
-
-    def get_molecules(self, drugs):
+    def get_molecules(self, drugs: List[str]) -> PackedGraph:
         """Getting the molecular structures.
 
         Args:
             drugs (list): A list of drug identifiers.
         Return:
-            molecules (list): A list of drug molecules as torchdrug.Molecule objects.
+            molecules (torch.PackedGraph): The molecules batched together for message passing.
         """
-        molecules = [self.__dict__[drug]["molecule"] for drug in drugs]
+        molecules = Graph.pack([self.__dict__[drug]["molecule"] for drug in drugs])
         return molecules
-
-    def get_feature_density_rate(self) -> float:
-        """Getting the ratio of non-zero drug feature values in the drug feature matrix.
-
-        Returns:
-            float: The ratio of non-zero entries in the whole drug feature matrix.
-        """
-        feature_matrix_density = None
-        if len(self.__dict__) > 0:
-            all_drugs = list(self.keys())
-            feature_matrix = self.get_feature_matrix(all_drugs)
-            non_zero_count = np.sum(feature_matrix != 0)
-            drug_count, feature_count = feature_matrix.shape
-            feature_matrix_density = non_zero_count / (feature_count * drug_count)
-        return feature_matrix_density

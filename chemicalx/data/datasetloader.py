@@ -69,7 +69,7 @@ class DatasetLoader:
         """
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
-        raw_data = {k: np.array(v) for k, v in raw_data.items()}
+        raw_data = {k: np.array(v).reshape(1, -1) for k, v in raw_data.items()}
         context_feature_set = ContextFeatureSet()
         context_feature_set.update(raw_data)
         return context_feature_set
@@ -83,7 +83,9 @@ class DatasetLoader:
         """
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
-        raw_data = {k: {"smiles": v["smiles"], "features": np.array(v["features"])} for k, v in raw_data.items()}
+        raw_data = {
+            k: {"smiles": v["smiles"], "features": np.array(v["features"]).reshape(1, -1)} for k, v in raw_data.items()
+        }
         drug_feature_set = DrugFeatureSet()
         drug_feature_set.update(raw_data)
         return drug_feature_set

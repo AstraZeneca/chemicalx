@@ -3,7 +3,7 @@ import torch
 import pandas as pd
 import numpy as np
 from typing import List
-from torchdrug.data import Graph
+from torchdrug.data import PackedGraph
 from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet, DrugPairBatch
 
 
@@ -85,7 +85,6 @@ class BatchGenerator:
         context_features = None
         if self.context_features:
             context_features = self.context_feature_set.get_feature_matrix(context_identifiers)
-            context_features = torch.FloatTensor(context_features)
         return context_features
 
     def _get_drug_features(self, drug_identifiers: List[str]):
@@ -100,10 +99,9 @@ class BatchGenerator:
         drug_features = None
         if self.drug_features:
             drug_features = self.drug_feature_set.get_feature_matrix(drug_identifiers)
-            drug_features = torch.FloatTensor(drug_features)
         return drug_features
 
-    def _get_drug_molecules(self, drug_identifiers: pd.Series):
+    def _get_drug_molecules(self, drug_identifiers: pd.Series) -> PackedGraph:
         """
         Getting the molecular structure of drugs.
 
@@ -115,7 +113,6 @@ class BatchGenerator:
         molecules = None
         if self.drug_molecules:
             molecules = self.drug_feature_set.get_molecules(drug_identifiers)
-            molecules = Graph.pack(molecules)
         return molecules
 
     def _transform_labels(self, labels: List):
@@ -128,7 +125,7 @@ class BatchGenerator:
             labels (torch.FloatTensor): The label target vector as a column vector.
         """
         if self.labels:
-            labels = torch.FloatTensor(np.array(labels)).view(-1, 1)
+            labels = torch.FloatTensor(np.array(labels).reshape(-1, 1))
         else:
             labels = None
         return labels
