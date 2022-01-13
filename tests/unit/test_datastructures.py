@@ -23,7 +23,6 @@ class TestContextFeatureSet(unittest.TestCase):
         self.another_context_feature_set = self.context_feature_set
         del self.another_context_feature_set["context_1"]
         del self.another_context_feature_set["context_2"]
-        assert self.another_context_feature_set.get_context_feature_count() == 0
 
     def test_len(self):
         assert len(self.context_feature_set) == 2
@@ -71,7 +70,6 @@ class TestDrugFeatureSet(unittest.TestCase):
         self.another_drug_feature_set = self.drug_feature_set
         del self.another_drug_feature_set["drug_1"]
         del self.another_drug_feature_set["drug_2"]
-        assert self.another_drug_feature_set.get_drug_feature_count() == 0
 
     def test_len(self):
         assert len(self.drug_feature_set) == 2
