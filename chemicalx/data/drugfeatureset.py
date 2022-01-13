@@ -18,7 +18,7 @@ class DrugFeatureSet(dict):
             features (dict): Dictionary of smiles string and molecular features.
         """
         self.__dict__[drug] = {}
-        self.__dict__[drug]["features"] = torch.FloatTensor(features["features"].view(1, -1))
+        self.__dict__[drug]["features"] = torch.FloatTensor(features["features"])
         self.__dict__[drug]["molecule"] = Molecule.from_smiles(features["smiles"])
 
     def __getitem__(self, drug: str):

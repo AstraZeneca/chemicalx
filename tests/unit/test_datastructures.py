@@ -59,8 +59,8 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def setUp(self):
         self.drug_feature_set = DrugFeatureSet()
-        self.drug_feature_set["drug_1"] = {"smiles": "CN=C=O", "features": np.array([0.0, 1.7, 2.3])}
-        self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([1, 0, 8])}
+        self.drug_feature_set["drug_1"] = {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])}
+        self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])}
 
     def test_get(self):
         assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
@@ -86,7 +86,7 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_update_and_delete(self):
         self.drug_feature_set.update(
-            {"drug_3": {"smiles": " CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "features": np.array([1.1, 2.2, 3.4])}}
+            {"drug_3": {"smiles": " CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "features": np.array([[1.1, 2.2, 3.4]])}}
         )
         assert len(self.drug_feature_set) == 3
         del self.drug_feature_set["drug_3"]
