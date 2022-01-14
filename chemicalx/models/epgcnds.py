@@ -1,11 +1,12 @@
 import torch
-import torch.nn.functional as F
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
 
+from chemicalx.models import ContextlessModel
 
-class EPGCNDS(torch.nn.Module):
+
+class EPGCNDS(ContextlessModel):
     r"""The EPGCN-DS model from the `"Structure-Based Drug-Drug Interaction Detection
     via Expressive Graph Convolutional Networks and Deep Sets"
     <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_ paper.

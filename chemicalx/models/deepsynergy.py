@@ -1,8 +1,14 @@
 import torch
 import torch.nn.functional as F
 
+from chemicalx.models import ContextModel
 
-class DeepSynergy(torch.nn.Module):
+__all__ = [
+    "DeepSynergy",
+]
+
+
+class DeepSynergy(ContextModel):
     r"""The DeepSynergy model from the `"DeepSynergy: Predicting
     Anti-Cancer Drug Synergy with Deep Learning"
     <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_ paper.
