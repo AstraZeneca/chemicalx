@@ -9,7 +9,6 @@ from .deepddi import DeepDDI
 from .deepdds import DeepDDS
 from .deepdrug import DeepDrug
 from .deepsynergy import DeepSynergy
-from .dpddi import DPDDI
 from .epgcnds import EPGCNDS
 from .gcnbmp import GCNBMP
 from .matchmaker import MatchMaker
@@ -22,14 +21,12 @@ __all__ = [
     # Base models
     "UnimplementedModel",
     # Implementations
-    "AUDNNSynergy",
     "CASTER",
     "DeepCCI",
     "DeepDDI",
     "DeepDDS",
     "DeepDrug",
     "DeepSynergy",
-    "DPDDI",
     "EPGCNDS",
     "GCNBMP",
     "MatchMaker",
