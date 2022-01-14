@@ -1,7 +1,9 @@
 from chemicalx.data import (  # noqa:F401,F403
+    batchgenerator,
     contextfeatureset,
     datasetloader,
     drugfeatureset,
+    drugpairbatch,
     labeledtriples,
 )
 from chemicalx.models import (  # noqa:F401,F403
