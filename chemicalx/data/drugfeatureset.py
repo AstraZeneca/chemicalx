@@ -1,8 +1,9 @@
+from typing import Dict, List, Union
+
+import numpy as np
 import torch
 import torchdrug
-import numpy as np
-from typing import List, Dict, Union
-from torchdrug.data import Molecule, Graph, PackedGraph
+from torchdrug.data import Graph, Molecule, PackedGraph
 
 
 class DrugFeatureSet(dict):

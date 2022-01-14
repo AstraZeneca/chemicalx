@@ -4,7 +4,8 @@ import torch.nn.functional as F
 
 class DeepSynergy(torch.nn.Module):
     r"""The DeepSynergy model from the `"DeepSynergy: Predicting
-    Anti-Cancer Drug Synergy with Deep Learning" <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_ paper.
+    Anti-Cancer Drug Synergy with Deep Learning"
+    <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_ paper.
 
     Args:
         context_channels (int): The number of context features.

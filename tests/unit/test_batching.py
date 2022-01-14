@@ -1,5 +1,6 @@
 import unittest
-from chemicalx.data import DatasetLoader, BatchGenerator
+
+from chemicalx.data import BatchGenerator, DatasetLoader
 
 
 class TestGeneratorDrugCombDB(unittest.TestCase):
