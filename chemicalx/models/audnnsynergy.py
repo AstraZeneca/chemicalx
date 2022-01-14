@@ -1,9 +1,9 @@
-from .base import Model
+from .base import UnimplementedModel
 
 __all__ = [
     "AUDNNSynergy",
 ]
 
 
-class AUDNNSynergy(Model):
+class AUDNNSynergy(UnimplementedModel):
     pass

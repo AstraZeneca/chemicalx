@@ -11,6 +11,13 @@ __all__ = [
 ]
 
 
+class UnimplementedModel:
+    """The base class for unimplemnted ChemicalX models."""
+
+    def __init__(self, x):
+        self.x = x
+
+
 class Model(nn.Module):
     """The base class for ChemicalX models."""
 
