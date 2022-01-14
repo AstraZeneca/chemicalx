@@ -30,7 +30,7 @@ model.train()
 
 loss = torch.nn.BCELoss()
 
-for epoch in tqdm(range(100)):
+for _ in tqdm(range(100)):
     for batch in generator:
         optimizer.zero_grad()
 
