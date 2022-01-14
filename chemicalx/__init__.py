@@ -22,4 +22,4 @@ from chemicalx.models import (  # noqa:F401,F403
     mrgnn,
     ssiddi,
 )
-from chemicalx.version import __version__
+from chemicalx.version import __version__  # noqa:F401,F403

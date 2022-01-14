@@ -1,14 +1,12 @@
 from typing import Dict, List, Union
 
-import numpy as np
 import torch
-import torchdrug
 from torchdrug.data import Graph, Molecule, PackedGraph
 
 
 class DrugFeatureSet(dict):
     """
-    Drug feature set for compunds.
+    Drug feature set for compounds.
     """
 
     def __setitem__(self, drug: str, features: Dict[str, Union[str, torch.FloatTensor]]):
