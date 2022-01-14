@@ -2,6 +2,7 @@ import unittest
 
 import torch
 
+from chemicalx import pipeline
 from chemicalx.data import BatchGenerator, DatasetLoader
 from chemicalx.models import (
     CASTER,
@@ -19,6 +20,41 @@ from chemicalx.models import (
     DeepSynergy,
     MatchMaker,
 )
+
+
+class TestPipeline(unittest.TestCase):
+    """Test the unified training and evaluation pipeline."""
+
+    def test_train_context(self):
+        """Test training and evaluating on a model that uses context in its forward function."""
+        model = DeepSynergy(context_channels=112, drug_channels=256)
+        results = pipeline(
+            dataset="drugcombdb",
+            model=model,
+            batch_size=5120,
+            epochs=1,
+            context_features=True,
+            drug_features=True,
+            drug_molecules=False,
+            labels=True,
+        )
+        self.assertIsInstance(results.roc_auc, float)
+
+    def test_train_contextless(self):
+        """Test training and evaluating on a model that does not use context in its forward function."""
+        model = EPGCNDS(in_channels=69)
+        results = pipeline(
+            dataset="drugcombdb",
+            model=model,
+            optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
+            batch_size=1024,
+            epochs=1,
+            context_features=True,
+            drug_features=True,
+            drug_molecules=True,
+            labels=True,
+        )
+        self.assertIsInstance(results.roc_auc, float)
 
 
 class TestModels(unittest.TestCase):
