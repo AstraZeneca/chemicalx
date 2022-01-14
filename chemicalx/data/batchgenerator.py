@@ -1,17 +1,11 @@
 import math
 from typing import List
 
+import chemicalx
 import numpy as np
 import pandas as pd
 import torch
 from torchdrug.data import PackedGraph
-
-from chemicalx.data import (
-    ContextFeatureSet,
-    DrugFeatureSet,
-    DrugPairBatch,
-    LabeledTriples,
-)
 
 
 class BatchGenerator:
@@ -157,7 +151,7 @@ class BatchGenerator:
 
         labels = self._transform_labels(batch_frame["label"])
 
-        batch = DrugPairBatch(
+        batch = chemicalx.drugpairbatch.DrugPairBatch(
             batch_frame,
             drug_features_left,
             drug_molecules_left,
