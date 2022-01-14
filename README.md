@@ -87,15 +87,11 @@ In detail, the following drug pair scoring models were implemented.
 
 * **[EPGCN-DS](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.epgcnds.EPGCNDS)** from [Structure-Based Drug-Drug Interaction Detection via Expressive Graph Convolutional Networks and Deep Sets](https://ojs.aaai.org/index.php/AAAI/article/view/7236) (AAAI)
 
-* **[AuDNNSynergy](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.audnnsynergy.AUDNNSynergy)** from [Synergistic Drug Combination Prediction by Integrating Multiomics Data in Deep Learning Models](https://pubmed.ncbi.nlm.nih.gov/32926369/) (Methods in Molecular Biology)
-
 * **[DeepDrug](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepdrug.DeepDrug)** from [DeepDrug: A General Graph-Based Deep Learning Framework for Drug Relation Prediction](https://europepmc.org/article/ppr/ppr236757) (PMC)
 
 * **[GCN-BMP](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.gcnbmp.GCNBMP)** from [GCN-BMP: Investigating graph representation learning for DDI prediction task](https://www.sciencedirect.com/science/article/pii/S1046202320300608) (Methods)
 
 **2021**
-
-* **[DPDDI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.dpddi.DPDDI)** from [DPDDI: a Deep Predictor for Drug-Drug Interactions](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03724-x) (BMC Bioinformatics)
 
 * **[DeepDDS](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepdds.DeepDDS)** from [DeepDDS: Deep Graph Neural Network with Attention Mechanism to Predict Synergistic Drug Combinations](https://arxiv.org/abs/2107.02467) (Briefings in Bioinformatics)
 
