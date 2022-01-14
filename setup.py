@@ -6,9 +6,7 @@ install_requires = [
     "torchdrug",
     "torch-scatter>=2.0.8",
     "pandas<=1.3.5",
-    "scipy",
     "tqdm",
-    "six",
     "scikit-learn",
     "class-resolver",
 ]
