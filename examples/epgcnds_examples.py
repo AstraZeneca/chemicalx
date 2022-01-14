@@ -14,6 +14,7 @@ def main():
         context_features=True,
         drug_features=True,
         drug_molecules=True,
+        labels=True,
     )
     print(f"AUROC : {results.roc_auc:.4f}")
 

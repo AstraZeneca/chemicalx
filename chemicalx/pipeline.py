@@ -53,6 +53,7 @@ def pipeline(
     context_features: bool,
     drug_features: bool,
     drug_molecules: bool,
+    labels: bool,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -76,6 +77,14 @@ def pipeline(
         The number of epochs to train
     :param loss:
         The loss to use. If none given, uses :class:`torch.nn.BCELoss`.
+    :param context_features:
+        Indicator whether the batch should include biological context features.
+    :param drug_features:
+        Indicator whether the batch should include drug features.
+    :param drug_molecules:
+        Indicator whether the batch should include drug molecules
+    :param labels:
+        Indicator whether the batch should include drug pair labels.
     :returns:
         The area under the AUC curve
     """
@@ -92,7 +101,7 @@ def pipeline(
         context_features=context_features,
         drug_features=drug_features,
         drug_molecules=drug_molecules,
-        labels=True,
+        labels=labels,
     )
 
     generator.set_data(context_feature_set, drug_feature_set, train_triples)
