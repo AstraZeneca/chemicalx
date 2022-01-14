@@ -79,7 +79,7 @@ class TestModels(unittest.TestCase):
         assert model.x == 2
 
     def test_SSIDDI(self):
-        """Test SSIDDI"""
+        """Test SSIDDI."""
         model = SSIDDI(x=2)
         assert model.x == 2
 

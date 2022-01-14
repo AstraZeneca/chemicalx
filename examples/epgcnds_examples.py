@@ -1,3 +1,5 @@
+"""Example with EPGCNDS."""
+
 import pandas as pd
 import torch
 from sklearn.metrics import roc_auc_score
