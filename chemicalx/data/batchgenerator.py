@@ -1,11 +1,12 @@
 import math
 from typing import List
 
-import chemicalx
 import numpy as np
 import pandas as pd
 import torch
 from torchdrug.data import PackedGraph
+
+import chemicalx
 
 
 class BatchGenerator:
