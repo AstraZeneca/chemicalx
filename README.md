@@ -42,7 +42,7 @@ Our framework solves the so called [drug pair scoring task](https://arxiv.org/ab
 
 **Case Study Tutorials**
 
-We provide in-depth case study tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
+We provide in-depth case study like tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
 
 --------------------------------------------------------------------------------
 
@@ -59,18 +59,9 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 }
 ```
 
---------------------------------------------------------------------------------
-
-**A simple example**
-
-```python
-
-```
---------------------------------------------------------------------------------
-
 **Methods Included**
 
-In detail, the following temporal graph neural networks were implemented.
+In detail, the following drug pair scoring models were implemented.
 
 **2017**
 
@@ -111,13 +102,6 @@ In detail, the following temporal graph neural networks were implemented.
 * **[MatchMaker](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.matchmaker.MatchMaker)** from [MatchMaker: A Deep Learning Framework for Drug Synergy Prediction](https://pubmed.ncbi.nlm.nih.gov/34086576/) (ACM TCBB)
 
 --------------------------------------------------------------------------------
-
-**Auxiliary Layers**
-
-
-
---------------------------------------------------------------------------------
-
 
 Head over to our [documentation](https://chemicalx.readthedocs.io) to find out more about installation, creation of datasets and a full list of implemented methods and available datasets.
 For a quick start, check out the [examples](https://chemicalx.readthedocs.io) in the `examples/` directory.

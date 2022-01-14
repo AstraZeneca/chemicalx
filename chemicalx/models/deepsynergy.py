@@ -19,10 +19,10 @@ class DeepSynergy(torch.nn.Module):
         self,
         context_channels: int,
         drug_channels: int,
-        input_hidden_channels: int,
-        middle_hidden_channels: int,
-        final_hidden_channels: int,
-        dropout_rate: float,
+        input_hidden_channels: int = 32,
+        middle_hidden_channels: int = 32,
+        final_hidden_channels: int = 32,
+        dropout_rate: float = 0.5,
     ):
         super(DeepSynergy, self).__init__()
         self.encoder = torch.nn.Linear(drug_channels + drug_channels + context_channels, input_hidden_channels)
@@ -37,7 +37,16 @@ class DeepSynergy(torch.nn.Module):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
+        """
+        A forward pass of the DeepSynergy model.
 
+        Args:
+            context_features (torch.FloatTensor): A matrix of biological context features.
+            drug_features_left (torch.FloatTensor): A matrix of head drug features.
+            drug_features_right (torch.FloatTensor): A matrix of tail drug features.
+        Returns:
+            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+        """
         hidden = torch.cat([context_features, drug_features_left, drug_features_right], dim=1)
         hidden = self.encoder(hidden)
         hidden = F.relu(hidden)

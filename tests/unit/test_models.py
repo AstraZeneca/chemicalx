@@ -26,8 +26,9 @@ class TestModels(unittest.TestCase):
         drug_feature_set = loader.get_drug_features()
         context_feature_set = loader.get_context_features()
         labeled_triples = loader.get_labeled_triples()
+        labeled_triples, _ = labeled_triples.train_test_split(train_size=0.005)
         self.generator = BatchGenerator(
-            batch_size=5120, context_features=True, drug_features=True, drug_molecules=True, labels=True
+            batch_size=32, context_features=True, drug_features=True, drug_molecules=True, labels=True
         )
         self.generator.set_data(context_feature_set, drug_feature_set, labeled_triples)
 
@@ -40,8 +41,19 @@ class TestModels(unittest.TestCase):
         assert model.x == 2
 
     def test_EPGCNDS(self):
-        model = EPGCNDS(x=2)
-        assert model.x == 2
+
+        model = EPGCNDS(in_channels=69)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_GCNBMP(self):
         model = GCNBMP(x=2)
