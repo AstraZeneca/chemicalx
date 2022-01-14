@@ -25,12 +25,12 @@ class ContextModel(Model):
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
         """
-        A forward pass of the model.
+        A forward pass of a model.
 
         :param context_features: A matrix of biological context features.
         :param drug_features_left: A matrix of head drug features.
         :param drug_features_right: A matrix of tail drug features.
-        :returns: A column vector of predicted synergy scores.
+        :returns: A column vector of predicted scores.
         """
         raise NotImplementedError
 
