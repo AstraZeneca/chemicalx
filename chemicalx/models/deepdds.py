@@ -1,3 +1,5 @@
+"""An implementation of the DeepDDS model."""
+
 from .base import Model
 
 __all__ = [

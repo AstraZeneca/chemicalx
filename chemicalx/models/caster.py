@@ -1,3 +1,5 @@
+"""An implementation of the CASTER model."""
+
 from .base import Model
 
 __all__ = [

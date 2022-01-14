@@ -1,5 +1,5 @@
 import math
-from typing import List
+from typing import Iterator, List
 
 import numpy as np
 import pandas as pd
@@ -9,7 +9,7 @@ from torchdrug.data import PackedGraph
 from .drugpairbatch import DrugPairBatch
 
 
-class BatchGenerator:
+class BatchGenerator(Iterator[DrugPairBatch]):
     """
     Generator to create batches of drug pairs efficiently.
 
@@ -36,8 +36,7 @@ class BatchGenerator:
         self.labels = labels
 
     def set_context_feature_set(self, context_feature_set: None):
-        """
-        Method to set the context feature set.
+        """Set the context feature set.
 
         Args:
             context_feature_set (ContextFeatureSet): A context feature set for feature generation.
@@ -45,8 +44,7 @@ class BatchGenerator:
         self.context_feature_set = context_feature_set
 
     def set_drug_feature_set(self, drug_feature_set: None):
-        """
-        Method to set the drug feature set.
+        """Set the drug feature set.
 
         Args:
             drug_feature_set (DrugFeatureSet): A drug feature set for feature generation.
@@ -54,8 +52,7 @@ class BatchGenerator:
         self.drug_feature_set = drug_feature_set
 
     def set_labeled_triples(self, labeled_triples: None):
-        """
-        Method to set the labeled triples.
+        """Set the labeled triples.
 
         Args:
             labeled_triples (LabeledTriples): A labeled triples object used to generate batches.
@@ -63,8 +60,7 @@ class BatchGenerator:
         self.labeled_triples = labeled_triples
 
     def set_data(self, context_feature_set: None, drug_feature_set: None, labeled_triples: None):
-        """
-        Method to set the feature sets and the labeled triples in one pass.
+        """Set the feature sets and the labeled triples in one pass.
 
         Args:
             context_feature_set (ContextFeatureSet): A context feature set for feature generation.
@@ -76,8 +72,7 @@ class BatchGenerator:
         self.set_labeled_triples(labeled_triples)
 
     def _get_context_features(self, context_identifiers: List[str]):
-        """
-        Getting the context features as a matrix.
+        """Get the context features as a matrix.
 
         Args:
             context_identifiers (pd.Series): The context identifiers of interest.
@@ -90,8 +85,7 @@ class BatchGenerator:
         return context_features
 
     def _get_drug_features(self, drug_identifiers: List[str]):
-        """
-        Getting the global drug features as a matrix.
+        """Get the global drug features as a matrix.
 
         Args:
             drug_identifiers (pd.Series): The drug identifiers of interest.
@@ -104,13 +98,12 @@ class BatchGenerator:
         return drug_features
 
     def _get_drug_molecules(self, drug_identifiers: pd.Series) -> PackedGraph:
-        """
-        Getting the molecular structure of drugs.
+        """Get the molecular structure of drugs.
 
         Args:
             drug_identifiers (pd.Series): The drug identifiers of interest.
         Returns:
-            molecules (torch.PackedGraph): The molecules diagonnaly batched together for message passing.
+            molecules (torch.PackedGraph): The molecules diagonally batched together for message passing.
         """
         molecules = None
         if self.drug_molecules:
@@ -118,8 +111,7 @@ class BatchGenerator:
         return molecules
 
     def _transform_labels(self, labels: List):
-        """
-        Transforming the labels from a chunk of the labeled triples frame.
+        """Transform the labels from a chunk of the labeled triples frame.
 
         Args:
             labels (pd.Series): The drug pair binary labels.
@@ -164,25 +156,19 @@ class BatchGenerator:
 
         return batch
 
-    def __iter__(self):
-        """
-        Start of iteration method - shuffles the triples and resets the interator index.
-        """
+    def __iter__(self) -> Iterator[DrugPairBatch]:
+        """Iterate by first shuffling the triples and resetting the interator index."""
         self.labeled_triples.data = self.labeled_triples.data.sample(frac=1.0)
         self.sample_count = self.labeled_triples.data.shape[0]
         self.lower_frame_index = 0
         return self
 
-    def __len__(self):
-        """
-        Method to set the maximal index of batches - helps tools like tqdm.
-        """
+    def __len__(self) -> int:
+        """Get the maximal index of batches - this helps tools like tqdm."""
         return math.ceil(self.labeled_triples.data.shape[0] / self.batch_size)
 
-    def __next__(self):
-        """
-        Getting the next batch from the generator.
-        """
+    def __next__(self) -> DrugPairBatch:
+        """Get the next batch from the generator."""
         if self.lower_frame_index < self.sample_count:
             self.upper_frame_index = self.lower_frame_index + self.batch_size
             sub_frame = self.labeled_triples.data.iloc[

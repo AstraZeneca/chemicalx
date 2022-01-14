@@ -1,7 +1,13 @@
+"""An implementation of the EPGCN-DS model."""
+
 import torch
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
+
+__all__ = [
+    "EPGCNDS",
+]
 
 
 class EPGCNDS(torch.nn.Module):
