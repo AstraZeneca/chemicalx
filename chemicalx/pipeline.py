@@ -11,7 +11,7 @@ from torch.nn.modules.loss import _Loss
 from tqdm import trange
 
 from chemicalx.data import BatchGenerator, DatasetLoader, DrugPairBatch, dataset_resolver
-from chemicalx.models import Model, model_resolver
+from chemicalx.models import Model, model_resolver, ContextlessModel, ContextModel
 
 __all__ = [
     "Result",
@@ -98,11 +98,12 @@ def pipeline(
 
     model.train()
 
-    # Switch depending on context
-    if context_features:
+    if isinstance(model, ContextModel):
         forwarder = context_forward
-    else:
+    elif isinstance(model, ContextlessModel):
         forwarder = contextless_forward
+    else:
+        raise TypeError(f"model does not inherit from appropriate base model: {model.__class__}")
 
     if loss is None:
         loss = torch.nn.BCELoss()
