@@ -1,3 +1,5 @@
+"""Datasets and utilities."""
+
 from class_resolver import Resolver
 
 from .batchgenerator import *  # noqa:F401,F403

@@ -1,3 +1,5 @@
+"""Models for ChemicalX."""
+
 from class_resolver import Resolver  # noqa:F401,F403
 
 from .audnnsynergy import *  # noqa:F401,F403

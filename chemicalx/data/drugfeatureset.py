@@ -11,12 +11,10 @@ __all__ = [
 
 
 class DrugFeatureSet(dict):
-    """
-    Drug feature set for compounds.
-    """
+    """Drug feature set for compounds."""
 
     def __setitem__(self, drug: str, features: Dict[str, Union[str, torch.FloatTensor]]):
-        """Set the features for a compound key
+        """Set the features for a compound key.
 
         Args:
             drug (str): Drug identifier.
@@ -89,7 +87,7 @@ class DrugFeatureSet(dict):
         )
 
     def keys(self):
-        """Retrie the drugs in a feature set.
+        """Get the drugs in a feature set.
 
         Returns:
             list: An iterator of drug identifiers.
@@ -97,7 +95,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.keys()
 
     def values(self):
-        """Retrie the iterator of drug features.
+        """Get the iterator of drug features.
 
         Returns:
             list: Feature iterator.
@@ -105,7 +103,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.values()
 
     def items(self):
-        """Retrie the iterator of tuples containing drug identifier - feature pairs.
+        """Get the iterator of tuples containing drug identifier - feature pairs.
 
         Returns:
             list: An iterator of (drug - feature dictionary) tuples.
@@ -131,7 +129,7 @@ class DrugFeatureSet(dict):
         return iter(self.__dict__)
 
     def get_drug_count(self) -> int:
-        """Getting the number of drugs.
+        """Get the number of drugs.
 
         Returns:
             int: The number of drugs.

@@ -1,3 +1,10 @@
+"""A module for the drug pair batch class."""
+
+__all__ = [
+    "DrugPairBatch",
+]
+
+
 class DrugPairBatch:
     """A data class to store a labeled drug pair batch."""
 

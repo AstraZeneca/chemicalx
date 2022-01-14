@@ -18,9 +18,7 @@ __all__ = [
 
 
 class DatasetLoader:
-    """
-    General dataset loader for the integrated drug pair scoring datasets.
-    """
+    """General dataset loader for the integrated drug pair scoring datasets."""
 
     def __init__(self, dataset_name: str):
         """Instantiate the dataset loader.

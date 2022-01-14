@@ -1,13 +1,17 @@
+"""A module for the context feature set class."""
+
 from typing import Dict, List
 
 import numpy as np
 import torch
 
+__all__ = [
+    "ContextFeatureSet",
+]
+
 
 class ContextFeatureSet(dict):
-    """
-    Context feature set for biological/chemical context feature vectors.
-    """
+    """Context feature set for biological/chemical context feature vectors."""
 
     def __setitem__(self, context: str, features: np.ndarray) -> None:
         """Set the feature vector for a biological context key.

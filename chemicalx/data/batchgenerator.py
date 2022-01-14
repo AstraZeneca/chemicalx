@@ -16,16 +16,7 @@ __all__ = [
 
 
 class BatchGenerator(Iterator[DrugPairBatch]):
-    """
-    Generator to create batches of drug pairs efficiently.
-
-    Args:
-        batch_size (int): Number of drug pairs per batch.
-        context_features (bool): Indicator whether the batch should include biological context features.
-        drug_features (bool): Indicator whether the batch should include drug features.
-        drug_molecules (bool): Indicator whether the batch should include drug molecules
-        labels (bool): Indicator whether the batch should include drug pair labels.
-    """
+    """Generator to create batches of drug pairs efficiently."""
 
     def __init__(
         self,
@@ -35,6 +26,15 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         drug_molecules: bool,
         labels: bool,
     ):
+        """Initialize a batch generator.
+
+        Args:
+            batch_size (int): Number of drug pairs per batch.
+            context_features (bool): Indicator whether the batch should include biological context features.
+            drug_features (bool): Indicator whether the batch should include drug features.
+            drug_molecules (bool): Indicator whether the batch should include drug molecules
+            labels (bool): Indicator whether the batch should include drug pair labels.
+        """
         self.batch_size = batch_size
         self.context_features = context_features
         self.drug_features = drug_features

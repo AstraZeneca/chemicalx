@@ -1,3 +1,5 @@
+"""Tests for data structures."""
+
 import unittest
 
 import numpy as np
@@ -7,11 +9,10 @@ from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
 class TestContextFeatureSet(unittest.TestCase):
-    """
-    Testing the context feature set methods.
-    """
+    """Testing the context feature set methods."""
 
     def setUp(self):
+        """Set up the test case."""
         self.context_feature_set = ContextFeatureSet()
         self.context_feature_set["context_1"] = np.array([[0.0, 1.8, 2.1]])
         self.context_feature_set["context_2"] = np.array([[0, 1, 2]])
@@ -54,11 +55,10 @@ class TestContextFeatureSet(unittest.TestCase):
 
 
 class TestDrugFeatureSet(unittest.TestCase):
-    """
-    Testing the drug feature set methods.
-    """
+    """Testing the drug feature set methods."""
 
     def setUp(self):
+        """Set up the test case."""
         self.drug_feature_set = DrugFeatureSet()
         self.drug_feature_set["drug_1"] = {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])}
         self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])}
@@ -107,11 +107,10 @@ class TestDrugFeatureSet(unittest.TestCase):
 
 
 class TestLabeledTriples(unittest.TestCase):
-    """
-    Testing the labeled triples methods.
-    """
+    """Testing the labeled triples methods."""
 
     def setUp(self):
+        """Set up the test case."""
         self.labeled_triples = LabeledTriples()
         self.other_labeled_triples = LabeledTriples()
 
