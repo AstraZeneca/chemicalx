@@ -6,4 +6,7 @@ __all__ = [
 
 
 class AUDNNSynergy(UnimplementedModel):
-    pass
+    """An implementation of the CASTER model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/34
+    """
