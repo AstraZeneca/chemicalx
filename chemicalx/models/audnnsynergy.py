@@ -1,3 +1,5 @@
+"""An implementation of the AUDNN Synergy model."""
+
 from .base import Model
 
 __all__ = [
@@ -6,4 +8,7 @@ __all__ = [
 
 
 class AUDNNSynergy(Model):
-    pass
+    """An implementation of the AUDNN Synergy model.
+
+    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/34
+    """
