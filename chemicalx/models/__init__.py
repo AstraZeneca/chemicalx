@@ -1,7 +1,7 @@
 from class_resolver import Resolver  # noqa:F401,F403
 
 from .audnnsynergy import *  # noqa:F401,F403
-from .base import Model  # noqa:F401,F403
+from .base import UnimplementedModel  # noqa:F401,F403
 from .caster import *  # noqa:F401,F403
 from .deepcci import *  # noqa:F401,F403
 from .deepddi import *  # noqa:F401,F403
@@ -16,4 +16,4 @@ from .mhcaddi import *  # noqa:F401,F403
 from .mrgnn import *  # noqa:F401,F403
 from .ssiddi import *  # noqa:F401,F403
 
-model_resolver = Resolver.from_subclasses(base=Model)
+model_resolver = Resolver.from_subclasses(base=UnimplementedModel)

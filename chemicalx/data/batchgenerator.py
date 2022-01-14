@@ -1,3 +1,5 @@
+"""A module for the batch generator class."""
+
 import math
 from typing import Iterator, List
 
@@ -7,6 +9,10 @@ import torch
 from torchdrug.data import PackedGraph
 
 from .drugpairbatch import DrugPairBatch
+
+__all__ = [
+    "BatchGenerator",
+]
 
 
 class BatchGenerator(Iterator[DrugPairBatch]):
@@ -133,7 +139,6 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             batch (DrugPairBatch): A batch of tensors for the pairs.
         """
-
         drug_features_left = self._get_drug_features(batch_frame["drug_1"])
         drug_molecules_left = self._get_drug_molecules(batch_frame["drug_1"])
 

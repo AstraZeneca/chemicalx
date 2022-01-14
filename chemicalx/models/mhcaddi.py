@@ -1,13 +1,13 @@
 """An implementation of the MHCADDI model."""
 
-from .base import Model
+from .base import UnimplementedModel
 
 __all__ = [
     "MHCADDI",
 ]
 
 
-class MHCADDI(Model):
+class MHCADDI(UnimplementedModel):
     """An implementation of the MHCADDI model.
 
     .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/13

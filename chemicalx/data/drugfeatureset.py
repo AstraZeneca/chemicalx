@@ -1,7 +1,13 @@
+"""A module for the drug feature set."""
+
 from typing import Dict, List, Union
 
 import torch
 from torchdrug.data import Graph, Molecule, PackedGraph
+
+__all__ = [
+    "DrugFeatureSet",
+]
 
 
 class DrugFeatureSet(dict):
@@ -10,7 +16,7 @@ class DrugFeatureSet(dict):
     """
 
     def __setitem__(self, drug: str, features: Dict[str, Union[str, torch.FloatTensor]]):
-        """Setting the features for a compound key
+        """Set the features for a compound key
 
         Args:
             drug (str): Drug identifier.
@@ -21,7 +27,7 @@ class DrugFeatureSet(dict):
         self.__dict__[drug]["molecule"] = Molecule.from_smiles(features["smiles"])
 
     def __getitem__(self, drug: str):
-        """Getting the features for a drug key.
+        """Get the features for a drug key.
 
         Args:
             drug (str): Drug identifier.
@@ -31,7 +37,7 @@ class DrugFeatureSet(dict):
         return self.__dict__[drug]
 
     def __len__(self):
-        """Getting the number of drugs.
+        """Get the number of drugs.
 
         Returns:
             int: The number of drugs.
@@ -39,7 +45,7 @@ class DrugFeatureSet(dict):
         return len(self.__dict__)
 
     def __delitem__(self, drug: str):
-        """Deleting the features for a drug key.
+        """Delete the features for a drug key.
 
         Args:
             drug (str): Drug identifier.
@@ -47,7 +53,7 @@ class DrugFeatureSet(dict):
         del self.__dict__[drug]
 
     def clear(self):
-        """Deleting all of the drugs from the drug feature set.
+        """Delete all the drugs from the drug feature set.
 
         Returns:
             DrugFeatureSet: An empty drug feature set.
@@ -55,7 +61,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.clear()
 
     def has_drug(self, drug: str):
-        """Checking whether a drug feature set contains a drug.
+        """Check whether a drug feature set contains a drug.
 
         Args:
             drug (str): Drug identifier.
@@ -65,7 +71,7 @@ class DrugFeatureSet(dict):
         return drug in self.__dict__
 
     def update(self, data: Dict[str, Dict]):
-        """Adding a dictionary of drug keys - feature dictionaries to a drug set.
+        """Add a dictionary of drug keys - feature dictionaries to a drug set.
 
         Args:
             data (dict): A dictionary of drug keys with feature dictionaries.
@@ -83,7 +89,7 @@ class DrugFeatureSet(dict):
         )
 
     def keys(self):
-        """Retrieving the drugs in a feature set.
+        """Retrie the drugs in a feature set.
 
         Returns:
             list: An iterator of drug identifiers.
@@ -91,7 +97,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.keys()
 
     def values(self):
-        """Retrieving the iterator of drug features.
+        """Retrie the iterator of drug features.
 
         Returns:
             list: Feature iterator.
@@ -99,7 +105,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.values()
 
     def items(self):
-        """Retrieving the iterator of tuples containing drug identifier - feature pairs.
+        """Retrie the iterator of tuples containing drug identifier - feature pairs.
 
         Returns:
             list: An iterator of (drug - feature dictionary) tuples.
@@ -107,7 +113,7 @@ class DrugFeatureSet(dict):
         return self.__dict__.items()
 
     def __contains__(self, drug: str):
-        """A data class method which allows the use of the 'in' operator.
+        """Check if the drug is in the drug feature set.
 
         Args:
             drug (str): A drug identifier.
@@ -117,7 +123,7 @@ class DrugFeatureSet(dict):
         return drug in self.__dict__
 
     def __iter__(self):
-        """A data class method which allows iteration over the drug feature set.
+        """Iterate over the drug feature set.
 
         Returns:
             iterable: An iterable of the drug feature set.
@@ -133,7 +139,7 @@ class DrugFeatureSet(dict):
         return len(self.__dict__)
 
     def get_feature_matrix(self, drugs: List[str]) -> torch.FloatTensor:
-        """Getting the drug feature matrix for a list of drugs.
+        """Get the drug feature matrix for a list of drugs.
 
         Args:
             drugs (list): A list of drug identifiers.
@@ -144,7 +150,7 @@ class DrugFeatureSet(dict):
         return features
 
     def get_molecules(self, drugs: List[str]) -> PackedGraph:
-        """Getting the molecular structures.
+        """Get the molecular structures.
 
         Args:
             drugs (list): A list of drug identifiers.

@@ -1,13 +1,13 @@
 """An implementation of the MR-GNN model."""
 
-from .base import Model
+from .base import UnimplementedModel
 
 __all__ = [
     "MRGNN",
 ]
 
 
-class MRGNN(Model):
+class MRGNN(UnimplementedModel):
     """An implementation of the MR-GNN model.
 
     .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/12
