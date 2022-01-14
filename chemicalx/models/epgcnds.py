@@ -7,7 +7,8 @@ from torchdrug.models import GraphConvolutionalNetwork
 
 class EPGCNDS(torch.nn.Module):
     r"""The EPGCN-DS model from the `"Structure-Based Drug-Drug Interaction Detection
-    via Expressive Graph Convolutional Networks and Deep Sets " <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_ paper.
+    via Expressive Graph Convolutional Networks and Deep Sets"
+    <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_ paper.
 
     Args:
         in_channels (int): The number of molecular features.

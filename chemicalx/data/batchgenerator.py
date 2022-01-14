@@ -1,10 +1,17 @@
 import math
-import torch
-import pandas as pd
-import numpy as np
 from typing import List
+
+import numpy as np
+import pandas as pd
+import torch
 from torchdrug.data import PackedGraph
-from chemicalx.data import LabeledTriples, DrugFeatureSet, ContextFeatureSet, DrugPairBatch
+
+from chemicalx.data import (
+    ContextFeatureSet,
+    DrugFeatureSet,
+    DrugPairBatch,
+    LabeledTriples,
+)
 
 
 class BatchGenerator:

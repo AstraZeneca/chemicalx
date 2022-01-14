@@ -1,9 +1,10 @@
-import torch
 import pandas as pd
-from tqdm import tqdm
+import torch
 from sklearn.metrics import roc_auc_score
+from tqdm import tqdm
+
+from chemicalx.data import BatchGenerator, DatasetLoader
 from chemicalx.models import DeepSynergy
-from chemicalx.data import DatasetLoader, BatchGenerator
 
 loader = DatasetLoader("drugcombdb")
 

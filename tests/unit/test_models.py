@@ -1,7 +1,8 @@
 import unittest
-import torch
-from chemicalx.data import DatasetLoader, BatchGenerator
 
+import torch
+
+from chemicalx.data import BatchGenerator, DatasetLoader
 from chemicalx.models import (
     CASTER,
     DPDDI,

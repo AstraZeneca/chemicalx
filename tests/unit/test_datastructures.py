@@ -1,6 +1,8 @@
 import unittest
+
 import numpy as np
 import pandas as pd
+
 from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
@@ -16,8 +18,8 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def test_get(self):
         assert self.context_feature_set["context_2"].shape == (1, 3)
-        assert ("context_2" in self.context_feature_set) == True
-        assert self.context_feature_set.has_context("context_2") == True
+        assert "context_2" in self.context_feature_set
+        assert self.context_feature_set.has_context("context_2")
 
     def test_delete(self):
         self.another_context_feature_set = self.context_feature_set
@@ -63,8 +65,8 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_get(self):
         assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
-        assert ("drug_2" in self.drug_feature_set) == True
-        assert self.drug_feature_set.has_drug("drug_2") == True
+        assert "drug_2" in self.drug_feature_set
+        assert self.drug_feature_set.has_drug("drug_2")
 
     def test_delete(self):
         self.another_drug_feature_set = self.drug_feature_set
