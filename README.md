@@ -22,7 +22,7 @@
 
 **[Documentation](https://chemicalx.readthedocs.io)** | **[External Resources](https://chemicalx.readthedocs.io/en/latest/notes/resources.html)** | **[Datasets](https://chemicalx.readthedocs.io/en/latest/notes/introduction.html#datasets)** | **[Examples](https://github.com/AstraZeneca/chemicalx/tree/main/examples)**
 
-*ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect and synergy prediction. The library consists of data loaders and integrated benchmark datasets. It also includes state-of-the-art deep neural network architectures that solve the [drug pair scoring task](https://arxiv.org/pdf/2111.02916v4.pdf). Implemented methods cover traditional SMILES string based techniques and neural message passing based models.
+*ChemicalX* is a deep learning library for drug-drug interaction, polypharmacy side effect, and synergy prediction. The library consists of data loaders and integrated benchmark datasets. It also includes state-of-the-art deep neural network architectures that solve the [drug pair scoring task](https://arxiv.org/pdf/2111.02916v4.pdf). Implemented methods cover traditional SMILES string based techniques and neural message passing based models.
 
 --------------------------------------------------------------------------------
 

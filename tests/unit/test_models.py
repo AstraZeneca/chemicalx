@@ -1,3 +1,5 @@
+"""Tests for models."""
+
 import unittest
 
 import torch
@@ -22,7 +24,10 @@ from chemicalx.models import (
 
 
 class TestModels(unittest.TestCase):
+    """A test case for models."""
+
     def setUp(self):
+        """Set up the test case."""
         loader = DatasetLoader("drugcomb")
         drug_feature_set = loader.get_drug_features()
         context_feature_set = loader.get_context_features()
@@ -33,16 +38,18 @@ class TestModels(unittest.TestCase):
         )
         self.generator.set_data(context_feature_set, drug_feature_set, labeled_triples)
 
-    def test_CASTER(self):
+    def test_caster(self):
+        """Test CASTER."""
         model = CASTER(x=2)
         assert model.x == 2
 
-    def test_DPDDI(self):
+    def test_dppdi(self):
+        """Test DPDDI."""
         model = DPDDI(x=2)
         assert model.x == 2
 
-    def test_EPGCNDS(self):
-
+    def test_epgcnds(self):
+        """Test EPGCNDS."""
         model = EPGCNDS(in_channels=69)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
@@ -56,40 +63,48 @@ class TestModels(unittest.TestCase):
             optimizer.step()
             assert prediction.shape[0] == batch.labels.shape[0]
 
-    def test_GCNBMP(self):
+    def test_gcnbmp(self):
+        """Test GCNBMP."""
         model = GCNBMP(x=2)
         assert model.x == 2
 
-    def test_MHCADDI(self):
+    def test_mhcaddi(self):
+        """Test MHCADDI."""
         model = MHCADDI(x=2)
         assert model.x == 2
 
-    def test_MRGNN(self):
+    def test_mrgnn(self):
+        """Test MRGNN."""
         model = MRGNN(x=2)
         assert model.x == 2
 
-    def test_SSIDDI(self):
+    def test_ssiddi(self):
+        """Test SSIDDI."""
         model = SSIDDI(x=2)
         assert model.x == 2
 
-    def test_AUDNNSynergy(self):
+    def test_audnn_synergy(self):
+        """Test AUDNN Synergy."""
         model = AUDNNSynergy(x=2)
         assert model.x == 2
 
-    def test_DeepCCI(self):
+    def test_deepcci(self):
+        """Test DeepCCI."""
         model = DeepCCI(x=2)
         assert model.x == 2
 
-    def test_DeepDDI(self):
+    def test_deepddi(self):
+        """Test DeepDDI."""
         model = DeepDDI(x=2)
         assert model.x == 2
 
-    def test_DeepDrug(self):
+    def test_deepdrug(self):
+        """Test DeepDrug."""
         model = DeepDrug(x=2)
         assert model.x == 2
 
-    def test_DeepSynergy(self):
-
+    def test_deepsynergy(self):
+        """Test DeepSynergy."""
         model = DeepSynergy(
             context_channels=288,
             drug_channels=256,
@@ -110,10 +125,12 @@ class TestModels(unittest.TestCase):
             optimizer.step()
             assert prediction.shape[0] == batch.labels.shape[0]
 
-    def test_DeepDDS(self):
+    def test_deepdds(self):
+        """Test DeepDDS."""
         model = DeepDDS(x=2)
         assert model.x == 2
 
-    def test_MatchMaker(self):
+    def test_matchmaker(self):
+        """Test MatchMaker."""
         model = MatchMaker(x=2)
         assert model.x == 2

@@ -1,3 +1,5 @@
+"""Example with EPGCNDS."""
+
 import pandas as pd
 import torch
 from sklearn.metrics import roc_auc_score
@@ -28,7 +30,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=10 ** -7)
 
 loss = torch.nn.BCELoss()
 
-for epoch in range(20):
+for _ in range(20):
     for batch in tqdm(generator):
         optimizer.zero_grad()
         prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)

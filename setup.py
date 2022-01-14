@@ -1,3 +1,5 @@
+"""Setup the package."""
+
 from setuptools import find_packages, setup
 
 install_requires = [

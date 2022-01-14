@@ -1,19 +1,18 @@
+r"""An implementation of the DeepSynergy model."""
+
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa:N812
+
+__all__ = [
+    "DeepSynergy",
+]
 
 
 class DeepSynergy(torch.nn.Module):
-    r"""The DeepSynergy model from the `"DeepSynergy: Predicting
-    Anti-Cancer Drug Synergy with Deep Learning"
-    <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_ paper.
+    r"""The DeepSynergy model from [deepsynergy]_.
 
-    Args:
-        context_channels (int): The number of context features.
-        drug_channels (int): The number of drug features.
-        input_hidden_channels (int): The number of hidden layer neurons in the input layer.
-        middle_hidden_channels (int): The number of hidden layer neurons in the middle layer.
-        final_hidden_channels (int): The number of hidden layer neurons in the final layer.
-        dropout_rate (float): The rate of dropout before the scoring head is used.
+    .. [deepsynergy] `"DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning"
+    <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_
     """
 
     def __init__(
@@ -25,6 +24,15 @@ class DeepSynergy(torch.nn.Module):
         final_hidden_channels: int = 32,
         dropout_rate: float = 0.5,
     ):
+        """Instantiate the DeepSynergy model.
+
+        :param context_channels: The number of context features.
+        :param drug_channels: The number of drug features.
+        :param input_hidden_channels: The number of hidden layer neurons in the input layer.
+        :param middle_hidden_channels: The number of hidden layer neurons in the middle layer.
+        :param final_hidden_channels: The number of hidden layer neurons in the final layer.
+        :param dropout_rate: The rate of dropout before the scoring head is used.
+        """
         super(DeepSynergy, self).__init__()
         self.encoder = torch.nn.Linear(drug_channels + drug_channels + context_channels, input_hidden_channels)
         self.hidden_first = torch.nn.Linear(input_hidden_channels, middle_hidden_channels)
@@ -39,7 +47,7 @@ class DeepSynergy(torch.nn.Module):
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
         """
-        A forward pass of the DeepSynergy model.
+        Run a forward pass of the DeepSynergy model.
 
         Args:
             context_features (torch.FloatTensor): A matrix of biological context features.

@@ -1,11 +1,13 @@
-from .base import Model
+"""An implementation of the DeepDDI model."""
+
+from .base import UnimplementedModel
 
 __all__ = [
     "DeepDDI",
 ]
 
 
-class DeepDDI(Model):
+class DeepDDI(UnimplementedModel):
     """An implementation of the DeepDDI model.
 
     .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/2
