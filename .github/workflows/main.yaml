@@ -27,6 +27,9 @@ jobs:
       - name: Run doc8
         run: |
           tox -e doc8
+      - name: Run docstr-coverage
+        run: |
+          tox -e docstr-coverage
       - name: Run sphinx test
         run: |
           sudo apt-get install graphviz
