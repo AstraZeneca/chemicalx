@@ -1,7 +1,7 @@
 r"""An implementation of the DeepSynergy model."""
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa:N812
 
 __all__ = [
     "DeepSynergy",
