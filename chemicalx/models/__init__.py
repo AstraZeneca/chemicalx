@@ -2,7 +2,6 @@
 
 from class_resolver import Resolver
 
-from .audnnsynergy import AUDNNSynergy
 from .base import UnimplementedModel
 from .caster import CASTER
 from .deepcci import DeepCCI
