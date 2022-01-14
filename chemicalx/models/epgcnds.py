@@ -21,7 +21,7 @@ class EPGCNDS(ContextlessModel):
         out_channels (int): The number of hidden layer neurons in the last layer.
     """
 
-    def __init__(self, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
+    def __init__(self, *, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
         super(EPGCNDS, self).__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(in_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, out_channels)
