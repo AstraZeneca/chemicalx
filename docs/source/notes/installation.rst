@@ -1,6 +1,5 @@
 Installation
 ============
-
 The installation of ChemicalX requires the presence of certain prerequisites. These are described in great detail in the installation description of PyTorch Geometric. Please follow the instructions laid out `here <https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_. You might also take a look at the `readme file <https://github.com/AstraZeneca/chemicalx>`_ of the ChemicalX repository. The torch-scatter binaries are provided for Python version <= 3.9.
 
 **PyTorch 1.10.0**
@@ -21,20 +20,18 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 
 The package itself can be installed via pip:
 
-    .. code-block:: none
+.. code-block:: shell
 
-        $ pip install chemicalx
+    $ pip install chemicalx
 
 Upgrade your outdated ChemicalX version by using:
 
-    .. code-block:: none
+.. code-block:: shell
 
-        $ pip install chemicalx --upgrade
-
+    $ pip install chemicalx --upgrade
 
 To check your current package version just simply run:
 
-    .. code-block:: none
+.. code-block:: shell
 
-        $ pip freeze | grep chemicalx
-
+    $ pip freeze | grep chemicalx

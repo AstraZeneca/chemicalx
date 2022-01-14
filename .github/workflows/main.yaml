@@ -24,6 +24,9 @@ jobs:
       - name: Run flake8
         run: |
           tox -e flake8
+      - name: Run doc test
+        run: |
+          tox -e docs
       - name: Run test-suite
         run: |
           tox -e py

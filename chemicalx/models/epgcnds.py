@@ -13,9 +13,9 @@ __all__ = [
 class EPGCNDS(torch.nn.Module):
     r"""The EPGCN-DS model from [epgcnds]_.
 
-    .. [epgcnds] `"Structure-Based Drug-Drug Interaction Detection
-    via Expressive Graph Convolutional Networks and Deep Sets"
-    <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_ paper.
+    .. [epgcnds] `Structure-Based Drug-Drug Interaction Detection
+       via Expressive Graph Convolutional Networks and Deep Sets
+       <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
     """
 
     def __init__(self, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
