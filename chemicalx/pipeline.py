@@ -10,8 +10,13 @@ from sklearn.metrics import roc_auc_score
 from torch.nn.modules.loss import _Loss
 from tqdm import trange
 
-from chemicalx.data import BatchGenerator, DatasetLoader, DrugPairBatch, dataset_resolver
-from chemicalx.models import Model, model_resolver, ContextlessModel, ContextModel
+from chemicalx.data import (
+    BatchGenerator,
+    DatasetLoader,
+    DrugPairBatch,
+    dataset_resolver,
+)
+from chemicalx.models import ContextlessModel, ContextModel, Model, model_resolver
 
 __all__ = [
     "Result",
