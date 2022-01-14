@@ -1,13 +1,14 @@
 """A collection of full training and evaluation pipelines."""
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Type
 
 import pandas as pd
 import torch
 from class_resolver import HintOrType
 from sklearn.metrics import roc_auc_score
 from torch.nn.modules.loss import _Loss
+from torch.optim.optimizer import Optimizer
 from tqdm import trange
 
 from chemicalx.data import (
@@ -46,10 +47,12 @@ def pipeline(
     dataset: HintOrType[DatasetLoader],
     model: HintOrType[Model],
     model_kwargs: Optional[Mapping[str, Any]] = None,
+    optimizer_cls: Type[Optimizer] = torch.optim.Adam,
     optimizer_kwargs: Optional[Mapping[str, Any]] = None,
+    loss_cls: Type[_Loss] = torch.nn.BCELoss,
+    loss_kwargs: Optional[Mapping[str, Any]] = None,
     batch_size: int = 5120,
     epochs: int,
-    loss: Optional[_Loss] = None,
     context_features: bool,
     drug_features: bool,
     drug_molecules: bool,
@@ -71,12 +74,18 @@ def pipeline(
         3. An instance of a :class:`chemicalx.Model`
     :param model_kwargs:
         Keyword arguments to pass through to the model constructor. Relevant if passing model by string or class.
+    :param optimizer_cls:
+        The class for the optimizer to use. Currently defaults to :class:`torch.optim.Adam`.
+    :param optimizer_kwargs:
+        Keyword arguments to pass through to the optimizer construction.
+    :param loss_cls:
+        The loss to use. If none given, uses :class:`torch.nn.BCELoss`.
+    :param loss_kwargs:
+        Keyword arguments to pass through to the loss construction.
     :param batch_size:
         The batch size
     :param epochs:
         The number of epochs to train
-    :param loss:
-        The loss to use. If none given, uses :class:`torch.nn.BCELoss`.
     :param context_features:
         Indicator whether the batch should include biological context features.
     :param drug_features:
@@ -108,7 +117,7 @@ def pipeline(
 
     model = model_resolver.make(model, model_kwargs)
 
-    optimizer = torch.optim.Adam(model.parameters(), **(optimizer_kwargs or {}))
+    optimizer = optimizer_cls(model.parameters(), **(optimizer_kwargs or {}))
 
     model.train()
 
@@ -119,8 +128,7 @@ def pipeline(
     else:
         raise TypeError(f"model does not inherit from appropriate base model: {model.__class__}")
 
-    if loss is None:
-        loss = torch.nn.BCELoss()
+    loss = loss_cls(**(loss_kwargs or {}))
 
     for _epoch in trange(epochs):
         for batch in generator:
