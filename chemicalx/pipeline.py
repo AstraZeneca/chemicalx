@@ -150,8 +150,10 @@ def pipeline(
         identifiers["prediction"] = prediction
         predictions.append(identifiers)
 
-    predictions = pd.concat(predictions)
+    predictions_df = pd.concat(predictions)
 
     return Result(
-        model=model, predictions=predictions, roc_auc=roc_auc_score(predictions["label"], predictions["prediction"])
+        model=model,
+        predictions=predictions_df,
+        roc_auc=roc_auc_score(predictions_df["label"], predictions_df["prediction"]),
     )
