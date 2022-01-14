@@ -26,6 +26,7 @@ jobs:
           tox -e flake8
       - name: Run doc test
         run: |
+          sudo apt-get install graphviz
           tox -e docs
       - name: Run test-suite
         run: |
