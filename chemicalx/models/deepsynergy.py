@@ -17,8 +17,8 @@ class DeepSynergy(torch.nn.Module):
 
     def __init__(
         self,
-        context_channels: int,
-        drug_channels: int,
+        context_channels: int = 112,
+        drug_channels: int = 256,
         input_hidden_channels: int = 32,
         middle_hidden_channels: int = 32,
         final_hidden_channels: int = 32,
