@@ -5,6 +5,10 @@ from torchdrug.models import GraphConvolutionalNetwork
 
 from chemicalx.models import ContextlessModel
 
+__all__ = [
+    "EPGCNDS",
+]
+
 
 class EPGCNDS(ContextlessModel):
     r"""The EPGCN-DS model from the `"Structure-Based Drug-Drug Interaction Detection
