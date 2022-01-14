@@ -1,3 +1,5 @@
+"""An implementation of the AUDNN Synergy model."""
+
 from .base import UnimplementedModel
 
 __all__ = [
@@ -6,7 +8,7 @@ __all__ = [
 
 
 class AUDNNSynergy(UnimplementedModel):
-    """An implementation of the CASTER model.
+    """An implementation of the AUDNN Synergy model.
 
     .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/34
     """

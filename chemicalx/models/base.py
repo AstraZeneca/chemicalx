@@ -12,9 +12,10 @@ __all__ = [
 
 
 class UnimplementedModel:
-    """The base class for unimplemnted ChemicalX models."""
+    """The base class for unimplemented ChemicalX models."""
 
-    def __init__(self, x):
+    def __init__(self, x: int):
+        """Instantiate a base model."""
         self.x = x
 
 

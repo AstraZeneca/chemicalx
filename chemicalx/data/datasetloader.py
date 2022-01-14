@@ -1,3 +1,5 @@
+"""A module for dataset loaders."""
+
 import io
 import json
 import urllib.request
@@ -16,12 +18,11 @@ __all__ = [
 
 
 class DatasetLoader:
-    """
-    General dataset loader for the integrated drug pair scoring datasets.
-    """
+    """General dataset loader for the integrated drug pair scoring datasets."""
 
     def __init__(self, dataset_name: str):
-        """
+        """Instantiate the dataset loader.
+
         Args:
             dataset_name (str): The name of the dataset.
         """
@@ -31,7 +32,7 @@ class DatasetLoader:
 
     def generate_path(self, file_name: str) -> str:
         """
-        Generating a complete url for a dataset file.
+        Generate a complete url for a dataset file.
 
         Args:
             file_name (str): Name of the data file.
@@ -43,7 +44,7 @@ class DatasetLoader:
 
     def load_raw_json_data(self, path: str) -> Dict:
         """
-        Given a path reading the raw JSON dataset.
+        Load a raw JSON dataset at the given path.
 
         Args:
             path (str): The path to the JSON file.
@@ -56,7 +57,7 @@ class DatasetLoader:
 
     def load_raw_csv_data(self, path: str) -> pd.DataFrame:
         """
-        Reading the labeled triples CSV in memory.
+        Load a CSV dataset at the given path.
 
         Args:
             path (str): The path to the triples CSV file.
@@ -70,7 +71,7 @@ class DatasetLoader:
 
     def get_context_features(self):
         """
-        Reading the context feature set.
+        Get the context feature set.
 
         Returns:
             context_feature_set (ContextFeatureSet): The ContextFeatureSet of the dataset of interest.
@@ -84,7 +85,7 @@ class DatasetLoader:
 
     def get_drug_features(self):
         """
-        Reading the drug feature set.
+        Get the drug feature set.
 
         Returns:
             drug_feature_set (DrugFeatureSet): The DrugFeatureSet of the dataset of interest.
@@ -100,7 +101,7 @@ class DatasetLoader:
 
     def get_labeled_triples(self):
         """
-        Getting the labeled triples file from the storage.
+        Get the labeled triples file from the storage.
 
         Returns:
             labeled_triples (LabeledTriples): The labeled triples in the dataset.
@@ -116,6 +117,7 @@ class DrugCombDbDatasetLoader(DatasetLoader):
     """A dataset loader for `DrugCombDB <http://drugcombdb.denglab.org>`_."""
 
     def __init__(self):
+        """Instantiate the DrugCombDB dataset loader."""
         super().__init__("drugcombdb")
 
 
@@ -124,4 +126,5 @@ class DrugCombDatasetLoader(DatasetLoader):
     """A dataset loader for DrugComb."""
 
     def __init__(self):
+        """Instantiate the DrugComb dataset loader."""
         super().__init__("drugcomb")

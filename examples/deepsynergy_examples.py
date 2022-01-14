@@ -1,3 +1,5 @@
+"""Example with DeepSynergy."""
+
 from chemicalx import pipeline
 from chemicalx.models import DeepSynergy
 

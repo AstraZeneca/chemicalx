@@ -1,3 +1,5 @@
+"""Example with EPGCNDS."""
+
 from chemicalx import pipeline
 from chemicalx.models import EPGCNDS
 

@@ -1,16 +1,20 @@
+"""A module for the context feature set class."""
+
 from typing import Dict, List
 
 import numpy as np
 import torch
 
+__all__ = [
+    "ContextFeatureSet",
+]
+
 
 class ContextFeatureSet(dict):
-    """
-    Context feature set for biological/chemical context feature vectors.
-    """
+    """Context feature set for biological/chemical context feature vectors."""
 
-    def __setitem__(self, context: str, features: np.ndarray):
-        """Setting the feature vector for a biological context key.
+    def __setitem__(self, context: str, features: np.ndarray) -> None:
+        """Set the feature vector for a biological context key.
 
         Args:
             context (str): Biological or chemical context identifier.
@@ -19,7 +23,7 @@ class ContextFeatureSet(dict):
         self.__dict__[context] = torch.FloatTensor(features)
 
     def __getitem__(self, context: str) -> torch.FloatTensor:
-        """Getting the feature vector for a biological context key.
+        """Get the feature vector for a biological context key.
 
         Args:
             context (str): Biological or chemical context identifier.
@@ -28,16 +32,16 @@ class ContextFeatureSet(dict):
         """
         return self.__dict__[context]
 
-    def __len__(self):
-        """Getting the number of biological/chemical contexts.
+    def __len__(self) -> int:
+        """Get the number of biological/chemical contexts.
 
         Returns:
             int: The number of contexts.
         """
         return len(self.__dict__)
 
-    def __delitem__(self, context: str):
-        """Deleting the feature vector for a biological context key.
+    def __delitem__(self, context: str) -> None:
+        """Delete the feature vector for a biological context key.
 
         Args:
             context (str): Biological or chemical context identifier.
@@ -45,15 +49,15 @@ class ContextFeatureSet(dict):
         del self.__dict__[context]
 
     def clear(self):
-        """Deleting all of the contexts from the context feature set.
+        """Delete all the contexts from the context feature set.
 
         Returns:
             ContextFeatureSet: An empty context feature set.
         """
         return self.__dict__.clear()
 
-    def has_context(self, context: str):
-        """Checking whether a context feature set contains a context.
+    def has_context(self, context: str) -> bool:
+        """Check whether a context feature set contains a context.
 
         Args:
             context (str): Biological or chemical context identifier.
@@ -63,7 +67,7 @@ class ContextFeatureSet(dict):
         return context in self.__dict__
 
     def update(self, data: Dict[str, np.ndarray]):
-        """Updating a dictionary of context keys - feature vector values to a context set.
+        """Update a dictionary of context keys - feature vector values to a context set.
 
         Args:
             data (dict): A dictionary of context keys with feature vector values.
@@ -73,7 +77,7 @@ class ContextFeatureSet(dict):
         return self.__dict__.update({context: torch.FloatTensor(features) for context, features in data.items()})
 
     def keys(self):
-        """Retrieving the list of biological / chemical contexts in a feature set.
+        """Get the list of biological / chemical contexts in a feature set.
 
         Returns:
             list: An iterator of context identifiers.
@@ -81,7 +85,7 @@ class ContextFeatureSet(dict):
         return self.__dict__.keys()
 
     def values(self):
-        """Retrieving the iterator of context feature vectors.
+        """Get the iterator of context feature vectors.
 
         Returns:
             list: Feature vector iterator.
@@ -89,15 +93,15 @@ class ContextFeatureSet(dict):
         return self.__dict__.values()
 
     def items(self):
-        """Retrieving the iterator of tuples containing context identifier - feature vector pairs.
+        """Get the iterator of tuples containing context identifier - feature vector pairs.
 
         Returns:
             list: An iterator of (context - feature vector) tuples.
         """
         return self.__dict__.items()
 
-    def __contains__(self, context: str):
-        """A data class method which allows the use of the 'in' operator.
+    def __contains__(self, context: str) -> bool:
+        """Check if the context is in keys.
 
         Args:
             context (str): A context identifier.
@@ -107,7 +111,7 @@ class ContextFeatureSet(dict):
         return context in self.__dict__
 
     def __iter__(self):
-        """A data class method which allows iteration over the context feature set.
+        """Iterate over the context feature set.
 
         Returns:
             iterable: An iterable of the context feature set.
@@ -115,7 +119,7 @@ class ContextFeatureSet(dict):
         return iter(self.__dict__)
 
     def get_context_count(self) -> int:
-        """Getting the number of biological contexts.
+        """Get the number of biological contexts.
 
         Returns:
             int: The number of contexts.
@@ -123,7 +127,7 @@ class ContextFeatureSet(dict):
         return len(self.__dict__)
 
     def get_feature_matrix(self, contexts: List[str]) -> torch.FloatTensor:
-        """Getting the feature matrix for a list of contexts.
+        """Get the feature matrix for a list of contexts.
 
         Args:
             contexts (list): A list of context identifiers.

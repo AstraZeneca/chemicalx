@@ -1,3 +1,5 @@
+"""Setup the package."""
+
 from setuptools import find_packages, setup
 
 install_requires = [
@@ -6,9 +8,7 @@ install_requires = [
     "torchdrug",
     "torch-scatter>=2.0.8",
     "pandas<=1.3.5",
-    "scipy",
     "tqdm",
-    "six",
     "scikit-learn",
     "class-resolver",
 ]

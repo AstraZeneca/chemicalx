@@ -17,11 +17,6 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7.12
-      - uses: s-weigand/setup-conda@v1
-        with:
-          activate-conda: true
-          python-version: 3.7
-      - run: conda --version
       - run: which python
       - name: Install general requirements
         run: |
@@ -29,28 +24,13 @@ jobs:
       - name: Run flake8
         run: |
           tox -e flake8
-      - name: Run installation.
-        run: |
-         conda install -y scipy
-         pip install torch==1.10.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
-         pip install torchvision==0.11.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-         pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.10.0+cpu.html
-         pip install torchdrug
-         pip install codecov
-         pip install pytest
-         python setup.py install
-      - name: Install main package
-        run: |
-          pip install -e .[test]
       - name: Run test-suite
         run: |
-          python -m pytest
+          tox -e py
       - name: Generate coverage report
         if: success()
         run: |
-          pip install coverage
-          coverage run -m pytest
-          coverage xml
+          tox -e coverage
       - name: Upload coverage report to codecov
         uses: codecov/codecov-action@v1
         if: success()

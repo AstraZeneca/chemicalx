@@ -1,3 +1,5 @@
+"""ChemicalX is a deep learning library for drug-drug interaction, polypharmacy, and synergy prediction."""
+
 from chemicalx.data import (  # noqa:F401,F403
     batchgenerator,
     contextfeatureset,
@@ -23,4 +25,4 @@ from chemicalx.models import (  # noqa:F401,F403
     ssiddi,
 )
 from chemicalx.pipeline import Result, pipeline  # noqa:F401,F403
-from chemicalx.version import __version__
+from chemicalx.version import __version__  # noqa:F401,F403

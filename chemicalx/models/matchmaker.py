@@ -1,3 +1,5 @@
+"""An implementation of the MatchMaker model."""
+
 from .base import UnimplementedModel
 
 __all__ = [

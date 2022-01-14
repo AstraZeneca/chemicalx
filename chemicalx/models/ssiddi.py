@@ -1,3 +1,5 @@
+"""An implementation of the SSI-DDI model."""
+
 from .base import UnimplementedModel
 
 __all__ = [
