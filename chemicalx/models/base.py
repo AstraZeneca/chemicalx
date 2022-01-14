@@ -24,6 +24,14 @@ class ContextModel(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
+        """
+        A forward pass of the model.
+
+        :param context_features: A matrix of biological context features.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted synergy scores.
+        """
         raise NotImplementedError
 
 
@@ -34,10 +42,8 @@ class ContextlessModel(Model):
         """
         A forward pass of a contextless model.
 
-        Args:
-            molecules_left (torch.FloatTensor): Batched molecules for the left side drugs.
-            molecules_right (torch.FloatTensor): Batched molecules for the right side drugs.
-        Returns:
-            hidden (torch.FloatTensor): A column vector of predicted scores.
+        :param molecules_left: Batched molecules for the left side drugs.
+        :param molecules_right: Batched molecules for the right side drugs.
+        :returns: A column vector of predicted scores.
         """
         raise NotImplementedError
