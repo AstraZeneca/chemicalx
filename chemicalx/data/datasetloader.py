@@ -6,6 +6,12 @@ import urllib.request
 from typing import Dict
 from chemicalx.data import DrugFeatureSet, ContextFeatureSet, LabeledTriples
 
+__all__ = [
+    "DatasetLoader",
+    "DrugCombDbDatasetLoader",
+    "DrugCombDatasetLoader",
+]
+
 
 class DatasetLoader:
     """
@@ -102,3 +108,18 @@ class DatasetLoader:
         labeled_triples = LabeledTriples()
         labeled_triples.update_from_pandas(raw_data)
         return labeled_triples
+
+
+class DrugCombDbDatasetLoader(DatasetLoader):
+    """A dataset loader for `DrugCombDB <http://drugcombdb.denglab.org>`_."""
+
+    def __init__(self):
+        super().__init__("drugcombdb")
+
+
+# FIXME need reference
+class DrugCombDatasetLoader(DatasetLoader):
+    """A dataset loader for DrugComb."""
+
+    def __init__(self):
+        super().__init__("drugcomb")
