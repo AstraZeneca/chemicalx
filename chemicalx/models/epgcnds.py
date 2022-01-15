@@ -5,14 +5,15 @@ from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
 
-from chemicalx.models import ContextlessModel
+from chemicalx.data import DrugPairBatch
+from chemicalx.models import Model
 
 __all__ = [
     "EPGCNDS",
 ]
 
 
-class EPGCNDS(ContextlessModel):
+class EPGCNDS(Model):
     r"""The EPGCN-DS model from [epgcnds]_.
 
     .. [epgcnds] `"Structure-Based Drug-Drug Interaction Detection
@@ -32,6 +33,12 @@ class EPGCNDS(ContextlessModel):
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, out_channels)
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
+
+    def unpack(self, batch: DrugPairBatch):  # noqa:D102
+        return (
+            batch.drug_molecules_left,
+            batch.drug_features_left,
+        )
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """

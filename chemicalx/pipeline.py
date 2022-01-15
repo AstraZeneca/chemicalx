@@ -11,13 +11,8 @@ from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from tqdm import trange
 
-from chemicalx.data import (
-    BatchGenerator,
-    DatasetLoader,
-    DrugPairBatch,
-    dataset_resolver,
-)
-from chemicalx.models import ContextlessModel, ContextModel, Model, model_resolver
+from chemicalx.data import BatchGenerator, DatasetLoader, dataset_resolver
+from chemicalx.models import Model, model_resolver
 
 __all__ = [
     "Result",
@@ -32,14 +27,6 @@ class Result:
     model: Model
     roc_auc: float
     predictions: pd.DataFrame
-
-
-def context_forward(model: Model, batch: DrugPairBatch):
-    return model(batch.context_features, batch.drug_features_left, batch.drug_features_right)
-
-
-def contextless_forward(model: Model, batch: DrugPairBatch):
-    return model(batch.drug_features_left, batch.drug_features_right)
 
 
 def pipeline(
@@ -121,19 +108,12 @@ def pipeline(
 
     model.train()
 
-    if isinstance(model, ContextModel):
-        forwarder = context_forward
-    elif isinstance(model, ContextlessModel):
-        forwarder = contextless_forward
-    else:
-        raise TypeError(f"model does not inherit from appropriate base model: {model.__class__}")
-
     loss = loss_cls(**(loss_kwargs or {}))
 
     for _epoch in trange(epochs):
         for batch in generator:
             optimizer.zero_grad()
-            prediction = forwarder(model, batch)
+            prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
             loss_value.backward()
             optimizer.step()
@@ -144,7 +124,7 @@ def pipeline(
 
     predictions = []
     for batch in generator:
-        prediction = forwarder(model, batch)
+        prediction = model(*model.unpack(batch))
         prediction = prediction.detach().cpu().numpy()
         identifiers = batch.identifiers
         identifiers["prediction"] = prediction

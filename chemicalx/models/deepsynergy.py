@@ -3,14 +3,15 @@ r"""An implementation of the DeepSynergy model."""
 import torch
 import torch.nn.functional as F  # noqa:N812
 
-from chemicalx.models import ContextModel
+from chemicalx.data import DrugPairBatch
+from chemicalx.models import Model
 
 __all__ = [
     "DeepSynergy",
 ]
 
 
-class DeepSynergy(ContextModel):
+class DeepSynergy(Model):
     r"""The DeepSynergy model from [deepsynergy]_.
 
     .. [deepsynergy] `"DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning"
@@ -42,6 +43,13 @@ class DeepSynergy(ContextModel):
         self.hidden_second = torch.nn.Linear(middle_hidden_channels, final_hidden_channels)
         self.dropout = torch.nn.Dropout(dropout_rate)
         self.scoring_head = torch.nn.Linear(final_hidden_channels, 1)
+
+    def unpack(self, batch: DrugPairBatch):  # noqa:D102
+        return (
+            batch.context_features,
+            batch.drug_features_left,
+            batch.drug_features_right,
+        )
 
     def forward(
         self,
