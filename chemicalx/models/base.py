@@ -25,5 +25,10 @@ class Model(nn.Module, ABC):
 
     @abstractmethod
     def unpack(self, batch: DrugPairBatch):
-        """Unpack a batch into a tuple of the features needed for forward."""
+        """Unpack a batch into a tuple of the features needed for forward.
+
+        :param batch: A batch object
+        :returns: A tuple that will be used as the positional arguments
+            in this model's :func:`forward` method.
+        """
         raise NotImplementedError
