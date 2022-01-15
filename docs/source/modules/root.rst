@@ -35,9 +35,6 @@ Data Structures and Loaders
 Pair Scoring Models
 --------------------
 
-.. autoclass:: chemicalx.models.audnnsynergy.AUDNNSynergy
-    :members:
-    :undoc-members:
 
 
 .. autoclass:: chemicalx.models.caster.CASTER
@@ -64,13 +61,7 @@ Pair Scoring Models
     :members:
     :undoc-members:
 
-
 .. autoclass:: chemicalx.models.deepsynergy.DeepSynergy
-    :members:
-    :undoc-members:
-
-
-.. autoclass:: chemicalx.models.dpddi.DPDDI
     :members:
     :undoc-members:
 

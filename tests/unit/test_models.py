@@ -8,13 +8,11 @@ from chemicalx import pipeline
 from chemicalx.data import BatchGenerator, DatasetLoader
 from chemicalx.models import (
     CASTER,
-    DPDDI,
     EPGCNDS,
     GCNBMP,
     MHCADDI,
     MRGNN,
     SSIDDI,
-    AUDNNSynergy,
     DeepCCI,
     DeepDDI,
     DeepDDS,
@@ -79,11 +77,6 @@ class TestModels(unittest.TestCase):
         model = CASTER(x=2)
         assert model.x == 2
 
-    def test_dppdi(self):
-        """Test DPDDI."""
-        model = DPDDI(x=2)
-        assert model.x == 2
-
     def test_epgcnds(self):
         """Test EPGCNDS."""
         model = EPGCNDS(in_channels=69)
@@ -117,11 +110,6 @@ class TestModels(unittest.TestCase):
     def test_ssiddi(self):
         """Test SSIDDI."""
         model = SSIDDI(x=2)
-        assert model.x == 2
-
-    def test_audnn_synergy(self):
-        """Test AUDNN Synergy."""
-        model = AUDNNSynergy(x=2)
         assert model.x == 2
 
     def test_deepcci(self):

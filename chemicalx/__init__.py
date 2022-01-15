@@ -9,14 +9,12 @@ from chemicalx.data import (  # noqa:F401,F403
     labeledtriples,
 )
 from chemicalx.models import (  # noqa:F401,F403
-    audnnsynergy,
     caster,
     deepcci,
     deepddi,
     deepdds,
     deepdrug,
     deepsynergy,
-    dpddi,
     epgcnds,
     gcnbmp,
     matchmaker,
