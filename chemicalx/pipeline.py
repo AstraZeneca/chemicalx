@@ -1,7 +1,10 @@
 """A collection of full training and evaluation pipelines."""
 
+import json
+import time
 from dataclasses import dataclass
-from typing import Any, Mapping, Optional, Type
+from pathlib import Path
+from typing import Any, List, Mapping, Optional, Type, Union
 
 import pandas as pd
 import torch
@@ -13,6 +16,7 @@ from tqdm import trange
 
 from chemicalx.data import BatchGenerator, DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
+from chemicalx.version import __version__
 
 __all__ = [
     "Result",
@@ -26,11 +30,37 @@ class Result:
 
     model: Model
     predictions: pd.DataFrame
+    losses: List[float]
+    train_time: float
+    evaluation_time: float
     roc_auc: float
 
     def summarize(self) -> None:
         """Print results to the console."""
         print(f"AUC-ROC: {self.roc_auc:0.3f}")
+
+    def save(self, directory: Union[str, Path]) -> None:
+        """Save the results to a directory."""
+        if isinstance(directory, str):
+            directory = Path(directory)
+        directory = directory.resolve()
+        directory.mkdir(exist_ok=True, parents=True)
+
+        torch.save(self.model, directory.joinpath("model.pkl"))
+        directory.joinpath("results.json").write_text(
+            json.dumps(
+                {
+                    "evaluation": {
+                        "auc_roc": self.roc_auc,
+                    },
+                    "losses": self.losses,
+                    "training_time": self.train_time,
+                    "evaluation_time": self.evaluation_time,
+                    "chemicalx_version": __version__,
+                },
+                indent=2,
+            )
+        )
 
 
 def pipeline(
@@ -86,7 +116,7 @@ def pipeline(
     :param labels:
         Indicator whether the batch should include drug pair labels.
     :returns:
-        The area under the AUC curve
+        A result object with the trained model and evaluation results
     """
     loader = dataset_resolver.make(dataset)
 
@@ -114,18 +144,23 @@ def pipeline(
 
     loss = loss_cls(**(loss_kwargs or {}))
 
+    losses = []
+    train_start_time = time.time()
     for _epoch in trange(epochs):
         for batch in generator:
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
+            losses.append(loss_value.item())
             loss_value.backward()
             optimizer.step()
+    train_time = time.time() - train_start_time
 
     model.eval()
 
     generator.set_labeled_triples(test_triples)
 
+    evaluation_start_time = time.time()
     predictions = []
     for batch in generator:
         prediction = model(*model.unpack(batch))
@@ -133,11 +168,15 @@ def pipeline(
         identifiers = batch.identifiers
         identifiers["prediction"] = prediction
         predictions.append(identifiers)
+    evaluation_time = time.time() - evaluation_start_time
 
     predictions_df = pd.concat(predictions)
 
     return Result(
         model=model,
         predictions=predictions_df,
+        losses=losses,
+        train_time=train_time,
+        evaluation_time=evaluation_time,
         roc_auc=roc_auc_score(predictions_df["label"], predictions_df["prediction"]),
     )
