@@ -25,8 +25,12 @@ class Result:
     """A result package."""
 
     model: Model
-    roc_auc: float
     predictions: pd.DataFrame
+    roc_auc: float
+
+    def summarize(self) -> None:
+        """Print results to the console."""
+        print(f"AUC-ROC: {self.roc_auc:0.3f}")
 
 
 def pipeline(

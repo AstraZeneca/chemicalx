@@ -17,7 +17,7 @@ def main():
         drug_molecules=False,
         labels=True,
     )
-    print(f"AUROC : {results.roc_auc:.4f}")
+    results.summarize()
 
 
 if __name__ == "__main__":

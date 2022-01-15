@@ -37,7 +37,7 @@ class EPGCNDS(Model):
     def unpack(self, batch: DrugPairBatch):  # noqa:D102
         return (
             batch.drug_molecules_left,
-            batch.drug_features_left,
+            batch.drug_molecules_right,
         )
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
