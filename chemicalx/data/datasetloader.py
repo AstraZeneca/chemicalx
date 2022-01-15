@@ -121,9 +121,8 @@ class DrugCombDB(DatasetLoader):
         super().__init__("drugcombdb")
 
 
-# FIXME need reference
 class DrugComb(DatasetLoader):
-    """A dataset loader for DrugComb."""
+    """A dataset loader for `DrugComb <https://drugcomb.fimm.fi/>`_."""
 
     def __init__(self):
         """Instantiate the DrugComb dataset loader."""
