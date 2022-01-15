@@ -28,7 +28,7 @@
 
 **Drug Pair Scoring Explained**
 
-Our framework solves the so called [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. Deep learning models which solve this task have an architecture with two distinctive parts:
+Our framework solves the [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. Deep learning models which solve this task have an architecture with two distinctive parts:
 
 1. A drug encoder layer which takes a pair of drugs as an input (blue and red drugs below).
 2. A head layer which outputs scores in the administration context - polypharmacy in our explanatory figure.
@@ -37,6 +37,40 @@ Our framework solves the so called [drug pair scoring task](https://arxiv.org/ab
   <img width="90%" src="https://github.com/AstraZeneca/chemicalx/blob/main/images/pair_scoring.jpg?sanitize=true" />
 </p>
 
+
+**Getting Started**
+
+`chemicalx` provides a high-level function for training and evaluating models
+that's heavily influenced by the [PyKEEN](https://github.com/pykeen/pykeen/)
+training and evaluation pipeline:
+
+```python
+from chemicalx import pipeline
+from chemicalx.models import DeepSynergy
+from chemicalx.data import DrugCombDB
+
+model = DeepSynergy(context_channels=112, drug_channels=256)
+dataset = DrugCombDB()
+
+results = pipeline(
+    dataset=dataset,
+    model=model,
+    # Data arguments
+    batch_size=5120,
+    context_features=True,
+    drug_features=True,
+    drug_molecules=False,
+    labels=True,
+    # Training arguments
+    epochs=100,
+)
+
+# outputs information about the AUC-ROC, etc. to the console
+results.summarize()
+
+# save the model, losses, evaluation, and other metadata
+results.save("~/test_results/")
+```
 
 --------------------------------------------------------------------------------
 
