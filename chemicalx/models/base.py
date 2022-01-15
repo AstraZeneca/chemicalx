@@ -7,6 +7,7 @@ from torch import nn
 from chemicalx.data import DrugPairBatch
 
 __all__ = [
+    "UnimplementedModel",
     "Model",
 ]
 
