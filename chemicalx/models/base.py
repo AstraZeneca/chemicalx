@@ -31,4 +31,3 @@ class Model(nn.Module, ABC):
         :returns: A tuple that will be used as the positional arguments
             in this model's :func:`forward` method.
         """
-        raise NotImplementedError
