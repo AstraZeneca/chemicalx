@@ -24,6 +24,16 @@ jobs:
       - name: Run flake8
         run: |
           tox -e flake8
+      - name: Run doc8
+        run: |
+          tox -e doc8
+      - name: Run docstr-coverage
+        run: |
+          tox -e docstr-coverage
+      - name: Run sphinx test
+        run: |
+          sudo apt-get install graphviz
+          tox -e docs
       - name: Run test-suite
         run: |
           tox -e py

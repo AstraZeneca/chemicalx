@@ -11,8 +11,8 @@ __all__ = [
 class DeepSynergy(torch.nn.Module):
     r"""The DeepSynergy model from [deepsynergy]_.
 
-    .. [deepsynergy] `"DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning"
-    <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_
+    .. [deepsynergy] `DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning
+       <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_
     """
 
     def __init__(
