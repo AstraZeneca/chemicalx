@@ -16,7 +16,20 @@ install_requires = [
 
 setup_requires = ["pytest-runner"]
 
-tests_require = ["pytest", "pytest-cov", "mock", "unittest"]
+tests_require = ["pytest", "pytest-cov"]
+
+extras_require = {
+    "tests": tests_require,
+    "docs": [
+        "sphinx",
+        "sphinx-rtd-theme",
+        "sphinx-click",
+        "sphinx-autodoc-typehints",
+        "sphinx_automodapi",
+        "nbsphinx_link",
+        "jupyter-sphinx",
+    ],
+}
 
 keywords = [
     "drug",
@@ -48,6 +61,7 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
+    extras_require=extras_require,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

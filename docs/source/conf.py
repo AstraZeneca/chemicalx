@@ -13,12 +13,15 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
+    "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "jupyter_sphinx",
+    "sphinx_autodoc_typehints",
+    "sphinx_automodapi.automodapi",
 ]
 
 source_suffix = ".rst"
@@ -45,7 +48,7 @@ html_theme_options = {
 
 html_logo = "_static/img/chemicalx.jpg"
 html_static_path = ["_static"]
-html_context = {"css_files": ["_static/css/custom.css"]}
+# html_context = {"css_files": ["_static/css/custom.css"]}
 rst_context = {"chemicalx": chemicalx}
 
 add_module_names = False

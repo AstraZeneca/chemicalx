@@ -1,19 +1,38 @@
 """Models for ChemicalX."""
 
-from class_resolver import Resolver  # noqa:F401,F403
+from class_resolver import Resolver
 
-from .base import Model, UnimplementedModel  # noqa:F401,F403
-from .caster import *  # noqa:F401,F403
-from .deepcci import *  # noqa:F401,F403
-from .deepddi import *  # noqa:F401,F403
-from .deepdds import *  # noqa:F401,F403
-from .deepdrug import *  # noqa:F401,F403
-from .deepsynergy import *  # noqa:F401,F403
-from .epgcnds import *  # noqa:F401,F403
-from .gcnbmp import *  # noqa:F401,F403
-from .matchmaker import *  # noqa:F401,F403
-from .mhcaddi import *  # noqa:F401,F403
-from .mrgnn import *  # noqa:F401,F403
-from .ssiddi import *  # noqa:F401,F403
+from .base import Model, UnimplementedModel
+from .caster import CASTER
+from .deepcci import DeepCCI
+from .deepddi import DeepDDI
+from .deepdds import DeepDDS
+from .deepdrug import DeepDrug
+from .deepsynergy import DeepSynergy
+from .epgcnds import EPGCNDS
+from .gcnbmp import GCNBMP
+from .matchmaker import MatchMaker
+from .mhcaddi import MHCADDI
+from .mrgnn import MRGNN
+from .ssiddi import SSIDDI
+
+__all__ = [
+    "model_resolver",
+    # Base models
+    "UnimplementedModel",
+    # Implementations
+    "CASTER",
+    "DeepCCI",
+    "DeepDDI",
+    "DeepDDS",
+    "DeepDrug",
+    "DeepSynergy",
+    "EPGCNDS",
+    "GCNBMP",
+    "MatchMaker",
+    "MHCADDI",
+    "MRGNN",
+    "SSIDDI",
+]
 
 model_resolver = Resolver.from_subclasses(base=Model)

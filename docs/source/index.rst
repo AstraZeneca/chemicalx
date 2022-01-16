@@ -1,7 +1,7 @@
 :github_url: https://github.com/AstraZeneca/chemicalx
 
 ChemicalX Documentation
-===============================
+=======================
 
 
 
