@@ -18,3 +18,4 @@ python:
       - requirements: docs/requirements_1.txt
       - method: setuptools
         path: .
+   system_packages: true
