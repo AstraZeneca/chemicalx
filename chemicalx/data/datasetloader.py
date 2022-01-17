@@ -15,7 +15,7 @@ __all__ = [
     "DrugCombDB",
     "DrugComb",
     "TwoSides",
-    "DeepDDI",
+    "DrugbankDDI",
 ]
 
 
