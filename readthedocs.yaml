@@ -17,8 +17,5 @@ python:
    install:
       - requirements: docs/requirements_1.txt
       - method: setuptools
-<<<<<<< HEAD
         path: .
-=======
->>>>>>> b917b3a (RTD)
    system_packages: true
