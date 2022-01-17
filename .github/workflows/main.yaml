@@ -10,6 +10,45 @@ on:
   workflow_dispatch:
 
 jobs:
+    lint:
+      name: Lint
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [ "3.7", "3.10" ]
+          toxenv: ["manifest", "flake8", "pyroma"]
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Install dependencies
+          run: |
+            pip install --upgrade pip setuptools wheel
+            pip install tox
+        - name: Run {{ matrix.toxenv }}
+          run: tox -e {{ matrix.toxenv }}
+    docs:
+      name: Documentation
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [ "3.7", "3.10" ]
+          toxenv: [ "doc8", "docs", "docstr-coverage" ]
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Install dependencies
+          run: |
+            pip install --upgrade pip setuptools wheel
+            pip install tox
+            sudo apt-get install graphviz
+        - name: Run {{ matrix.toxenv }}
+          run: tox -e {{ matrix.toxenv }}
     build:
       runs-on: ubuntu-latest
       steps:
@@ -21,19 +60,6 @@ jobs:
       - name: Install general requirements
         run: |
           pip install tox
-      - name: Run flake8
-        run: |
-          tox -e flake8
-      - name: Run doc8
-        run: |
-          tox -e doc8
-      - name: Run docstr-coverage
-        run: |
-          tox -e docstr-coverage
-      - name: Run sphinx test
-        run: |
-          sudo apt-get install graphviz
-          tox -e docs
       - name: Run test-suite
         run: |
           tox -e py
