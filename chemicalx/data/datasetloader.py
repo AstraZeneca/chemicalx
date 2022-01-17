@@ -30,7 +30,7 @@ class DatasetLoader:
         """
         self.base_url = "https://raw.githubusercontent.com/AstraZeneca/chemicalx/main/dataset"
         self.dataset_name = dataset_name
-        assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "deepddi"]
+        assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "drugbankddi"]
 
     def generate_path(self, file_name: str) -> str:
         """
@@ -137,9 +137,9 @@ class TwoSides(DatasetLoader):
         """Instantiate the TWOSIDES dataset loader."""
         super().__init__("twosides")
 
-class DeepDDI(DatasetLoader):
-    """A dataset loader for a sample of `DeepDDI <>`_."""
+class DrugbankDDI(DatasetLoader):
+    """A dataset loader for `Drugbank DDI <>`_."""
 
     def __init__(self):
-        """Instantiate the DeepDDI dataset loader."""
-        super().__init__("deepddi")
+        """Instantiate the Drugbank DDI dataset loader."""
+        super().__init__("drugbankddi")
