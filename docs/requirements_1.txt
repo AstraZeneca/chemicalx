@@ -1,0 +1,14 @@
+tqdm
+numpy
+sphinx==4.0.2
+sphinx_rtd_theme==0.5.2
+https://download.pytorch.org/whl/cpu/torch-1.10.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
+https://data.pyg.org/whl/torch-1.10.0%2Bcpu/torch_scatter-2.0.9-cp37-cp37m-linux_x86_64.whl
+torchdrug
+sklearn
+scipy
+pandas
+six
+nbsphinx
+nbsphinx_link
+jupyter-sphinx
