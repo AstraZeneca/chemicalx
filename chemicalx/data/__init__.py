@@ -18,8 +18,8 @@ __all__ = [
     # Datasets
     "dataset_resolver",
     "DatasetLoader",
-    "DrugCombDatasetLoader",
-    "DrugCombDbDatasetLoader",
+    "DrugComb",
+    "DrugCombDB",
 ]
 
 dataset_resolver = Resolver.from_subclasses(base=DatasetLoader)
