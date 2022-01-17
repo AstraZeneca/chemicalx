@@ -122,6 +122,7 @@ class DrugCombDB(DatasetLoader):
         """Instantiate the DrugCombDB dataset loader."""
         super().__init__("drugcombdb")
 
+
 class DrugComb(DatasetLoader):
     """A dataset loader for `DrugComb <https://drugcomb.fimm.fi/>`_."""
 
@@ -129,12 +130,14 @@ class DrugComb(DatasetLoader):
         """Instantiate the DrugComb dataset loader."""
         super().__init__("drugcomb")
 
+
 class TwoSides(DatasetLoader):
     """A dataset loader for a sample of `TWOSIDES <http://tatonettilab.org/offsides/>`_."""
 
     def __init__(self):
         """Instantiate the TWOSIDES dataset loader."""
         super().__init__("twosides")
+
 
 class DrugbankDDI(DatasetLoader):
     """A dataset loader for `Drugbank DDI <https://www.pnas.org/content/115/18/E4304>`_."""

@@ -50,6 +50,7 @@ class TestDrugCombDB(unittest.TestCase):
         labeled_triples = self.dataset_loader.get_labeled_triples()
         assert labeled_triples.data.shape == (191391, 4)
 
+
 class TestDeepDDI(unittest.TestCase):
     """A test case for DeepDDI."""
 
@@ -71,6 +72,7 @@ class TestDeepDDI(unittest.TestCase):
         """Test the shape of the labeled triples."""
         labeled_triples = self.dataset_loader.get_labeled_triples()
         assert labeled_triples.data.shape == (383500, 4)
+
 
 class TestTwoSides(unittest.TestCase):
     """A test case for TwoSides."""
