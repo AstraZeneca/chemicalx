@@ -42,7 +42,7 @@ TwoSides
 * We only included the 100 most common side effects.
 * We used the cleaned dataset from the Therapeutic Data Commons.
 * Drug identifiers are represented by the DrugBank identifier.
-* Contexts are represented by the top 100 most common side effects in TwoSides.
+* Contexts are represented by the top 10 most common side effects in TwoSides.
 * Using RDKit 2021.09.03. we generated 256-dimensional Morgan fingerprints.
 * Labels represent the presence of a specific drug-drug interaction.
 * Context features are one-hot encoded binary vectors.
