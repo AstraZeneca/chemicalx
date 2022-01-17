@@ -44,7 +44,8 @@ class DeepSynergy(Model):
         self.dropout = torch.nn.Dropout(dropout_rate)
         self.scoring_head = torch.nn.Linear(final_hidden_channels, 1)
 
-    def unpack(self, batch: DrugPairBatch):  # noqa:D102
+    def unpack(self, batch: DrugPairBatch):
+        """Return the context features, left drug features, and right drug features."""
         return (
             batch.context_features,
             batch.drug_features_left,

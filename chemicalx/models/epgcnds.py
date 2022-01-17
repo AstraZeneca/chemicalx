@@ -34,7 +34,8 @@ class EPGCNDS(Model):
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
 
-    def unpack(self, batch: DrugPairBatch):  # noqa:D102
+    def unpack(self, batch: DrugPairBatch):
+        """Return the left molecular graph and right molecular graph."""
         return (
             batch.drug_molecules_left,
             batch.drug_molecules_right,
