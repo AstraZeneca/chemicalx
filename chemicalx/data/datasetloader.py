@@ -122,7 +122,6 @@ class DrugCombDB(DatasetLoader):
         """Instantiate the DrugCombDB dataset loader."""
         super().__init__("drugcombdb")
 
-
 class DrugComb(DatasetLoader):
     """A dataset loader for `DrugComb <https://drugcomb.fimm.fi/>`_."""
 
