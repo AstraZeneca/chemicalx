@@ -20,11 +20,11 @@ class BatchGenerator(Iterator[DrugPairBatch]):
 
     def __init__(
         self,
-        batch_size: int,
-        context_features: bool,
-        drug_features: bool,
-        drug_molecules: bool,
-        labels: bool,
+        batch_size: int = 128,
+        context_features: bool = True,
+        drug_features: bool = True,
+        drug_molecules: bool = True,
+        labels: bool = True,
     ):
         """Initialize a batch generator.
 
