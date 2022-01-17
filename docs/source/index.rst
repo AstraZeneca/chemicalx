@@ -19,7 +19,10 @@ ChemicalX Documentation
    :maxdepth: 2
    :caption: Notes
 
+
    notes/installation
    notes/introduction
+   notes/data_processing
    notes/resources
+
 

@@ -56,7 +56,7 @@ class TestDeepDDI(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        self.dataset_loader = DatasetLoader("deepddi")
+        self.dataset_loader = DatasetLoader("drugbankddi")
 
     def test_get_context_features(self):
         """Test the number of context features."""
