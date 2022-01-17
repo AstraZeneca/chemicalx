@@ -21,7 +21,9 @@ class EPGCNDS(Model):
        <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
     """
 
-    def __init__(self, *, in_channels: int, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1):
+    def __init__(
+        self, *, in_channels: int, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1
+    ):
         """Instantiate the EPGCN-DS model.
 
         :param in_channels: The number of molecular features.
