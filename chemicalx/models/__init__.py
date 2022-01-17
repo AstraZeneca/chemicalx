@@ -4,7 +4,6 @@ from class_resolver import Resolver
 
 from .base import Model, UnimplementedModel
 from .caster import CASTER
-from .deepcci import DeepCCI
 from .deepddi import DeepDDI
 from .deepdds import DeepDDS
 from .deepdrug import DeepDrug
@@ -22,7 +21,6 @@ __all__ = [
     "UnimplementedModel",
     # Implementations
     "CASTER",
-    "DeepCCI",
     "DeepDDI",
     "DeepDDS",
     "DeepDrug",

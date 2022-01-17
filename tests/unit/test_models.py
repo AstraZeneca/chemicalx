@@ -13,7 +13,6 @@ from chemicalx.models import (
     MHCADDI,
     MRGNN,
     SSIDDI,
-    DeepCCI,
     DeepDDI,
     DeepDDS,
     DeepDrug,
@@ -110,11 +109,6 @@ class TestModels(unittest.TestCase):
     def test_ssiddi(self):
         """Test SSIDDI."""
         model = SSIDDI(x=2)
-        assert model.x == 2
-
-    def test_deepcci(self):
-        """Test DeepCCI."""
-        model = DeepCCI(x=2)
         assert model.x == 2
 
     def test_deepddi(self):

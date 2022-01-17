@@ -10,7 +10,6 @@ from chemicalx.data import (  # noqa:F401,F403
 )
 from chemicalx.models import (  # noqa:F401,F403
     caster,
-    deepcci,
     deepddi,
     deepdds,
     deepdrug,

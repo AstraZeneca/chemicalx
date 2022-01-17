@@ -21,18 +21,21 @@ class EPGCNDS(Model):
        <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
     """
 
-    def __init__(self, *, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
+    def __init__(
+        self, *, in_channels: int = 128, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1
+    ):
         """Instantiate the EPGCN-DS model.
 
         :param in_channels: The number of molecular features.
         :param hidden_channels: The number of graph convolutional filters.
-        :param out_channels: The number of hidden layer neurons in the last layer.
+        :param middle_channels: The number of hidden layer neurons in the last layer.
+        :param out_channels: The number of output channels.
         """
         super(EPGCNDS, self).__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(in_channels, hidden_channels)
-        self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, out_channels)
+        self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
-        self.final = torch.nn.Linear(out_channels, 1)
+        self.final = torch.nn.Linear(middle_channels, out_channels)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left molecular graph and right molecular graph."""
