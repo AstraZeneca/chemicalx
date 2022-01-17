@@ -22,7 +22,7 @@ class EPGCNDS(Model):
     """
 
     def __init__(
-        self, *, in_channels: int, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1
+        self, *, in_channels: int = 128, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1
     ):
         """Instantiate the EPGCN-DS model.
 
