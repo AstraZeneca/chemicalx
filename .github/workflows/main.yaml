@@ -27,8 +27,8 @@ jobs:
           run: |
             pip install --upgrade pip setuptools wheel
             pip install tox
-        - name: Run {{ matrix.toxenv }}
-          run: tox -e {{ matrix.toxenv }}
+        - name: Run ${{ matrix.toxenv }}
+          run: tox -e ${{ matrix.toxenv }}
     docs:
       name: Documentation
       runs-on: ubuntu-latest
@@ -47,8 +47,8 @@ jobs:
             pip install --upgrade pip setuptools wheel
             pip install tox
             sudo apt-get install graphviz
-        - name: Run {{ matrix.toxenv }}
-          run: tox -e {{ matrix.toxenv }}
+        - name: Run ${{ matrix.toxenv }}
+          run: tox -e ${{ matrix.toxenv }}
     build:
       runs-on: ubuntu-latest
       steps:
