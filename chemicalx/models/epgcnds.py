@@ -1,7 +1,6 @@
 """An implementation of the EPGCN-DS model."""
 
 import torch
-import torch.nn.functional as F  # noqa:N812
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
