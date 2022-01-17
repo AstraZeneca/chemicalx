@@ -4,6 +4,7 @@ graft tests
 prune docs
 prune dataset
 prune examples
+prune data_cleaning
 prune logo_font
 prune images
 
