@@ -40,7 +40,7 @@ Our framework solves the [drug pair scoring task](https://arxiv.org/abs/2111.029
 
 **Getting Started**
 
-`chemicalx` provides a high-level function for training and evaluating models
+The API of `chemicalx` provides a high-level function for training and evaluating models
 that's heavily influenced by the [PyKEEN](https://github.com/pykeen/pykeen/)
 training and evaluation pipeline:
 
@@ -65,10 +65,10 @@ results = pipeline(
     epochs=100,
 )
 
-# outputs information about the AUC-ROC, etc. to the console
+# Outputs information about the AUC-ROC, etc. to the console.
 results.summarize()
 
-# save the model, losses, evaluation, and other metadata
+# Save the model, losses, evaluation, and other metadata.
 results.save("~/test_results/")
 ```
 
@@ -96,10 +96,6 @@ If you find *ChemicalX* and the new datasets useful in your research, please con
 **Methods Included**
 
 In detail, the following drug pair scoring models were implemented.
-
-**2017**
-
-* **[DeepCCI](https://chemicalx.readthedocs.io/en/latest/modules/root.html#chemicalx.models.deepcci.DeepCCI)** from [DeepCCI: End-to-end Deep Learning for Chemical-Chemical Interaction Prediction](https://arxiv.org/abs/1704.08432) (ACM BCB)
 
 **2018**
 
