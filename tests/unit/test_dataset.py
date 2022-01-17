@@ -89,7 +89,7 @@ class TestTwoSides(unittest.TestCase):
     def test_get_drug_features(self):
         """Test the number of drug features."""
         drug_feature_set = self.dataset_loader.get_drug_features()
-        assert len(drug_feature_set) == 638
+        assert len(drug_feature_set) == 644
 
     def test_get_labeled_triples(self):
         """Test the shape of the labeled triples."""
