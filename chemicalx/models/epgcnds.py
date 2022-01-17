@@ -3,7 +3,8 @@
 import torch
 import torch.nn.functional as F  # noqa:N812
 from torchdrug.data import PackedGraph
-from torchdrug.layers import GraphConv, MeanReadout
+from torchdrug.layers import MeanReadout
+from torchdrug.models import GraphConvolutionalNetwork
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -32,8 +33,8 @@ class EPGCNDS(Model):
         :param out_channels: The number of output channels.
         """
         super(EPGCNDS, self).__init__()
-        self.graph_convolution_in = GraphConv(in_channels, hidden_channels)
-        self.graph_convolution_out = GraphConv(hidden_channels, middle_channels)
+        self.graph_convolution_in = GraphConvolutionalNetwork(in_channels, hidden_channels)
+        self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(middle_channels, out_channels)
 
@@ -61,14 +62,8 @@ class EPGCNDS(Model):
             "node_feature"
         ]
 
-        features_left = F.relu(features_left)
-        features_right = F.relu(features_right)
-
         features_left = self.graph_convolution_out(molecules_left, features_left)["node_feature"]
         features_right = self.graph_convolution_out(molecules_right, features_right)["node_feature"]
-
-        features_left = F.relu(features_left)
-        features_right = F.relu(features_right)
 
         features_left = self.mean_readout(molecules_left, features_left)
         features_right = self.mean_readout(molecules_right, features_right)
