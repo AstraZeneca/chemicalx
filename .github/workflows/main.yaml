@@ -10,48 +10,54 @@ on:
   workflow_dispatch:
 
 jobs:
-    lint:
-      name: Lint
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          python-version: [ "3.7", "3.10" ]
-          toxenv: ["manifest", "flake8", "pyroma"]
-      steps:
-        - uses: actions/checkout@v2
-        - name: Set up Python ${{ matrix.python-version }}
-          uses: actions/setup-python@v2
-          with:
-            python-version: ${{ matrix.python-version }}
-        - name: Install dependencies
-          run: |
-            pip install --upgrade pip setuptools wheel
-            pip install tox
-        - name: Run ${{ matrix.toxenv }}
-          run: tox -e ${{ matrix.toxenv }}
-    docs:
-      name: Documentation
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          python-version: [ "3.7", "3.10" ]
-          toxenv: [ "doc8", "docs", "docstr-coverage" ]
-      steps:
-        - uses: actions/checkout@v2
-        - name: Set up Python ${{ matrix.python-version }}
-          uses: actions/setup-python@v2
-          with:
-            python-version: ${{ matrix.python-version }}
-        - name: Install dependencies
-          run: |
-            pip install --upgrade pip setuptools wheel
-            pip install tox
-            sudo apt-get install graphviz
-        - name: Run ${{ matrix.toxenv }}
-          run: tox -e ${{ matrix.toxenv }}
-    build:
-      runs-on: ubuntu-latest
-      steps:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.7" ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install tox
+      - name: Check manifest
+        run: tox -e manifest
+      - name: Check package metadata
+        run: tox -e pyroma
+      - name: Check code quality
+        run: tox -e flake8
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.7" ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install tox
+          sudo apt-get install graphviz
+      - name: Lint documentation
+        run: tox -e doc8
+      - name: Check documentation coverage
+        run: tox -e docstr-coverage
+      - name: Check documentation build
+        run: tox -e docs
+  build:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
