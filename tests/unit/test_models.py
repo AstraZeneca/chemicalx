@@ -1,9 +1,12 @@
 """Tests for models."""
 
+import inspect
 import unittest
 
 import torch
+from class_resolver import Resolver
 
+import chemicalx.models
 from chemicalx import pipeline
 from chemicalx.data import BatchGenerator, DatasetLoader
 from chemicalx.models import (
@@ -18,6 +21,9 @@ from chemicalx.models import (
     DeepDrug,
     DeepSynergy,
     MatchMaker,
+    Model,
+    UnimplementedModel,
+    model_resolver,
 )
 
 
@@ -54,6 +60,40 @@ class TestPipeline(unittest.TestCase):
             labels=True,
         )
         self.assertIsInstance(results.roc_auc, float)
+
+
+class MetaModelTestCase(unittest.TestCase):
+    """Test model properties."""
+
+    def test_inheritance(self):
+        """Test that all models inherit from the correct class."""
+        for name, model_cls in vars(chemicalx.models).items():
+            if not isinstance(model_cls, type) or model_cls is Resolver:
+                continue
+            with self.subTest(name=name):
+                self.assertTrue(
+                    issubclass(model_cls, (Model, UnimplementedModel)),
+                    msg=f"Model {model_cls} does not inherit from the base model class `chemicalx.models.Model`",
+                )
+
+    def test_defaults(self):
+        """Test that all models have default values for all arguments."""
+        for model_cls in model_resolver:
+            with self.subTest(name=model_cls.__name__):
+                signature = inspect.signature(model_cls.__init__)
+                missing = {
+                    name
+                    for name, param in signature.parameters.items()
+                    if param.name != "self" and param.default is inspect.Parameter.empty
+                }
+                self.assertEqual(0, len(missing), msg=f"Missing default parameters for: {missing}")
+                positional = {
+                    name
+                    for name, param in signature.parameters.items()
+                    if param.name != "self"
+                    and param.kind in {inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD}
+                }
+                self.assertEqual(0, len(positional), msg=f"Arguments should be kwarg only: {positional}")
 
 
 class TestModels(unittest.TestCase):
