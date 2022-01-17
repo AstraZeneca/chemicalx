@@ -4,7 +4,7 @@ from class_resolver import Resolver
 
 from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
-from .datasetloader import DatasetLoader, DrugCombDatasetLoader, DrugCombDbDatasetLoader
+from .datasetloader import DatasetLoader, DrugComb, DrugCombDB
 from .drugfeatureset import DrugFeatureSet
 from .drugpairbatch import DrugPairBatch
 from .labeledtriples import LabeledTriples
@@ -18,8 +18,8 @@ __all__ = [
     # Datasets
     "dataset_resolver",
     "DatasetLoader",
-    "DrugCombDatasetLoader",
-    "DrugCombDbDatasetLoader",
+    "DrugComb",
+    "DrugCombDB",
 ]
 
 dataset_resolver = Resolver.from_subclasses(base=DatasetLoader)

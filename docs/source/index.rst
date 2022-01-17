@@ -11,6 +11,7 @@ ChemicalX Documentation
    :caption: Package Reference
 
    modules/root
+   modules/pipeline
 
 
 .. toctree::

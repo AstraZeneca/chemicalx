@@ -2,7 +2,7 @@
 
 from class_resolver import Resolver
 
-from .base import UnimplementedModel
+from .base import Model, UnimplementedModel
 from .caster import CASTER
 from .deepcci import DeepCCI
 from .deepddi import DeepDDI
@@ -35,4 +35,4 @@ __all__ = [
     "SSIDDI",
 ]
 
-model_resolver = Resolver.from_subclasses(base=UnimplementedModel)
+model_resolver = Resolver.from_subclasses(base=Model)

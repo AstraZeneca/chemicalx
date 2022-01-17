@@ -12,8 +12,8 @@ import chemicalx
 
 __all__ = [
     "DatasetLoader",
-    "DrugCombDbDatasetLoader",
-    "DrugCombDatasetLoader",
+    "DrugCombDB",
+    "DrugComb",
 ]
 
 
@@ -113,7 +113,7 @@ class DatasetLoader:
         return labeled_triples
 
 
-class DrugCombDbDatasetLoader(DatasetLoader):
+class DrugCombDB(DatasetLoader):
     """A dataset loader for `DrugCombDB <http://drugcombdb.denglab.org>`_."""
 
     def __init__(self):
@@ -121,9 +121,8 @@ class DrugCombDbDatasetLoader(DatasetLoader):
         super().__init__("drugcombdb")
 
 
-# FIXME need reference
-class DrugCombDatasetLoader(DatasetLoader):
-    """A dataset loader for DrugComb."""
+class DrugComb(DatasetLoader):
+    """A dataset loader for `DrugComb <https://drugcomb.fimm.fi/>`_."""
 
     def __init__(self):
         """Instantiate the DrugComb dataset loader."""

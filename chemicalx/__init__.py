@@ -22,4 +22,5 @@ from chemicalx.models import (  # noqa:F401,F403
     mrgnn,
     ssiddi,
 )
+from chemicalx.pipeline import Result, pipeline  # noqa:F401,F403
 from chemicalx.version import __version__  # noqa:F401,F403

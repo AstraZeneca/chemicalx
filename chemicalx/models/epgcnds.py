@@ -5,12 +5,15 @@ from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
 
+from chemicalx.data import DrugPairBatch
+from chemicalx.models import Model
+
 __all__ = [
     "EPGCNDS",
 ]
 
 
-class EPGCNDS(torch.nn.Module):
+class EPGCNDS(Model):
     r"""The EPGCN-DS model from [epgcnds]_.
 
     .. [epgcnds] `Structure-Based Drug-Drug Interaction Detection
@@ -18,7 +21,7 @@ class EPGCNDS(torch.nn.Module):
        <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
     """
 
-    def __init__(self, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
+    def __init__(self, *, in_channels: int, hidden_channels: int = 32, out_channels: int = 16):
         """Instantiate the EPGCN-DS model.
 
         :param in_channels: The number of molecular features.
@@ -30,6 +33,13 @@ class EPGCNDS(torch.nn.Module):
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, out_channels)
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(out_channels, 1)
+
+    def unpack(self, batch: DrugPairBatch):
+        """Return the left molecular graph and right molecular graph."""
+        return (
+            batch.drug_molecules_left,
+            batch.drug_molecules_right,
+        )
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
