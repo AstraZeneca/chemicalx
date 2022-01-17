@@ -3,7 +3,7 @@ import random
 import rdkit
 import heapq
 import numpy as np
-import pandas as pd  
+import pandas as pd
 from tqdm import tqdm
 
 from rdkit.Chem import AllChem
@@ -13,7 +13,7 @@ from tdc.multi_pred import DDI
 
 from collections import Counter
 
-DDI(name = "TWOSIDES")
+DDI(name="TWOSIDES")
 
 positive_samples = pd.read_csv("./data/twosides.csv", sep=",")
 
@@ -23,11 +23,11 @@ context_counts = Counter(positive_samples["Side Effect Name"].values.tolist())
 
 print(context_counts)
 
-contexts = heapq.nlargest(10, context_counts , key=context_counts.get)
+contexts = heapq.nlargest(10, context_counts, key=context_counts.get)
 
 print(contexts)
 
-positive_samples  = positive_samples[positive_samples["Side Effect Name"].isin(contexts)]
+positive_samples = positive_samples[positive_samples["Side Effect Name"].isin(contexts)]
 
 print(positive_samples.shape)
 
@@ -48,7 +48,7 @@ print(len(contexts))
 negative_samples = []
 
 labeled_triples = positive_samples[["ID1", "ID2", "Y"]]
-labeled_triples.columns = ["drug_1","drug_2","context"]
+labeled_triples.columns = ["drug_1", "drug_2", "context"]
 labeled_triples["label"] = 1.0
 
 for _ in tqdm(range(len(positive_samples.values.tolist()))):
@@ -61,7 +61,7 @@ for _ in tqdm(range(len(positive_samples.values.tolist()))):
     negative_sample = [drug_1, drug_2, context, 0.0]
     negative_samples.append(negative_sample)
 
-negative_samples = pd.DataFrame(negative_samples, columns = ["drug_1","drug_2","context", "label"])
+negative_samples = pd.DataFrame(negative_samples, columns=["drug_1", "drug_2", "context", "label"])
 
 labeled_triples = pd.concat([labeled_triples, negative_samples])
 
@@ -71,7 +71,7 @@ labeled_triples.to_csv("labeled_triples.csv", index=None)
 
 drug_set = {}
 for drug, smiles in drugs_raw.items():
-    drug_set[drug] ={}
+    drug_set[drug] = {}
     drug_set[drug]["smiles"] = smiles
     molecule = rdkit.Chem.MolFromSmiles(smiles)
     features = AllChem.GetHashedMorganFingerprint(molecule, 2, nBits=256)
@@ -80,17 +80,19 @@ for drug, smiles in drugs_raw.items():
     drug_features = array.tolist()
     drug_set[drug]["features"] = drug_features
 
-with open("drug_set.json","w") as f:
+with open("drug_set.json", "w") as f:
     json.dump(drug_set, f)
 
 context_count = len(contexts)
 
+
 def map_context(index, countext_count):
     context_vector = [0 for i in range(countext_count)]
-    context_vector[index] =  1
+    context_vector[index] = 1
     return context_vector
+
 
 context_set = {context: map_context(i, context_count) for i, context in enumerate(contexts)}
 
-with open("context_set.json","w") as f:
+with open("context_set.json", "w") as f:
     json.dump(context_set, f)
