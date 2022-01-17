@@ -54,7 +54,7 @@ setup(
     license="Apache License, Version 2.0",
     description="A Deep Learning Library for Drug Pair Scoring.",
     author="Benedek Rozemberczki and Charles Hoyt",
-    author_email="",
+    author_email="benedek.rozemberczki@gmail.com",
     url="https://github.com/AstraZeneca/chemicalx",
     download_url="https://github.com/AstraZeneca/chemicalx/archive/v0.0.8.tar.gz",
     keywords=keywords,
@@ -68,5 +68,7 @@ setup(
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
 )

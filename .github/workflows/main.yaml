@@ -10,9 +10,54 @@ on:
   workflow_dispatch:
 
 jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.7" ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install tox
+      - name: Check manifest
+        run: tox -e manifest
+      - name: Check package metadata
+        run: tox -e pyroma
+      - name: Check code quality
+        run: tox -e flake8
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.7" ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install tox
+          sudo apt-get install graphviz
+      - name: Lint documentation
+        run: tox -e doc8
+      - name: Check documentation coverage
+        run: tox -e docstr-coverage
+      - name: Check documentation build
+        run: tox -e docs
+  build:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
@@ -21,19 +66,6 @@ jobs:
       - name: Install general requirements
         run: |
           pip install tox
-      - name: Run flake8
-        run: |
-          tox -e flake8
-      - name: Run doc8
-        run: |
-          tox -e doc8
-      - name: Run docstr-coverage
-        run: |
-          tox -e docstr-coverage
-      - name: Run sphinx test
-        run: |
-          sudo apt-get install graphviz
-          tox -e docs
       - name: Run test-suite
         run: |
           tox -e py
