@@ -26,6 +26,7 @@ class DeepSynergy(Model):
         input_hidden_channels: int = 32,
         middle_hidden_channels: int = 32,
         final_hidden_channels: int = 32,
+        out_channels: int = 1,
         dropout_rate: float = 0.5,
     ):
         """Instantiate the DeepSynergy model.
@@ -35,6 +36,7 @@ class DeepSynergy(Model):
         :param input_hidden_channels: The number of hidden layer neurons in the input layer.
         :param middle_hidden_channels: The number of hidden layer neurons in the middle layer.
         :param final_hidden_channels: The number of hidden layer neurons in the final layer.
+        :param out_channels: The number of output channels.
         :param dropout_rate: The rate of dropout before the scoring head is used.
         """
         super(DeepSynergy, self).__init__()
@@ -42,7 +44,7 @@ class DeepSynergy(Model):
         self.hidden_first = torch.nn.Linear(input_hidden_channels, middle_hidden_channels)
         self.hidden_second = torch.nn.Linear(middle_hidden_channels, final_hidden_channels)
         self.dropout = torch.nn.Dropout(dropout_rate)
-        self.scoring_head = torch.nn.Linear(final_hidden_channels, 1)
+        self.scoring_head = torch.nn.Linear(final_hidden_channels, out_channels)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features, and right drug features."""
