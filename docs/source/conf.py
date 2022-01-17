@@ -24,8 +24,6 @@ extensions = [
     "sphinx_automodapi.automodapi",
 ]
 
-autodoc_mock_imports = ["torchdrug", "torch", "torch-scatter"]
-
 source_suffix = ".rst"
 master_doc = "index"
 
