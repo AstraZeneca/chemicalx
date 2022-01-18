@@ -1,5 +1,4 @@
-"""
-An implementation of the DeepDDS model:
+"""An implementation of the DeepDDS model.
 
 DeepDDS: deep graph neural network with attention mechanism to predict
 synergistic drug combinations
@@ -40,6 +39,7 @@ class DeepDDS(Model):
        mechanism to predict synergistic drug combinations <http://arxiv.org/abs/2107.02467>`_.
        *arXiv*, 2107.02467.
     """
+
     # todo: implement the GAT version of the model as well
 
     def __init__(
@@ -48,8 +48,15 @@ class DeepDDS(Model):
         context_feature_size: int,
         context_output_size: int,
         in_channels: int,
-        dropout: float = 0.2,
+        dropout: float = 0.2,  # Rate used in paper
     ):
+        """Instantiate the DeepDDS model.
+
+        :param context_feature_size:
+        :param context_output_size:
+        :param in_channels:
+        :param dropout:
+        """
         super(DeepDDS, self).__init__()
         self.cell_mlp = MLP(input_dim=context_feature_size, hidden_dims=[2048, 512, context_output_size])
         self.conv_left = GraphConvolutionalNetwork(in_channels, [in_channels, in_channels * 2, in_channels * 4])
@@ -61,11 +68,21 @@ class DeepDDS(Model):
         self.mlp_final = MLP(context_output_size * 3, [1024, 512, 128, 1], dropout=dropout)
 
     def unpack(self, batch: DrugPairBatch):
+        """Return the context features, left drug features and right drug features."""
         return batch.context_features, batch.drug_molecules_left, batch.drug_molecules_right
 
     def forward(
         self, context_features: torch.FloatTensor, molecules_left: PackedGraph, molecules_right: PackedGraph
     ) -> torch.FloatTensor:
+        """Run a forward pass of the DeeDDS model.
+
+        Args:
+            context_features (torch.FloatTensor): A matrix of cell line features
+            molecules_left (torch.FloatTensor): A matrix of left drug features
+            molecules_right (torch.FloatTensor): A matrix of right drug features
+        Returns:
+            (torch.FloarTensor): A column vector of predicted synergy scores
+        """
         # Run the MLP forward
         mlp_out = self.cell_mlp(normalize(context_features, p=2, dim=1))
 
