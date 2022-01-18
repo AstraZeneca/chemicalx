@@ -18,6 +18,7 @@ from .ssiddi import SSIDDI
 __all__ = [
     "model_resolver",
     # Base models
+    "Model",
     "UnimplementedModel",
     # Implementations
     "CASTER",

@@ -8,7 +8,7 @@ from class_resolver import Resolver
 
 import chemicalx.models
 from chemicalx import pipeline
-from chemicalx.data import BatchGenerator, DatasetLoader
+from chemicalx.data import BatchGenerator, DatasetLoader, DrugCombDB
 from chemicalx.models import (
     CASTER,
     EPGCNDS,
@@ -30,11 +30,16 @@ from chemicalx.models import (
 class TestPipeline(unittest.TestCase):
     """Test the unified training and evaluation pipeline."""
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up the test case with a dataset."""
+        cls.loader = DrugCombDB()
+
     def test_train_context(self):
         """Test training and evaluating on a model that uses context in its forward function."""
-        model = DeepSynergy(context_channels=112, drug_channels=256)
+        model = DeepSynergy(context_channels=self.loader.context_channels, drug_channels=self.loader.drug_channels)
         results = pipeline(
-            dataset="drugcombdb",
+            dataset=self.loader,
             model=model,
             batch_size=5120,
             epochs=1,
@@ -47,9 +52,9 @@ class TestPipeline(unittest.TestCase):
 
     def test_train_contextless(self):
         """Test training and evaluating on a model that does not use context in its forward function."""
-        model = EPGCNDS(drug_channels=69)
+        model = EPGCNDS(drug_channels=self.loader.drug_channels)
         results = pipeline(
-            dataset="drugcombdb",
+            dataset=self.loader,
             model=model,
             optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
             batch_size=1024,
@@ -100,9 +105,13 @@ class MetaModelTestCase(unittest.TestCase):
 class TestModels(unittest.TestCase):
     """A test case for models."""
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up the test case with a dataset."""
+        cls.loader = DatasetLoader("drugcomb")
+
     def setUp(self):
         """Set up the test case."""
-        self.loader = DatasetLoader("drugcomb")
         drug_feature_set = self.loader.get_drug_features()
         context_feature_set = self.loader.get_context_features()
         labeled_triples = self.loader.get_labeled_triples()
