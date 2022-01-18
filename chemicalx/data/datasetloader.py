@@ -4,6 +4,7 @@ import io
 import json
 import urllib.request
 from functools import lru_cache
+from textwrap import dedent
 from typing import Dict
 
 import numpy as np
@@ -87,6 +88,16 @@ class DatasetLoader:
         context_feature_set.update(raw_data)
         return context_feature_set
 
+    @property
+    def num_contexts(self) -> int:
+        """Get the number of contexts."""
+        return len(self.get_context_features())
+
+    @property
+    def context_channels(self) -> int:
+        """Get the number of features for each context."""
+        return next(iter(self.get_context_features().values())).shape[1]
+
     @lru_cache(maxsize=1)
     def get_drug_features(self):
         """
@@ -104,6 +115,16 @@ class DatasetLoader:
         drug_feature_set.update(raw_data)
         return drug_feature_set
 
+    @property
+    def num_drugs(self) -> int:
+        """Get the number of drugs."""
+        return len(self.get_drug_features())
+
+    @property
+    def drug_channels(self) -> int:
+        """Get the number of features for each drug."""
+        return next(iter(self.get_drug_features().values()))["features"].shape[1]
+
     @lru_cache(maxsize=1)
     def get_labeled_triples(self):
         """
@@ -117,6 +138,26 @@ class DatasetLoader:
         labeled_triples = chemicalx.data.LabeledTriples()
         labeled_triples.update_from_pandas(raw_data)
         return labeled_triples
+
+    @property
+    def num_labeled_triples(self) -> int:
+        """Get the number of labeled triples."""
+        return len(self.get_labeled_triples())
+
+    def summarize(self) -> None:
+        """Summarize the dataset."""
+        print(
+            dedent(
+                f"""\
+            Name: {self.dataset_name}
+            Contexts: {self.num_contexts}
+            Context Feature Size: {self.context_channels}
+            Drugs: {self.num_drugs}
+            Drug Feature Size: {self.drug_channels}
+            Triples: {self.num_labeled_triples}
+        """
+            )
+        )
 
 
 class DrugCombDB(DatasetLoader):
