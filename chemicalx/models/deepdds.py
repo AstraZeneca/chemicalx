@@ -40,6 +40,7 @@ class DeepDDS(Model):
        mechanism to predict synergistic drug combinations <http://arxiv.org/abs/2107.02467>`_.
        *arXiv*, 2107.02467.
     """
+    # todo: implement the GAT version of the model as well
 
     def __init__(
         self,
