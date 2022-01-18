@@ -3,6 +3,7 @@
 import io
 import json
 import urllib.request
+from functools import lru_cache
 from typing import Dict
 
 import numpy as np
@@ -71,6 +72,7 @@ class DatasetLoader:
         raw_data = pd.read_csv(io.BytesIO(data_bytes), encoding="utf8", sep=",", dtype=types)
         return raw_data
 
+    @lru_cache(maxsize=1)
     def get_context_features(self):
         """
         Get the context feature set.
@@ -85,6 +87,7 @@ class DatasetLoader:
         context_feature_set.update(raw_data)
         return context_feature_set
 
+    @lru_cache(maxsize=1)
     def get_drug_features(self):
         """
         Get the drug feature set.
@@ -101,6 +104,7 @@ class DatasetLoader:
         drug_feature_set.update(raw_data)
         return drug_feature_set
 
+    @lru_cache(maxsize=1)
     def get_labeled_triples(self):
         """
         Get the labeled triples file from the storage.
