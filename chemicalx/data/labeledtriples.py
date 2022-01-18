@@ -17,6 +17,10 @@ class LabeledTriples:
         self.types = {"drug_1": str, "drug_2": str, "context": str, "label": float}
         self.data = pd.DataFrame(columns=self.columns).astype(self.types)
 
+    def __len__(self) -> int:
+        """Get the number of triples."""
+        return len(self.data.index)
+
     def drop_duplicates(self):
         """Drop the duplicated entries."""
         self.data = self.data.drop_duplicates()
