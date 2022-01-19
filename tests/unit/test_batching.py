@@ -41,5 +41,5 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
         for batch in generator:
             assert batch.drug_features_left is None
             assert batch.drug_molecules_left is None
-            assert batch.labels is None
+            assert batch.labels is not None
             assert batch.context_features is None
