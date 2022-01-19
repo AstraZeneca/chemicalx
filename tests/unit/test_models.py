@@ -8,7 +8,7 @@ from class_resolver import Resolver
 
 import chemicalx.models
 from chemicalx import pipeline
-from chemicalx.data import BatchGenerator, DatasetLoader
+from chemicalx.data import BatchGenerator, DatasetLoader, DrugCombDB
 from chemicalx.models import (
     CASTER,
     EPGCNDS,
@@ -30,11 +30,16 @@ from chemicalx.models import (
 class TestPipeline(unittest.TestCase):
     """Test the unified training and evaluation pipeline."""
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up the test case with a dataset."""
+        cls.loader = DrugCombDB()
+
     def test_train_context(self):
         """Test training and evaluating on a model that uses context in its forward function."""
-        model = DeepSynergy(context_channels=112, drug_channels=256)
+        model = DeepSynergy(context_channels=self.loader.context_channels, drug_channels=self.loader.drug_channels)
         results = pipeline(
-            dataset="drugcombdb",
+            dataset=self.loader,
             model=model,
             batch_size=5120,
             epochs=1,
@@ -47,9 +52,9 @@ class TestPipeline(unittest.TestCase):
 
     def test_train_contextless(self):
         """Test training and evaluating on a model that does not use context in its forward function."""
-        model = EPGCNDS(in_channels=69)
+        model = EPGCNDS()
         results = pipeline(
-            dataset="drugcombdb",
+            dataset=self.loader,
             model=model,
             optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
             batch_size=1024,
@@ -78,19 +83,20 @@ class MetaModelTestCase(unittest.TestCase):
 
     def test_defaults(self):
         """Test that all models have default values for all arguments."""
+        skip = {"self", "drug_channels", "context_channels"}
         for model_cls in model_resolver:
             with self.subTest(name=model_cls.__name__):
                 signature = inspect.signature(model_cls.__init__)
                 missing = {
                     name
                     for name, param in signature.parameters.items()
-                    if param.name != "self" and param.default is inspect.Parameter.empty
+                    if param.name not in skip and param.default is inspect.Parameter.empty
                 }
                 self.assertEqual(0, len(missing), msg=f"Missing default parameters for: {missing}")
                 positional = {
                     name
                     for name, param in signature.parameters.items()
-                    if param.name != "self"
+                    if param.name not in skip
                     and param.kind in {inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD}
                 }
                 self.assertEqual(0, len(positional), msg=f"Arguments should be kwarg only: {positional}")
@@ -99,12 +105,16 @@ class MetaModelTestCase(unittest.TestCase):
 class TestModels(unittest.TestCase):
     """A test case for models."""
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up the test case with a dataset."""
+        cls.loader = DatasetLoader("drugcomb")
+
     def setUp(self):
         """Set up the test case."""
-        loader = DatasetLoader("drugcomb")
-        drug_feature_set = loader.get_drug_features()
-        context_feature_set = loader.get_context_features()
-        labeled_triples = loader.get_labeled_triples()
+        drug_feature_set = self.loader.get_drug_features()
+        context_feature_set = self.loader.get_context_features()
+        labeled_triples = self.loader.get_labeled_triples()
         labeled_triples, _ = labeled_triples.train_test_split(train_size=0.005)
         self.generator = BatchGenerator(
             batch_size=32, context_features=True, drug_features=True, drug_molecules=True, labels=True
@@ -118,7 +128,7 @@ class TestModels(unittest.TestCase):
 
     def test_epgcnds(self):
         """Test EPGCNDS."""
-        model = EPGCNDS(in_channels=69)
+        model = EPGCNDS()
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()
@@ -164,8 +174,8 @@ class TestModels(unittest.TestCase):
     def test_deepsynergy(self):
         """Test DeepSynergy."""
         model = DeepSynergy(
-            context_channels=288,
-            drug_channels=256,
+            context_channels=self.loader.context_channels,
+            drug_channels=self.loader.drug_channels,
             input_hidden_channels=32,
             middle_hidden_channels=16,
             final_hidden_channels=16,

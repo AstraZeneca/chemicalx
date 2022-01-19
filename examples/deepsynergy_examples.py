@@ -1,14 +1,16 @@
 """Example with DeepSynergy."""
 
 from chemicalx import pipeline
+from chemicalx.data import DrugCombDB
 from chemicalx.models import DeepSynergy
 
 
 def main():
     """Train and evaluate the DeepSynergy model."""
-    model = DeepSynergy(context_channels=112, drug_channels=256)
+    dataset = DrugCombDB()
+    model = DeepSynergy(context_channels=dataset.context_channels, drug_channels=dataset.drug_channels)
     results = pipeline(
-        dataset="drugcombdb",
+        dataset=dataset,
         model=model,
         batch_size=5120,
         epochs=100,

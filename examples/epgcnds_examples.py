@@ -1,14 +1,16 @@
 """Example with EPGCNDS."""
 
 from chemicalx import pipeline
+from chemicalx.data import DrugCombDB
 from chemicalx.models import EPGCNDS
 
 
 def main():
     """Train and evaluate the EPGCNDS model."""
-    model = EPGCNDS(in_channels=69)
+    dataset = DrugCombDB()
+    model = EPGCNDS()
     results = pipeline(
-        dataset="drugcombdb",
+        dataset=dataset,
         model=model,
         optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
         batch_size=1024,
