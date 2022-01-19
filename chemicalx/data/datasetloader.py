@@ -45,7 +45,8 @@ class DatasetLoader:
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        **kwargs,
+        train_size: Optional[float] = None,
+        random_state: Optional[int] = None,
     ) -> Tuple[BatchGenerator, BatchGenerator]:
         """Generate a pre-stratified pair of batch generators."""
         return cast(
@@ -58,7 +59,10 @@ class DatasetLoader:
                     drug_molecules=drug_molecules,
                     labeled_triples=labeled_triples,
                 )
-                for labeled_triples in self.get_labeled_triples().train_test_split(**kwargs)
+                for labeled_triples in self.get_labeled_triples().train_test_split(
+                    train_size=train_size,
+                    random_state=random_state,
+                )
             ),
         )
 
@@ -188,10 +192,8 @@ class DatasetLoader:
             labeled_triples (LabeledTriples): The labeled triples in the dataset.
         """
         path = self.generate_path("labeled_triples.csv")
-        raw_data = self.load_raw_csv_data(path)
-        labeled_triples = LabeledTriples()
-        labeled_triples.update_from_pandas(raw_data)
-        return labeled_triples
+        df = self.load_raw_csv_data(path)
+        return LabeledTriples(df)
 
     @property
     def num_labeled_triples(self) -> int:

@@ -126,17 +126,14 @@ class TestLabeledTriples(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        self.labeled_triples = LabeledTriples()
-        self.other_labeled_triples = LabeledTriples()
-
         data = pd.DataFrame(
             [["drug_a", "drug_b", "context_a", 1.0], ["drug_b", "drug_c", "context_b", 0.0]],
             columns=["drug_1", "drug_2", "context", "label"],
         )
-        self.labeled_triples.update_from_pandas(data)
+        self.labeled_triples = LabeledTriples(data)
 
         data = [["drug_a", "drug_b", "context_a", 1.0], ["drug_a", "drug_c", "context_b", 0.0]]
-        self.other_labeled_triples.update_from_list(data)
+        self.other_labeled_triples = LabeledTriples(data)
 
     def test_from_pandas(self):
         """Test loading from pandas."""
