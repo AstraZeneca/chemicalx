@@ -7,9 +7,9 @@ from functools import lru_cache
 from textwrap import dedent
 from typing import Dict, Optional, Tuple, cast
 
-import torch
 import numpy as np
 import pandas as pd
+import torch
 
 from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
@@ -168,11 +168,10 @@ class DatasetLoader:
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {
-            k: {"smiles": v["smiles"], "features": np.array(v["features"]).reshape(1, -1)} for k, v in raw_data.items()
+            key: {"smiles": value["smiles"], "features": np.array(value["features"]).reshape(1, -1)}
+            for key, value in raw_data.items()
         }
-        drug_feature_set = DrugFeatureSet()
-        drug_feature_set.update(raw_data)
-        return drug_feature_set
+        return DrugFeatureSet.from_dict(raw_data)
 
     @property
     def num_drugs(self) -> int:

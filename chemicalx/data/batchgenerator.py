@@ -30,7 +30,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         labels: bool,
         context_feature_set: Optional[ContextFeatureSet],
         drug_feature_set: Optional[DrugFeatureSet],
-        labeled_triples: Optional[LabeledTriples],
+        labeled_triples: LabeledTriples,
     ):
         """Initialize a batch generator.
 

@@ -2,6 +2,7 @@
 
 import inspect
 import unittest
+from typing import ClassVar
 
 import torch
 from class_resolver import Resolver
@@ -29,6 +30,8 @@ from chemicalx.models import (
 
 class TestPipeline(unittest.TestCase):
     """Test the unified training and evaluation pipeline."""
+
+    loader: ClassVar[DatasetLoader]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -104,6 +107,8 @@ class MetaModelTestCase(unittest.TestCase):
 
 class TestModels(unittest.TestCase):
     """A test case for models."""
+
+    loader: ClassVar[DatasetLoader]
 
     @classmethod
     def setUpClass(cls) -> None:

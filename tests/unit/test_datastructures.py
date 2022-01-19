@@ -5,6 +5,8 @@ import unittest
 import numpy as np
 import pandas as pd
 import torch
+from torchdrug.data import Molecule
+
 from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
@@ -63,15 +65,17 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        self.drug_feature_set = DrugFeatureSet()
-        self.drug_feature_set["drug_1"] = {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])}
-        self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])}
+        self.drug_feature_set = DrugFeatureSet.from_dict(
+            {
+                "drug_1": {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])},
+                "drug_2": {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])},
+            }
+        )
 
     def test_get(self):
         """Test getting data."""
         assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
         assert "drug_2" in self.drug_feature_set
-        assert self.drug_feature_set.has_drug("drug_2")
 
     def test_delete(self):
         """Test deleting data."""
@@ -85,19 +89,17 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_drug_features(self):
         """Get the number of elements."""
+        assert len(self.drug_feature_set) == 2
         assert len(list(self.drug_feature_set.keys())) == 2
         assert len(list(self.drug_feature_set.values())) == 2
         assert len(list(self.drug_feature_set.items())) == 2
 
-    def test_basic_statistics(self):
-        """Test the number of drugs."""
-        assert self.drug_feature_set.get_drug_count() == 2
-
     def test_update_and_delete(self):
         """Test updating and deleting entries."""
-        self.drug_feature_set.update(
-            {"drug_3": {"smiles": " CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "features": np.array([[1.1, 2.2, 3.4]])}}
-        )
+        self.drug_feature_set["drug_3"] = {
+            "molecule": Molecule.from_smiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C"),
+            "features": torch.FloatTensor(np.array([[1.1, 2.2, 3.4]])),
+        }
         assert len(self.drug_feature_set) == 3
         del self.drug_feature_set["drug_3"]
         assert len(self.drug_feature_set) == 2
