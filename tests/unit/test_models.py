@@ -2,6 +2,7 @@
 
 import inspect
 import unittest
+from typing import ClassVar
 
 import torch
 from class_resolver import Resolver
@@ -30,6 +31,8 @@ from chemicalx.models import (
 class TestPipeline(unittest.TestCase):
     """Test the unified training and evaluation pipeline."""
 
+    loader: ClassVar[DatasetLoader]
+
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case with a dataset."""
@@ -46,7 +49,6 @@ class TestPipeline(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=False,
-            labels=True,
         )
         self.assertIsInstance(results.roc_auc, float)
 
@@ -62,7 +64,6 @@ class TestPipeline(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
         )
         self.assertIsInstance(results.roc_auc, float)
 
@@ -105,6 +106,8 @@ class MetaModelTestCase(unittest.TestCase):
 class TestModels(unittest.TestCase):
     """A test case for models."""
 
+    loader: ClassVar[DatasetLoader]
+
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case with a dataset."""
@@ -117,7 +120,6 @@ class TestModels(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
             train_size=0.005,
         )
 

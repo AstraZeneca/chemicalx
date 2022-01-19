@@ -32,6 +32,8 @@ jobs:
         run: tox -e pyroma
       - name: Check code quality
         run: tox -e flake8
+      - name: Check typing
+        run: tox -e mypy
   docs:
     name: Documentation
     runs-on: ubuntu-latest

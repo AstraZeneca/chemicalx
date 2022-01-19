@@ -15,9 +15,6 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
     def setUpClass(cls) -> None:
         """Set up the class with a dataset loader."""
         cls.loader = DatasetLoader("drugcombdb")
-        cls.drug_feature_set = cls.loader.get_drug_features()
-        cls.context_feature_set = cls.loader.get_context_features()
-        cls.labeled_triples = cls.loader.get_labeled_triples()
 
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""
@@ -26,8 +23,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
-            labeled_triples=self.labeled_triples,
+            labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:
             assert batch.drug_features_left.shape[1] == 256
@@ -40,11 +36,10 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
             context_features=False,
             drug_features=False,
             drug_molecules=False,
-            labels=False,
-            labeled_triples=self.labeled_triples,
+            labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:
             assert batch.drug_features_left is None
             assert batch.drug_molecules_left is None
-            assert batch.labels is None
+            assert batch.labels is not None
             assert batch.context_features is None

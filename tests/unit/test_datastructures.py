@@ -4,6 +4,8 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import torch
+from torchdrug.data import Molecule
 
 from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
@@ -21,7 +23,6 @@ class TestContextFeatureSet(unittest.TestCase):
         """Test getting data."""
         assert self.context_feature_set["context_2"].shape == (1, 3)
         assert "context_2" in self.context_feature_set
-        assert self.context_feature_set.has_context("context_2")
 
     def test_delete(self):
         """Test deleting data."""
@@ -35,17 +36,14 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def test_contexts_features(self):
         """Get the number of elements."""
+        assert len(self.context_feature_set) == 2
         assert len(list(self.context_feature_set.keys())) == 2
         assert len(list(self.context_feature_set.values())) == 2
         assert len(list(self.context_feature_set.items())) == 2
 
-    def test_basic_statistics(self):
-        """Test the number of contexts."""
-        assert self.context_feature_set.get_context_count() == 2
-
     def test_update_and_delete(self):
         """Test updating and deleting entries."""
-        self.context_feature_set.update({"context_3": np.array([[1.1, 2.2, 3.4]])})
+        self.context_feature_set["context_3"] = torch.FloatTensor(np.array([[1.1, 2.2, 3.4]]))
         assert len(self.context_feature_set) == 3
         del self.context_feature_set["context_3"]
         assert len(self.context_feature_set) == 2
@@ -67,15 +65,17 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        self.drug_feature_set = DrugFeatureSet()
-        self.drug_feature_set["drug_1"] = {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])}
-        self.drug_feature_set["drug_2"] = {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])}
+        self.drug_feature_set = DrugFeatureSet.from_dict(
+            {
+                "drug_1": {"smiles": "CN=C=O", "features": np.array([[0.0, 1.7, 2.3]])},
+                "drug_2": {"smiles": "[Cu+2].[O-]S(=O)(=O)[O-]", "features": np.array([[1, 0, 8]])},
+            }
+        )
 
     def test_get(self):
         """Test getting data."""
         assert self.drug_feature_set["drug_1"]["features"].shape == (1, 3)
         assert "drug_2" in self.drug_feature_set
-        assert self.drug_feature_set.has_drug("drug_2")
 
     def test_delete(self):
         """Test deleting data."""
@@ -89,19 +89,17 @@ class TestDrugFeatureSet(unittest.TestCase):
 
     def test_drug_features(self):
         """Get the number of elements."""
+        assert len(self.drug_feature_set) == 2
         assert len(list(self.drug_feature_set.keys())) == 2
         assert len(list(self.drug_feature_set.values())) == 2
         assert len(list(self.drug_feature_set.items())) == 2
 
-    def test_basic_statistics(self):
-        """Test the number of drugs."""
-        assert self.drug_feature_set.get_drug_count() == 2
-
     def test_update_and_delete(self):
         """Test updating and deleting entries."""
-        self.drug_feature_set.update(
-            {"drug_3": {"smiles": " CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "features": np.array([[1.1, 2.2, 3.4]])}}
-        )
+        self.drug_feature_set["drug_3"] = {
+            "molecule": Molecule.from_smiles("CN1C=NC2=C1C(=O)N(C(=O)N2C)C"),
+            "features": torch.FloatTensor(np.array([[1.1, 2.2, 3.4]])),
+        }
         assert len(self.drug_feature_set) == 3
         del self.drug_feature_set["drug_3"]
         assert len(self.drug_feature_set) == 2
@@ -128,17 +126,14 @@ class TestLabeledTriples(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        self.labeled_triples = LabeledTriples()
-        self.other_labeled_triples = LabeledTriples()
-
         data = pd.DataFrame(
             [["drug_a", "drug_b", "context_a", 1.0], ["drug_b", "drug_c", "context_b", 0.0]],
             columns=["drug_1", "drug_2", "context", "label"],
         )
-        self.labeled_triples.update_from_pandas(data)
+        self.labeled_triples = LabeledTriples(data)
 
         data = [["drug_a", "drug_b", "context_a", 1.0], ["drug_a", "drug_c", "context_b", 0.0]]
-        self.other_labeled_triples.update_from_list(data)
+        self.other_labeled_triples = LabeledTriples(data)
 
     def test_from_pandas(self):
         """Test loading from pandas."""

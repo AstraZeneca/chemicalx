@@ -9,6 +9,7 @@ from typing import Dict, Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
+import torch
 
 from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
@@ -44,8 +45,8 @@ class DatasetLoader:
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        labels: bool,
-        **kwargs,
+        train_size: Optional[float] = None,
+        random_state: Optional[int] = None,
     ) -> Tuple[BatchGenerator, BatchGenerator]:
         """Generate a pre-stratified pair of batch generators."""
         return cast(
@@ -56,10 +57,12 @@ class DatasetLoader:
                     context_features=context_features,
                     drug_features=drug_features,
                     drug_molecules=drug_molecules,
-                    labels=labels,
                     labeled_triples=labeled_triples,
                 )
-                for labeled_triples in self.get_labeled_triples().train_test_split(**kwargs)
+                for labeled_triples in self.get_labeled_triples().train_test_split(
+                    train_size=train_size,
+                    random_state=random_state,
+                )
             ),
         )
 
@@ -69,7 +72,6 @@ class DatasetLoader:
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        labels: bool,
         labeled_triples: Optional[LabeledTriples] = None,
     ) -> BatchGenerator:
         """Initialize a batch generator.
@@ -88,7 +90,6 @@ class DatasetLoader:
             context_features=context_features,
             drug_features=drug_features,
             drug_molecules=drug_molecules,
-            labels=labels,
             context_feature_set=self.get_context_features() if context_features else None,
             drug_feature_set=self.get_drug_features() if drug_features else None,
             labeled_triples=self.get_labeled_triples() if labeled_triples is None else labeled_triples,
@@ -143,10 +144,8 @@ class DatasetLoader:
         """
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
-        raw_data = {k: np.array(v).reshape(1, -1) for k, v in raw_data.items()}
-        context_feature_set = ContextFeatureSet()
-        context_feature_set.update(raw_data)
-        return context_feature_set
+        raw_data = {k: torch.FloatTensor(np.array(v).reshape(1, -1)) for k, v in raw_data.items()}
+        return ContextFeatureSet(raw_data)
 
     @property
     def num_contexts(self) -> int:
@@ -169,11 +168,10 @@ class DatasetLoader:
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {
-            k: {"smiles": v["smiles"], "features": np.array(v["features"]).reshape(1, -1)} for k, v in raw_data.items()
+            key: {"smiles": value["smiles"], "features": np.array(value["features"]).reshape(1, -1)}
+            for key, value in raw_data.items()
         }
-        drug_feature_set = DrugFeatureSet()
-        drug_feature_set.update(raw_data)
-        return drug_feature_set
+        return DrugFeatureSet.from_dict(raw_data)
 
     @property
     def num_drugs(self) -> int:
@@ -194,10 +192,8 @@ class DatasetLoader:
             labeled_triples (LabeledTriples): The labeled triples in the dataset.
         """
         path = self.generate_path("labeled_triples.csv")
-        raw_data = self.load_raw_csv_data(path)
-        labeled_triples = LabeledTriples()
-        labeled_triples.update_from_pandas(raw_data)
-        return labeled_triples
+        df = self.load_raw_csv_data(path)
+        return LabeledTriples(df)
 
     @property
     def num_labeled_triples(self) -> int:
