@@ -13,6 +13,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        """Set up the class with a dataset loader."""
         cls.loader = DatasetLoader("drugcombdb")
         cls.drug_feature_set = cls.loader.get_drug_features()
         cls.context_feature_set = cls.loader.get_context_features()

@@ -3,10 +3,9 @@
 import io
 import json
 import urllib.request
-from typing import Dict, Tuple, cast
 from functools import lru_cache
 from textwrap import dedent
-from typing import Dict
+from typing import Dict, Tuple, cast
 
 import numpy as np
 import pandas as pd
