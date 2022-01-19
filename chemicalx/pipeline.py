@@ -77,6 +77,8 @@ def pipeline(
     context_features: bool,
     drug_features: bool,
     drug_molecules: bool,
+    train_size: Optional[float] = None,
+    random_state: Optional[int] = None,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -112,6 +114,10 @@ def pipeline(
         Indicator whether the batch should include drug features.
     :param drug_molecules:
         Indicator whether the batch should include drug molecules
+    :param train_size:
+        The ratio of training triples. Default is 0.8 if None is passed.
+    :param random_state:
+        The random seed for splitting the triples. Default is 42. Set to none for no fixed seed.
     :returns:
         A result object with the trained model and evaluation results
     """
@@ -121,6 +127,8 @@ def pipeline(
         context_features=context_features,
         drug_features=drug_features,
         drug_molecules=drug_molecules,
+        train_size=train_size,
+        random_state=random_state,
     )
 
     model = model_resolver.make(model, model_kwargs)
