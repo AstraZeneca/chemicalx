@@ -8,7 +8,7 @@ from chemicalx.models import EPGCNDS
 def main():
     """Train and evaluate the EPGCNDS model."""
     dataset = DrugCombDB()
-    model = EPGCNDS(drug_channels=dataset.drug_channels)
+    model = EPGCNDS()
     results = pipeline(
         dataset=dataset,
         model=model,

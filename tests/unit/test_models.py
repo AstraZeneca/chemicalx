@@ -52,7 +52,7 @@ class TestPipeline(unittest.TestCase):
 
     def test_train_contextless(self):
         """Test training and evaluating on a model that does not use context in its forward function."""
-        model = EPGCNDS(drug_channels=self.loader.drug_channels)
+        model = EPGCNDS()
         results = pipeline(
             dataset=self.loader,
             model=model,
@@ -90,7 +90,7 @@ class MetaModelTestCase(unittest.TestCase):
                 missing = {
                     name
                     for name, param in signature.parameters.items()
-                    if param.name != "self" and param.default is inspect.Parameter.empty
+                    if param.name not in skip and param.default is inspect.Parameter.empty
                 }
                 self.assertEqual(0, len(missing), msg=f"Missing default parameters for: {missing}")
                 positional = {
@@ -128,7 +128,7 @@ class TestModels(unittest.TestCase):
 
     def test_epgcnds(self):
         """Test EPGCNDS."""
-        model = EPGCNDS(drug_channels=self.loader.drug_channels)
+        model = EPGCNDS()
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()

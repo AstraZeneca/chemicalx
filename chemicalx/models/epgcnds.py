@@ -5,6 +5,7 @@ from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
 
+from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
 
@@ -22,17 +23,22 @@ class EPGCNDS(Model):
     """
 
     def __init__(
-        self, *, drug_channels: int, hidden_channels: int = 32, middle_channels: int = 16, out_channels: int = 1
+        self,
+        *,
+        molecule_channels: int = TORCHDRUG_NODE_FEATURES,
+        hidden_channels: int = 32,
+        middle_channels: int = 16,
+        out_channels: int = 1,
     ):
         """Instantiate the EPGCN-DS model.
 
-        :param drug_channels: The number of molecular features.
+        :param molecule_channels: The number of molecular features.
         :param hidden_channels: The number of graph convolutional filters.
         :param middle_channels: The number of hidden layer neurons in the last layer.
         :param out_channels: The number of output channels.
         """
         super(EPGCNDS, self).__init__()
-        self.graph_convolution_in = GraphConvolutionalNetwork(drug_channels, hidden_channels)
+        self.graph_convolution_in = GraphConvolutionalNetwork(molecule_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
         self.final = torch.nn.Linear(middle_channels, out_channels)
