@@ -22,6 +22,7 @@ from torchdrug.data import PackedGraph
 from torchdrug.layers import MLP
 from torchdrug.models import GraphConvolutionalNetwork
 
+from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
 
@@ -59,12 +60,20 @@ class DeepDDS(Model):
         """
         super(DeepDDS, self).__init__()
         self.cell_mlp = MLP(input_dim=context_feature_size, hidden_dims=[2048, 512, context_output_size])
-        self.conv_left = GraphConvolutionalNetwork(in_channels, [in_channels, in_channels * 2, in_channels * 4])
-        self.conv_right = GraphConvolutionalNetwork(in_channels, [in_channels, in_channels * 2, in_channels * 4])
-        self.mlp_left = MLP(
-            input_dim=in_channels * 4, hidden_dims=[in_channels * 2, context_output_size], dropout=dropout
+        self.conv_left = GraphConvolutionalNetwork(
+            TORCHDRUG_NODE_FEATURES, [TORCHDRUG_NODE_FEATURES, TORCHDRUG_NODE_FEATURES * 2, TORCHDRUG_NODE_FEATURES * 4]
         )
-        self.mlp_right = MLP(input_dim=in_channels * 4, hidden_dims=[in_channels * 2, context_output_size])
+        self.conv_right = GraphConvolutionalNetwork(
+            TORCHDRUG_NODE_FEATURES, [TORCHDRUG_NODE_FEATURES, TORCHDRUG_NODE_FEATURES * 2, TORCHDRUG_NODE_FEATURES * 4]
+        )
+        self.mlp_left = MLP(
+            input_dim=TORCHDRUG_NODE_FEATURES * 4,
+            hidden_dims=[TORCHDRUG_NODE_FEATURES * 2, context_output_size],
+            dropout=dropout,
+        )
+        self.mlp_right = MLP(
+            input_dim=TORCHDRUG_NODE_FEATURES * 4, hidden_dims=[TORCHDRUG_NODE_FEATURES * 2, context_output_size]
+        )
         self.mlp_final = MLP(context_output_size * 3, [1024, 512, 128, 1], dropout=dropout)
 
     def unpack(self, batch: DrugPairBatch):
