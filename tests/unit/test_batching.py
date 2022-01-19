@@ -1,6 +1,7 @@
 """Tests for batching."""
 
 import unittest
+from typing import ClassVar
 
 from chemicalx.data import DatasetLoader
 
@@ -8,12 +9,14 @@ from chemicalx.data import DatasetLoader
 class TestGeneratorDrugCombDB(unittest.TestCase):
     """Test the DrugCombDB generator."""
 
-    def setUp(self):
-        """Set up the test case."""
-        self.loader = DatasetLoader("drugcombdb")
-        self.drug_feature_set = self.loader.get_drug_features()
-        self.context_feature_set = self.loader.get_context_features()
-        self.labeled_triples = self.loader.get_labeled_triples()
+    loader: ClassVar[DatasetLoader]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.loader = DatasetLoader("drugcombdb")
+        cls.drug_feature_set = cls.loader.get_drug_features()
+        cls.context_feature_set = cls.loader.get_context_features()
+        cls.labeled_triples = cls.loader.get_labeled_triples()
 
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""
