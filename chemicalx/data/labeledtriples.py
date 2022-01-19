@@ -1,6 +1,6 @@
 """A module for the labeled triples class."""
 
-from typing import ClassVar, Iterable, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import ClassVar, Iterable, Mapping, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
