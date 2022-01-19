@@ -1,7 +1,7 @@
 """A module for the batch generator class."""
 
 import math
-from typing import Iterator, List, Optional
+from typing import Iterable, Iterator, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -35,14 +35,14 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         """Initialize a batch generator.
 
         Args:
-            batch_size (int): Number of drug pairs per batch.
-            context_features (bool): Indicator whether the batch should include biological context features.
-            drug_features (bool): Indicator whether the batch should include drug features.
-            drug_molecules (bool): Indicator whether the batch should include drug molecules
-            labels (bool): Indicator whether the batch should include drug pair labels.
-            context_feature_set (ContextFeatureSet): A context feature set for feature generation.
-            drug_feature_set (DrugFeatureSet): A drug feature set for feature generation.
-            labeled_triples (LabeledTriples): A labeled triples object used to generate batches.
+            batch_size: Number of drug pairs per batch.
+            context_features: Indicator whether the batch should include biological context features.
+            drug_features: Indicator whether the batch should include drug features.
+            drug_molecules: Indicator whether the batch should include drug molecules
+            labels: Indicator whether the batch should include drug pair labels.
+            context_feature_set: A context feature set for feature generation.
+            drug_feature_set: A drug feature set for feature generation.
+            labeled_triples: A labeled triples object used to generate batches.
         """
         self.batch_size = batch_size
         self.context_features = context_features
@@ -53,7 +53,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         self.drug_feature_set = drug_feature_set
         self.labeled_triples = labeled_triples
 
-    def _get_context_features(self, context_identifiers: List[str]):
+    def _get_context_features(self, context_identifiers: Iterable[str]) -> Optional[torch.FloatTensor]:
         """Get the context features as a matrix.
 
         Args:
@@ -61,38 +61,33 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             context_features (torch.FloatTensor): The matrix of biological context features.
         """
-        if self.context_feature_set is None:
-            raise ValueError
-        context_features = None
-        if self.context_features:
-            context_features = self.context_feature_set.get_feature_matrix(context_identifiers)
-        return context_features
+        if not self.context_features:
+            return None
+        return self.context_feature_set.get_feature_matrix(context_identifiers)
 
-    def _get_drug_features(self, drug_identifiers: List[str]):
+    def _get_drug_features(self, drug_identifiers: Iterable[str]) -> Optional[torch.FloatTensor]:
         """Get the global drug features as a matrix.
 
         Args:
-            drug_identifiers (pd.Series): The drug identifiers of interest.
+            drug_identifiers: The drug identifiers of interest.
         Returns:
-            drug_features (torch.FloatTensor): The matrix of drug features.
+            drug_features: The matrix of drug features.
         """
-        drug_features = None
-        if self.drug_features:
-            drug_features = self.drug_feature_set.get_feature_matrix(drug_identifiers)
-        return drug_features
+        if not self.drug_features:
+            return None
+        return self.drug_feature_set.get_feature_matrix(drug_identifiers)
 
-    def _get_drug_molecules(self, drug_identifiers: pd.Series) -> PackedGraph:
+    def _get_drug_molecules(self, drug_identifiers: Iterable[str]) -> Optional[PackedGraph]:
         """Get the molecular structure of drugs.
 
         Args:
-            drug_identifiers (pd.Series): The drug identifiers of interest.
+            drug_identifiers: The drug identifiers of interest.
         Returns:
-            molecules (torch.PackedGraph): The molecules diagonally batched together for message passing.
+            molecules: The molecules diagonally batched together for message passing.
         """
-        molecules = None
-        if self.drug_molecules:
-            molecules = self.drug_feature_set.get_molecules(drug_identifiers)
-        return molecules
+        if not self.drug_molecules:
+            return None
+        return self.drug_feature_set.get_molecules(drug_identifiers)
 
     def _transform_labels(self, labels: List):
         """Transform the labels from a chunk of the labeled triples frame.
@@ -102,13 +97,11 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             labels (torch.FloatTensor): The label target vector as a column vector.
         """
-        if self.labels:
-            labels = torch.FloatTensor(np.array(labels).reshape(-1, 1))
-        else:
-            labels = None
-        return labels
+        if not self.labels:
+            return None
+        return torch.FloatTensor(np.array(labels).reshape(-1, 1))
 
-    def generate_batch(self, batch_frame: pd.DataFrame):
+    def generate_batch(self, batch_frame: pd.DataFrame) -> DrugPairBatch:
         """
         Generate a batch of drug features, molecules, context features and labels for a set of pairs.
 
@@ -127,17 +120,15 @@ class BatchGenerator(Iterator[DrugPairBatch]):
 
         labels = self._transform_labels(batch_frame["label"])
 
-        batch = DrugPairBatch(
-            batch_frame,
-            drug_features_left,
-            drug_molecules_left,
-            drug_features_right,
-            drug_molecules_right,
-            context_features,
-            labels,
+        return DrugPairBatch(
+            identifiers=batch_frame,
+            drug_features_left=drug_features_left,
+            drug_molecules_left=drug_molecules_left,
+            drug_features_right=drug_features_right,
+            drug_molecules_right=drug_molecules_right,
+            context_features=context_features,
+            labels=labels,
         )
-
-        return batch
 
     def __iter__(self) -> Iterator[DrugPairBatch]:
         """Iterate by first shuffling the triples and resetting the interator index."""
@@ -148,7 +139,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
 
     def __len__(self) -> int:
         """Get the maximal index of batches - this helps tools like tqdm."""
-        return math.ceil(self.labeled_triples.data.shape[0] / self.batch_size)
+        return math.ceil(len(self.labeled_triples) / self.batch_size)
 
     def __next__(self) -> DrugPairBatch:
         """Get the next batch from the generator."""

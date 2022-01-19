@@ -28,10 +28,10 @@ class DrugPairBatch:
 
         Args:
             identifiers: A dataframe with drug pair, context and label columns.
-            drug_features_left: A matrix of molecular features for the left hand drugs.
-            drug_molecules_left: Packed molecules for the left hand drugs.
-            drug_features_right: A matrix of molecular features for the right hand drugs.
-            drug_molecules_right: Packed molecules for the right hand drugs.
+            drug_features_left: A matrix of molecular features for the left-hand drugs.
+            drug_molecules_left: Packed molecules for the left-hand drugs.
+            drug_features_right: A matrix of molecular features for the right-hand drugs.
+            drug_molecules_right: Packed molecules for the right-hand drugs.
             context_features: A matrix of biological/chemical context features.
             labels: A vector of drug pair labels.
         """

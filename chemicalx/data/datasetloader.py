@@ -8,7 +8,9 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-import chemicalx
+from .contextfeatureset import ContextFeatureSet
+from .drugfeatureset import DrugFeatureSet
+from .labeledtriples import LabeledTriples
 
 __all__ = [
     "DatasetLoader",
@@ -81,7 +83,7 @@ class DatasetLoader:
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {k: np.array(v).reshape(1, -1) for k, v in raw_data.items()}
-        context_feature_set = chemicalx.data.ContextFeatureSet()
+        context_feature_set = ContextFeatureSet()
         context_feature_set.update(raw_data)
         return context_feature_set
 
@@ -97,7 +99,7 @@ class DatasetLoader:
         raw_data = {
             k: {"smiles": v["smiles"], "features": np.array(v["features"]).reshape(1, -1)} for k, v in raw_data.items()
         }
-        drug_feature_set = chemicalx.data.DrugFeatureSet()
+        drug_feature_set = DrugFeatureSet()
         drug_feature_set.update(raw_data)
         return drug_feature_set
 
@@ -110,7 +112,7 @@ class DatasetLoader:
         """
         path = self.generate_path("labeled_triples.csv")
         raw_data = self.load_raw_csv_data(path)
-        labeled_triples = chemicalx.data.LabeledTriples()
+        labeled_triples = LabeledTriples()
         labeled_triples.update_from_pandas(raw_data)
         return labeled_triples
 
