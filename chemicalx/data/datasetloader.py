@@ -7,6 +7,7 @@ from functools import lru_cache
 from textwrap import dedent
 from typing import Dict, Optional, Tuple, cast
 
+import torch
 import numpy as np
 import pandas as pd
 
@@ -143,10 +144,8 @@ class DatasetLoader:
         """
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
-        raw_data = {k: np.array(v).reshape(1, -1) for k, v in raw_data.items()}
-        context_feature_set = ContextFeatureSet()
-        context_feature_set.update(raw_data)
-        return context_feature_set
+        raw_data = {k: torch.FloatTensor(np.array(v).reshape(1, -1)) for k, v in raw_data.items()}
+        return ContextFeatureSet(raw_data)
 
     @property
     def num_contexts(self) -> int:

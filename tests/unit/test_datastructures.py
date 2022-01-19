@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
+import torch
 from chemicalx.data import ContextFeatureSet, DrugFeatureSet, LabeledTriples
 
 
@@ -21,7 +21,6 @@ class TestContextFeatureSet(unittest.TestCase):
         """Test getting data."""
         assert self.context_feature_set["context_2"].shape == (1, 3)
         assert "context_2" in self.context_feature_set
-        assert self.context_feature_set.has_context("context_2")
 
     def test_delete(self):
         """Test deleting data."""
@@ -35,17 +34,14 @@ class TestContextFeatureSet(unittest.TestCase):
 
     def test_contexts_features(self):
         """Get the number of elements."""
+        assert len(self.context_feature_set) == 2
         assert len(list(self.context_feature_set.keys())) == 2
         assert len(list(self.context_feature_set.values())) == 2
         assert len(list(self.context_feature_set.items())) == 2
 
-    def test_basic_statistics(self):
-        """Test the number of contexts."""
-        assert self.context_feature_set.get_context_count() == 2
-
     def test_update_and_delete(self):
         """Test updating and deleting entries."""
-        self.context_feature_set.update({"context_3": np.array([[1.1, 2.2, 3.4]])})
+        self.context_feature_set["context_3"] = torch.FloatTensor(np.array([[1.1, 2.2, 3.4]]))
         assert len(self.context_feature_set) == 3
         del self.context_feature_set["context_3"]
         assert len(self.context_feature_set) == 2
