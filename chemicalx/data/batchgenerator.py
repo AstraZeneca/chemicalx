@@ -61,7 +61,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             context_features (torch.FloatTensor): The matrix of biological context features.
         """
-        if not self.context_features:
+        if not self.context_features or self.context_feature_set is None:
             return None
         return self.context_feature_set.get_feature_matrix(context_identifiers)
 
@@ -73,7 +73,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             drug_features: The matrix of drug features.
         """
-        if not self.drug_features:
+        if not self.drug_features or self.drug_feature_set is None:
             return None
         return self.drug_feature_set.get_feature_matrix(drug_identifiers)
 
@@ -85,7 +85,7 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             molecules: The molecules diagonally batched together for message passing.
         """
-        if not self.drug_molecules:
+        if not self.drug_molecules or self.drug_feature_set is None:
             return None
         return self.drug_feature_set.get_molecules(drug_identifiers)
 
