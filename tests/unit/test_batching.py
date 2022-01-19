@@ -9,22 +9,22 @@ from chemicalx.data import DatasetLoader
 class TestGeneratorDrugCombDB(unittest.TestCase):
     """Test the DrugCombDB generator."""
 
-    dataset: ClassVar[DatasetLoader]
+    loader: ClassVar[DatasetLoader]
 
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the class with a dataset loader."""
-        cls.dataset = DatasetLoader("drugcombdb")
+        cls.loader = DatasetLoader("drugcombdb")
 
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""
-        generator = self.dataset.get_generator(
+        generator = self.loader.get_generator(
             batch_size=4096,
             context_features=True,
             drug_features=True,
             drug_molecules=True,
             labels=True,
-            labeled_triples=self.dataset.get_labeled_triples(),
+            labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:
             assert batch.drug_features_left.shape[1] == 256
@@ -32,13 +32,13 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
 
     def test_set_all_false(self):
         """Test features of the batch generator."""
-        generator = self.dataset.get_generator(
+        generator = self.loader.get_generator(
             batch_size=4096,
             context_features=False,
             drug_features=False,
             drug_molecules=False,
             labels=False,
-            labeled_triples=self.dataset.get_labeled_triples(),
+            labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:
             assert batch.drug_features_left is None
