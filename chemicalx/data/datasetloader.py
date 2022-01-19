@@ -45,7 +45,6 @@ class DatasetLoader:
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        labels: bool,
         **kwargs,
     ) -> Tuple[BatchGenerator, BatchGenerator]:
         """Generate a pre-stratified pair of batch generators."""
@@ -57,7 +56,6 @@ class DatasetLoader:
                     context_features=context_features,
                     drug_features=drug_features,
                     drug_molecules=drug_molecules,
-                    labels=labels,
                     labeled_triples=labeled_triples,
                 )
                 for labeled_triples in self.get_labeled_triples().train_test_split(**kwargs)
@@ -70,7 +68,6 @@ class DatasetLoader:
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        labels: bool,
         labeled_triples: Optional[LabeledTriples] = None,
     ) -> BatchGenerator:
         """Initialize a batch generator.
@@ -89,7 +86,6 @@ class DatasetLoader:
             context_features=context_features,
             drug_features=drug_features,
             drug_molecules=drug_molecules,
-            labels=labels,
             context_feature_set=self.get_context_features() if context_features else None,
             drug_feature_set=self.get_drug_features() if drug_features else None,
             labeled_triples=self.get_labeled_triples() if labeled_triples is None else labeled_triples,

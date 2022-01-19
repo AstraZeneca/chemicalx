@@ -1,7 +1,7 @@
 """A module for the batch generator class."""
 
 import math
-from typing import Iterable, Iterator, List, Optional
+from typing import Iterable, Iterator, Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -27,7 +27,6 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
-        labels: bool,
         context_feature_set: Optional[ContextFeatureSet],
         drug_feature_set: Optional[DrugFeatureSet],
         labeled_triples: LabeledTriples,
@@ -39,7 +38,6 @@ class BatchGenerator(Iterator[DrugPairBatch]):
             context_features: Indicator whether the batch should include biological context features.
             drug_features: Indicator whether the batch should include drug features.
             drug_molecules: Indicator whether the batch should include drug molecules
-            labels: Indicator whether the batch should include drug pair labels.
             context_feature_set: A context feature set for feature generation.
             drug_feature_set: A drug feature set for feature generation.
             labeled_triples: A labeled triples object used to generate batches.
@@ -48,7 +46,6 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         self.context_features = context_features
         self.drug_features = drug_features
         self.drug_molecules = drug_molecules
-        self.labels = labels
         self.context_feature_set = context_feature_set
         self.drug_feature_set = drug_feature_set
         self.labeled_triples = labeled_triples
@@ -89,16 +86,15 @@ class BatchGenerator(Iterator[DrugPairBatch]):
             return None
         return self.drug_feature_set.get_molecules(drug_identifiers)
 
-    def _transform_labels(self, labels: List):
+    @classmethod
+    def _transform_labels(cls, labels: Sequence[float]) -> torch.FloatTensor:
         """Transform the labels from a chunk of the labeled triples frame.
 
         Args:
-            labels (pd.Series): The drug pair binary labels.
+            labels: The drug pair binary labels.
         Returns:
-            labels (torch.FloatTensor): The label target vector as a column vector.
+            labels : The label target vector as a column vector.
         """
-        if not self.labels:
-            return None
         return torch.FloatTensor(np.array(labels).reshape(-1, 1))
 
     def generate_batch(self, batch_frame: pd.DataFrame) -> DrugPairBatch:

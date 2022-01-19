@@ -77,7 +77,6 @@ def pipeline(
     context_features: bool,
     drug_features: bool,
     drug_molecules: bool,
-    labels: bool,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -113,8 +112,6 @@ def pipeline(
         Indicator whether the batch should include drug features.
     :param drug_molecules:
         Indicator whether the batch should include drug molecules
-    :param labels:
-        Indicator whether the batch should include drug pair labels.
     :returns:
         A result object with the trained model and evaluation results
     """
@@ -124,7 +121,6 @@ def pipeline(
         context_features=context_features,
         drug_features=drug_features,
         drug_molecules=drug_molecules,
-        labels=labels,
     )
 
     model = model_resolver.make(model, model_kwargs)

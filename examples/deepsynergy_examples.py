@@ -17,7 +17,6 @@ def main():
         context_features=True,
         drug_features=True,
         drug_molecules=False,
-        labels=True,
     )
     results.summarize()
 
