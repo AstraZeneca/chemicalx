@@ -107,9 +107,15 @@ class TestModels(unittest.TestCase):
         labeled_triples = loader.get_labeled_triples()
         labeled_triples, _ = labeled_triples.train_test_split(train_size=0.005)
         self.generator = BatchGenerator(
-            batch_size=32, context_features=True, drug_features=True, drug_molecules=True, labels=True
+            batch_size=32,
+            context_features=True,
+            drug_features=True,
+            drug_molecules=True,
+            labels=True,
+            context_feature_set=context_feature_set,
+            drug_feature_set=drug_feature_set,
+            labeled_triples=labeled_triples,
         )
-        self.generator.set_data(context_feature_set, drug_feature_set, labeled_triples)
 
     def test_caster(self):
         """Test CASTER."""

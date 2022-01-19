@@ -1,5 +1,11 @@
 """A module for the drug pair batch class."""
 
+from typing import Optional
+
+import pandas as pd
+import torch
+from torchdrug.data import PackedGraph
+
 __all__ = [
     "DrugPairBatch",
 ]
@@ -10,24 +16,24 @@ class DrugPairBatch:
 
     def __init__(
         self,
-        identifiers=None,
-        drug_features_left=None,
-        drug_molecules_left=None,
-        drug_features_right=None,
-        drug_molecules_right=None,
-        context_features=None,
-        labels=None,
+        identifiers: Optional[pd.DataFrame] = None,
+        drug_features_left: Optional[torch.FloatTensor] = None,
+        drug_molecules_left: Optional[PackedGraph] = None,
+        drug_features_right: Optional[torch.FloatTensor] = None,
+        drug_molecules_right: Optional[PackedGraph] = None,
+        context_features: Optional[torch.FloatTensor] = None,
+        labels: Optional[torch.FloatTensor] = None,
     ):
         """Initialize the drug pair batch.
 
         Args:
-            identifiers (pd.DataFrame or None): A dataframe with drug pair, context and label columns.
-            drug_features_left (torch.FloatTensor or None): A matrix of molecular features for the left hand drugs.
-            drug_molecules_left (torchdrug.PackedGraph or None): Packed molecules for the left hand drugs.
-            drug_features_right (torch.FloatTensor or None): A matrix of molecular features for the right hand drugs.
-            drug_molecules_right (torchdrug.PackedGraph or None): Packed molecules for the right hand drugs.
-            context_features (torch.FloatTensor or None): A matrix of biological/chemical context features.
-            labels (torch.FloatTensor or None): A vector of drug pair labels.
+            identifiers: A dataframe with drug pair, context and label columns.
+            drug_features_left: A matrix of molecular features for the left hand drugs.
+            drug_molecules_left: Packed molecules for the left hand drugs.
+            drug_features_right: A matrix of molecular features for the right hand drugs.
+            drug_molecules_right: Packed molecules for the right hand drugs.
+            context_features: A matrix of biological/chemical context features.
+            labels: A vector of drug pair labels.
         """
         self.identifiers = identifiers
         self.drug_features_left = drug_features_left

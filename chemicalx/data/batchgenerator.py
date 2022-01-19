@@ -1,14 +1,17 @@
 """A module for the batch generator class."""
 
 import math
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 import numpy as np
 import pandas as pd
 import torch
 from torchdrug.data import PackedGraph
 
+from .contextfeatureset import ContextFeatureSet
+from .drugfeatureset import DrugFeatureSet
 from .drugpairbatch import DrugPairBatch
+from .labeledtriples import LabeledTriples
 
 __all__ = [
     "BatchGenerator",
@@ -25,6 +28,9 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         drug_features: bool,
         drug_molecules: bool,
         labels: bool,
+        context_feature_set: Optional[ContextFeatureSet],
+        drug_feature_set: Optional[DrugFeatureSet],
+        labeled_triples: Optional[LabeledTriples],
     ):
         """Initialize a batch generator.
 
@@ -34,48 +40,18 @@ class BatchGenerator(Iterator[DrugPairBatch]):
             drug_features (bool): Indicator whether the batch should include drug features.
             drug_molecules (bool): Indicator whether the batch should include drug molecules
             labels (bool): Indicator whether the batch should include drug pair labels.
+            context_feature_set (ContextFeatureSet): A context feature set for feature generation.
+            drug_feature_set (DrugFeatureSet): A drug feature set for feature generation.
+            labeled_triples (LabeledTriples): A labeled triples object used to generate batches.
         """
         self.batch_size = batch_size
         self.context_features = context_features
         self.drug_features = drug_features
         self.drug_molecules = drug_molecules
         self.labels = labels
-
-    def set_context_feature_set(self, context_feature_set: None):
-        """Set the context feature set.
-
-        Args:
-            context_feature_set (ContextFeatureSet): A context feature set for feature generation.
-        """
         self.context_feature_set = context_feature_set
-
-    def set_drug_feature_set(self, drug_feature_set: None):
-        """Set the drug feature set.
-
-        Args:
-            drug_feature_set (DrugFeatureSet): A drug feature set for feature generation.
-        """
         self.drug_feature_set = drug_feature_set
-
-    def set_labeled_triples(self, labeled_triples: None):
-        """Set the labeled triples.
-
-        Args:
-            labeled_triples (LabeledTriples): A labeled triples object used to generate batches.
-        """
         self.labeled_triples = labeled_triples
-
-    def set_data(self, context_feature_set: None, drug_feature_set: None, labeled_triples: None):
-        """Set the feature sets and the labeled triples in one pass.
-
-        Args:
-            context_feature_set (ContextFeatureSet): A context feature set for feature generation.
-            drug_feature_set (DrugFeatureSet): A drug feature set for feature generation.
-            labeled_triples (LabeledTriples): A labeled triples object used to generate batches.
-        """
-        self.set_context_feature_set(context_feature_set)
-        self.set_drug_feature_set(drug_feature_set)
-        self.set_labeled_triples(labeled_triples)
 
     def _get_context_features(self, context_identifiers: List[str]):
         """Get the context features as a matrix.
@@ -85,6 +61,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         Returns:
             context_features (torch.FloatTensor): The matrix of biological context features.
         """
+        if self.context_feature_set is None:
+            raise ValueError
         context_features = None
         if self.context_features:
             context_features = self.context_feature_set.get_feature_matrix(context_identifiers)

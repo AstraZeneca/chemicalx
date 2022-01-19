@@ -126,15 +126,16 @@ def pipeline(
 
     train_triples, test_triples = labeled_triples.train_test_split()
 
-    generator = BatchGenerator(
+    train_generator = BatchGenerator(
         batch_size=batch_size,
         context_features=context_features,
         drug_features=drug_features,
         drug_molecules=drug_molecules,
         labels=labels,
+        context_feature_set=context_feature_set,
+        drug_feature_set=drug_feature_set,
+        labeled_triples=train_triples,
     )
-
-    generator.set_data(context_feature_set, drug_feature_set, train_triples)
 
     model = model_resolver.make(model, model_kwargs)
 
@@ -147,7 +148,7 @@ def pipeline(
     losses = []
     train_start_time = time.time()
     for _epoch in trange(epochs):
-        for batch in generator:
+        for batch in train_generator:
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
@@ -158,11 +159,20 @@ def pipeline(
 
     model.eval()
 
-    generator.set_labeled_triples(test_triples)
+    eval_generator = BatchGenerator(
+        batch_size=batch_size,
+        context_features=context_features,
+        drug_features=drug_features,
+        drug_molecules=drug_molecules,
+        labels=labels,
+        context_feature_set=context_feature_set,
+        drug_feature_set=drug_feature_set,
+        labeled_triples=train_triples,
+    )
 
     evaluation_start_time = time.time()
     predictions = []
-    for batch in generator:
+    for batch in eval_generator:
         prediction = model(*model.unpack(batch))
         prediction = prediction.detach().cpu().numpy()
         identifiers = batch.identifiers

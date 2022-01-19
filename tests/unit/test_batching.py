@@ -18,10 +18,11 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""
         generator = BatchGenerator(
-            batch_size=4096, context_features=True, drug_features=True, drug_molecules=True, labels=True
-        )
-
-        generator.set_data(
+            batch_size=4096,
+            context_features=True,
+            drug_features=True,
+            drug_molecules=True,
+            labels=True,
             context_feature_set=self.context_feature_set,
             drug_feature_set=self.drug_feature_set,
             labeled_triples=self.labeled_triples,
@@ -34,10 +35,11 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
     def test_set_all_false(self):
         """Test features of the batch generator."""
         generator = BatchGenerator(
-            batch_size=4096, context_features=False, drug_features=False, drug_molecules=False, labels=False
-        )
-
-        generator.set_data(
+            batch_size=4096,
+            context_features=False,
+            drug_features=False,
+            drug_molecules=False,
+            labels=False,
             context_feature_set=self.context_feature_set,
             drug_feature_set=self.drug_feature_set,
             labeled_triples=self.labeled_triples,
