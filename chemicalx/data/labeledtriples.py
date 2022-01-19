@@ -17,7 +17,7 @@ class LabeledTriples:
     def __init__(self, data: Union[pd.DataFrame, Iterable[Sequence]]):
         """Initialize the labeled triples object."""
         if not isinstance(data, pd.DataFrame):
-            data = pd.DataFrame(data, columns=self.columns)
+            data = pd.DataFrame(data, columns=self.columns).astype(self.dtype)
         self.data = data
 
     def __len__(self) -> int:
