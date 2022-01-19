@@ -14,7 +14,7 @@ from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from tqdm import trange
 
-from chemicalx.data import BatchGenerator, DatasetLoader, dataset_resolver
+from chemicalx.data import DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
 from chemicalx.version import __version__
 
@@ -119,22 +119,13 @@ def pipeline(
         A result object with the trained model and evaluation results
     """
     loader = dataset_resolver.make(dataset)
-
-    drug_feature_set = loader.get_drug_features()
-    context_feature_set = loader.get_context_features()
-    labeled_triples = loader.get_labeled_triples()
-
-    train_triples, test_triples = labeled_triples.train_test_split()
-
-    generator = BatchGenerator(
+    train_generator, test_generator = loader.get_generators(
         batch_size=batch_size,
         context_features=context_features,
         drug_features=drug_features,
         drug_molecules=drug_molecules,
         labels=labels,
     )
-
-    generator.set_data(context_feature_set, drug_feature_set, train_triples)
 
     model = model_resolver.make(model, model_kwargs)
 
@@ -147,7 +138,7 @@ def pipeline(
     losses = []
     train_start_time = time.time()
     for _epoch in trange(epochs):
-        for batch in generator:
+        for batch in train_generator:
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
@@ -158,11 +149,9 @@ def pipeline(
 
     model.eval()
 
-    generator.set_labeled_triples(test_triples)
-
     evaluation_start_time = time.time()
     predictions = []
-    for batch in generator:
+    for batch in test_generator:
         prediction = model(*model.unpack(batch))
         prediction = prediction.detach().cpu().numpy()
         identifiers = batch.identifiers

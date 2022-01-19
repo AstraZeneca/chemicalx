@@ -8,9 +8,10 @@ from chemicalx.data import DatasetLoader
 class TestDrugComb(unittest.TestCase):
     """A test case for DrugComb."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         """Set up the test case."""
-        self.dataset_loader = DatasetLoader("drugcomb")
+        cls.dataset_loader = DatasetLoader("drugcomb")
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -31,9 +32,10 @@ class TestDrugComb(unittest.TestCase):
 class TestDrugCombDB(unittest.TestCase):
     """A test case for DrugCombDB."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         """Set up the test case."""
-        self.dataset_loader = DatasetLoader("drugcombdb")
+        cls.dataset_loader = DatasetLoader("drugcombdb")
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -54,9 +56,10 @@ class TestDrugCombDB(unittest.TestCase):
 class TestDeepDDI(unittest.TestCase):
     """A test case for DeepDDI."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         """Set up the test case."""
-        self.dataset_loader = DatasetLoader("drugbankddi")
+        cls.dataset_loader = DatasetLoader("drugbankddi")
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -77,9 +80,10 @@ class TestDeepDDI(unittest.TestCase):
 class TestTwoSides(unittest.TestCase):
     """A test case for TwoSides."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         """Set up the test case."""
-        self.dataset_loader = DatasetLoader("twosides")
+        cls.dataset_loader = DatasetLoader("twosides")
 
     def test_get_context_features(self):
         """Test the number of context features."""

@@ -1,6 +1,6 @@
 """A module for the drug feature set."""
 
-from typing import Dict, List, Union
+from typing import Dict, Iterable, Union
 
 import torch
 from torchdrug.data import Graph, Molecule, PackedGraph
@@ -136,7 +136,7 @@ class DrugFeatureSet(dict):
         """
         return len(self.__dict__)
 
-    def get_feature_matrix(self, drugs: List[str]) -> torch.FloatTensor:
+    def get_feature_matrix(self, drugs: Iterable[str]) -> torch.FloatTensor:
         """Get the drug feature matrix for a list of drugs.
 
         Args:
@@ -147,7 +147,7 @@ class DrugFeatureSet(dict):
         features = torch.cat([self.__dict__[drug]["features"] for drug in drugs])
         return features
 
-    def get_molecules(self, drugs: List[str]) -> PackedGraph:
+    def get_molecules(self, drugs: Iterable[str]) -> PackedGraph:
         """Get the molecular structures.
 
         Args:

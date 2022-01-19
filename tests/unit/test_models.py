@@ -8,7 +8,7 @@ from class_resolver import Resolver
 
 import chemicalx.models
 from chemicalx import pipeline
-from chemicalx.data import BatchGenerator, DatasetLoader, DrugCombDB
+from chemicalx.data import DatasetLoader, DrugCombDB
 from chemicalx.models import (
     CASTER,
     EPGCNDS,
@@ -112,14 +112,14 @@ class TestModels(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case."""
-        drug_feature_set = self.loader.get_drug_features()
-        context_feature_set = self.loader.get_context_features()
-        labeled_triples = self.loader.get_labeled_triples()
-        labeled_triples, _ = labeled_triples.train_test_split(train_size=0.005)
-        self.generator = BatchGenerator(
-            batch_size=32, context_features=True, drug_features=True, drug_molecules=True, labels=True
+        self.generator, _ = self.loader.get_generators(
+            batch_size=32,
+            context_features=True,
+            drug_features=True,
+            drug_molecules=True,
+            labels=True,
+            train_size=0.005,
         )
-        self.generator.set_data(context_feature_set, drug_feature_set, labeled_triples)
 
     def test_caster(self):
         """Test CASTER."""
