@@ -5,7 +5,7 @@ import json
 import urllib.request
 from functools import lru_cache
 from textwrap import dedent
-from typing import Dict, Tuple, cast
+from typing import Dict, Optional, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -51,7 +51,7 @@ class DatasetLoader:
         return cast(
             Tuple[BatchGenerator, BatchGenerator],
             tuple(
-                self._get_generator(
+                self.get_generator(
                     batch_size=batch_size,
                     context_features=context_features,
                     drug_features=drug_features,
@@ -63,24 +63,35 @@ class DatasetLoader:
             ),
         )
 
-    def _get_generator(
+    def get_generator(
         self,
         batch_size: int,
         context_features: bool,
         drug_features: bool,
         drug_molecules: bool,
         labels: bool,
-        labeled_triples,
+        labeled_triples: Optional[LabeledTriples] = None,
     ) -> BatchGenerator:
+        """Initialize a batch generator.
+
+        Args:
+            batch_size: Number of drug pairs per batch.
+            context_features: Indicator whether the batch should include biological context features.
+            drug_features: Indicator whether the batch should include drug features.
+            drug_molecules: Indicator whether the batch should include drug molecules
+            labels: Indicator whether the batch should include drug pair labels.
+            labeled_triples: A labeled triples object used to generate batches. If none is given, will use
+                all triples from the dataset.
+        """
         return BatchGenerator(
             batch_size=batch_size,
             context_features=context_features,
             drug_features=drug_features,
             drug_molecules=drug_molecules,
             labels=labels,
-            context_feature_set=self.get_context_features(),
-            drug_feature_set=self.get_drug_features(),
-            labeled_triples=labeled_triples,
+            context_feature_set=self.get_context_features() if context_features else None,
+            drug_feature_set=self.get_drug_features() if drug_features else None,
+            labeled_triples=self.get_labeled_triples() if labeled_triples is None else labeled_triples,
         )
 
     def generate_path(self, file_name: str) -> str:

@@ -21,7 +21,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
 
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""
-        generator = self.loader._get_generator(
+        generator = self.loader.get_generator(
             batch_size=4096,
             context_features=True,
             drug_features=True,
@@ -35,7 +35,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
 
     def test_set_all_false(self):
         """Test features of the batch generator."""
-        generator = self.loader._get_generator(
+        generator = self.loader.get_generator(
             batch_size=4096,
             context_features=False,
             drug_features=False,
