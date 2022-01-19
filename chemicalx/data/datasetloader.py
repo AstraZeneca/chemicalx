@@ -3,11 +3,12 @@
 import io
 import json
 import urllib.request
-from typing import Dict
+from typing import Dict, Tuple, cast
 
 import numpy as np
 import pandas as pd
 
+from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
 from .labeledtriples import LabeledTriples
@@ -33,6 +34,51 @@ class DatasetLoader:
         self.base_url = "https://raw.githubusercontent.com/AstraZeneca/chemicalx/main/dataset"
         self.dataset_name = dataset_name
         assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "drugbankddi"]
+
+    def get_generators(
+        self,
+        batch_size: int,
+        context_features: bool,
+        drug_features: bool,
+        drug_molecules: bool,
+        labels: bool,
+        **kwargs,
+    ) -> Tuple[BatchGenerator, BatchGenerator]:
+        """Generate a pre-stratified pair of batch generators."""
+        return cast(
+            Tuple[BatchGenerator, BatchGenerator],
+            tuple(
+                self._get_generator(
+                    batch_size=batch_size,
+                    context_features=context_features,
+                    drug_features=drug_features,
+                    drug_molecules=drug_molecules,
+                    labels=labels,
+                    labeled_triples=labeled_triples,
+                )
+                for labeled_triples in self.get_labeled_triples().train_test_split(**kwargs)
+            ),
+        )
+
+    def _get_generator(
+        self,
+        batch_size: int,
+        context_features: bool,
+        drug_features: bool,
+        drug_molecules: bool,
+        labels: bool,
+        labeled_triples,
+    ) -> BatchGenerator:
+        return BatchGenerator(
+            batch_size=batch_size,
+            context_features=context_features,
+            drug_features=drug_features,
+            drug_molecules=drug_molecules,
+            labels=labels,
+            context_feature_set=self.get_context_features(),
+            drug_feature_set=self.get_drug_features(),
+            labeled_triples=labeled_triples,
+        )
 
     def generate_path(self, file_name: str) -> str:
         """
