@@ -49,7 +49,6 @@ class TestPipeline(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=False,
-            labels=True,
         )
         self.assertIsInstance(results.roc_auc, float)
 
@@ -65,7 +64,6 @@ class TestPipeline(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
         )
         self.assertIsInstance(results.roc_auc, float)
 
