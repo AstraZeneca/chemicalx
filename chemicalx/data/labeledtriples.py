@@ -19,7 +19,7 @@ class LabeledTriples:
 
     def __len__(self) -> int:
         """Get the number of triples."""
-        return self.data.shape[0]
+        return len(self.data.index)
 
     def drop_duplicates(self):
         """Drop the duplicated entries."""

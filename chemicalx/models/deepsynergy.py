@@ -21,8 +21,8 @@ class DeepSynergy(Model):
     def __init__(
         self,
         *,
-        context_channels: int = 128,
-        drug_channels: int = 128,
+        context_channels: int,
+        drug_channels: int,
         input_hidden_channels: int = 32,
         middle_hidden_channels: int = 32,
         final_hidden_channels: int = 32,
