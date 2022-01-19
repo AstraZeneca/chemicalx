@@ -2,7 +2,6 @@
 
 from class_resolver import Resolver
 
-from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .datasetloader import DatasetLoader, DrugbankDDI, DrugComb, DrugCombDB, TwoSides
 from .drugfeatureset import DrugFeatureSet
@@ -10,7 +9,6 @@ from .drugpairbatch import DrugPairBatch
 from .labeledtriples import LabeledTriples
 
 __all__ = [
-    "BatchGenerator",
     "ContextFeatureSet",
     "DrugFeatureSet",
     "DrugPairBatch",

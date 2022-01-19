@@ -18,6 +18,7 @@ from .labeledtriples import LabeledTriples
 
 __all__ = [
     "DatasetLoader",
+    # Actual datasets
     "DrugCombDB",
     "DrugComb",
     "TwoSides",
