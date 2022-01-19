@@ -42,7 +42,6 @@ class TestContextFeatureSet(unittest.TestCase):
     def test_basic_statistics(self):
         """Test the number of contexts."""
         assert self.context_feature_set.get_context_count() == 2
-        assert self.context_feature_set.count_features() == 3
 
     def test_update_and_delete(self):
         """Test updating and deleting entries."""
@@ -87,7 +86,6 @@ class TestDrugFeatureSet(unittest.TestCase):
     def test_len(self):
         """Test getting the length."""
         assert len(self.drug_feature_set) == 2
-        assert self.drug_feature_set.count_features() == 3
 
     def test_drug_features(self):
         """Get the number of elements."""

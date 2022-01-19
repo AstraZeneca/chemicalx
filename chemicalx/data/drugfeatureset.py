@@ -136,10 +136,6 @@ class DrugFeatureSet(dict):
         """
         return len(self.__dict__)
 
-    def count_features(self) -> int:
-        """Get the number of features for each context."""
-        return next(iter(self.values())).shape[1]
-
     def get_feature_matrix(self, drugs: Iterable[str]) -> torch.FloatTensor:
         """Get the drug feature matrix for a list of drugs.
 
