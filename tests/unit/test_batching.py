@@ -23,7 +23,6 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
             labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:
@@ -37,7 +36,6 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
             context_features=False,
             drug_features=False,
             drug_molecules=False,
-            labels=False,
             labeled_triples=self.loader.get_labeled_triples(),
         )
         for batch in generator:

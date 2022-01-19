@@ -122,7 +122,6 @@ class TestModels(unittest.TestCase):
             context_features=True,
             drug_features=True,
             drug_molecules=True,
-            labels=True,
             train_size=0.005,
         )
 
