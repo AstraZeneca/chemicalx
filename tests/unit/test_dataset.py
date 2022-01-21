@@ -81,7 +81,7 @@ class TestDeepDDI(unittest.TestCase):
     def test_get_labeled_triples(self):
         """Test the shape of the labeled triples."""
         labeled_triples = self.loader.get_labeled_triples()
-        assert labeled_triples.data.shape == (575307, 4)
+        assert labeled_triples.data.shape == (383616, 4)
 
 
 class TestTwoSides(unittest.TestCase):
