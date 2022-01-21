@@ -1,3 +1,5 @@
+"""Sphinx configuration."""
+
 import datetime
 import doctest
 import os
@@ -57,6 +59,8 @@ add_module_names = False
 
 
 def setup(app):
+    """Set up the app."""
+
     def skip(app, what, name, obj, skip, options):
         members = [
             "__init__",
