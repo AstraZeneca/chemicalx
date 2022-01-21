@@ -1,12 +1,11 @@
 """Download and pre-process the DrugBank drug-drug interaction dataset."""
 
-import json
 import math
 from random import Random
 
 import click
 import pandas as pd
-from utils import get_features, get_index, get_samples, get_tdc, map_context
+from utils import get_index, get_samples, get_tdc, write_artifacts
 
 
 @click.command()
@@ -21,31 +20,18 @@ def main(seed: int, ratio: float):
         input_directory.joinpath("drugbank.tab"),
         sep="\t",
         usecols=[0, 1, 2, 4, 5],
+        header=0,
         names=["drug_1", "drug_2", "context", "drug_1_smiles", "drug_2_smiles"],
     )
+    positive_samples["context"] = positive_samples["context"].map(lambda x: f"context_{x:02}")
     print("Number of positive samples:", positive_samples.shape[0])
+    print("Columns:", positive_samples.columns)
 
-    contexts = list(set(positive_samples["Y"].values.tolist()))
+    contexts = list(sorted(set(positive_samples["context"].values.tolist())))
     print("Number of contexts:", len(contexts))
 
     # Index drugs' SMILES and drug-drug-context triples
     drugs_raw, big_map = get_index(positive_samples)
-
-    drugs = list(drugs_raw)
-    print("Number of drugs:", len(drugs))
-
-    # Generate negative samples
-    negative_samples = get_samples(
-        rng=rng, n=int(math.ceil(ratio * positive_samples.shape[0])), drugs=drugs, contexts=contexts, big_map=big_map
-    )
-
-    labeled_triples = positive_samples[["drug_1", "drug_2", "context"]]
-    labeled_triples["label"] = 1.0
-    labeled_triples = pd.concat([labeled_triples, negative_samples])
-    labeled_triples["context"] = labeled_triples["context"].map(lambda x: f"context_{x}")
-    print("Number of total triples:", labeled_triples.shape)
-    labeled_triples.to_csv(output_directory.joinpath("labeled_triples.csv"), index=False)
-
     drugs_raw.update(
         {
             "DB09323": "O.O.O.O.C(CNCC1=CC=CC=C1)NCC1=CC=CC=C1.[H][C@]12SC(C)(C)[C@@H](N1C(=O)[C@H]2NC(=O)CC1=CC=CC=C1)C(O)=O.[H][C@]12SC(C)(C)[C@@H](N1C(=O)[C@H]2NC(=O)CC1=CC=CC=C1)C(O)=O",  # noqa:E501
@@ -61,16 +47,21 @@ def main(seed: int, ratio: float):
         }
     )
 
-    # Generate drugs file
-    drug_set = {drug: {"smiles": smiles, "features": get_features(smiles)} for drug, smiles in drugs_raw.items()}
-    with output_directory.joinpath("drug_set.json").open("w") as file:
-        json.dump(drug_set, file)
+    drugs = list(drugs_raw)
+    print("Number of drugs:", len(drugs))
 
-    # Generate contexts file
-    context_count = len(contexts)
-    context_set = {context: map_context(i, context_count) for i, context in enumerate(contexts)}
-    with output_directory.joinpath("context_set.json").open("w") as file:
-        json.dump(context_set, file)
+    # Generate negative samples
+    negative_samples = get_samples(
+        rng=rng, n=int(math.ceil(ratio * positive_samples.shape[0])), drugs=drugs, contexts=contexts, big_map=big_map
+    )
+
+    labeled_triples = positive_samples[["drug_1", "drug_2", "context"]]
+    labeled_triples["label"] = 1.0
+    labeled_triples = pd.concat([labeled_triples, negative_samples])
+    print("Number of total triples:", labeled_triples.shape)
+    labeled_triples.to_csv(output_directory.joinpath("labeled_triples.csv"), index=False)
+
+    write_artifacts(output_directory=output_directory, drugs_raw=drugs_raw, contexts=contexts)
 
 
 if __name__ == "__main__":
