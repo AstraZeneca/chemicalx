@@ -1,7 +1,7 @@
 """An implementation of the DeepDDS model.
 
 DeepDDS: deep graph neural network with attention mechanism to predict
-synergistic drug combinations
+synergistic drug combinations.
 
 arXiv:2107.02467 [cs.LG]
 https://arxiv.org/abs/2107.02467
