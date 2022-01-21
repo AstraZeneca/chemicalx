@@ -3,6 +3,7 @@
 import io
 import json
 import urllib.request
+from abc import ABC, abstractmethod
 from functools import lru_cache
 from textwrap import dedent
 from typing import Dict, Optional, Tuple, cast
@@ -18,6 +19,7 @@ from .labeledtriples import LabeledTriples
 
 __all__ = [
     "DatasetLoader",
+    "RemoteDatasetLoader",
     # Actual datasets
     "DrugCombDB",
     "DrugComb",
@@ -26,18 +28,8 @@ __all__ = [
 ]
 
 
-class DatasetLoader:
-    """General dataset loader for the integrated drug pair scoring datasets."""
-
-    def __init__(self, dataset_name: str):
-        """Instantiate the dataset loader.
-
-        Args:
-            dataset_name (str): The name of the dataset.
-        """
-        self.base_url = "https://raw.githubusercontent.com/AstraZeneca/chemicalx/main/dataset"
-        self.dataset_name = dataset_name
-        assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "drugbankddi"]
+class DatasetLoader(ABC):
+    """A generic dataset."""
 
     def get_generators(
         self,
@@ -95,6 +87,86 @@ class DatasetLoader:
             labeled_triples=self.get_labeled_triples() if labeled_triples is None else labeled_triples,
         )
 
+    @abstractmethod
+    def get_context_features(self) -> ContextFeatureSet:
+        """
+        Get the context feature set.
+
+        Returns:
+            : The ContextFeatureSet of the dataset of interest.
+        """
+
+    @property
+    def num_contexts(self) -> int:
+        """Get the number of contexts."""
+        return len(self.get_context_features())
+
+    @property
+    def context_channels(self) -> int:
+        """Get the number of features for each context."""
+        return next(iter(self.get_context_features().values())).shape[1]
+
+    @abstractmethod
+    def get_drug_features(self):
+        """
+        Get the drug feature set.
+
+        Returns:
+            : The DrugFeatureSet of the dataset of interest.
+        """
+
+    @property
+    def num_drugs(self) -> int:
+        """Get the number of drugs."""
+        return len(self.get_drug_features())
+
+    @property
+    def drug_channels(self) -> int:
+        """Get the number of features for each drug."""
+        return next(iter(self.get_drug_features().values()))["features"].shape[1]
+
+    def get_labeled_triples(self) -> LabeledTriples:
+        """
+        Get the labeled triples file from the storage.
+
+        Returns:
+            : The labeled triples in the dataset.
+        """
+
+    @property
+    def num_labeled_triples(self) -> int:
+        """Get the number of labeled triples."""
+        return len(self.get_labeled_triples())
+
+    def summarize(self) -> None:
+        """Summarize the dataset."""
+        print(
+            dedent(
+                f"""\
+            Name: {self.__class__.__name__}
+            Contexts: {self.num_contexts}
+            Context Feature Size: {self.context_channels}
+            Drugs: {self.num_drugs}
+            Drug Feature Size: {self.drug_channels}
+            Triples: {self.num_labeled_triples}
+        """
+            )
+        )
+
+
+class RemoteDatasetLoader(DatasetLoader):
+    """General dataset loader for the integrated drug pair scoring datasets."""
+
+    def __init__(self, dataset_name: str):
+        """Instantiate the dataset loader.
+
+        Args:
+            dataset_name (str): The name of the dataset.
+        """
+        self.base_url = "https://raw.githubusercontent.com/AstraZeneca/chemicalx/main/dataset"
+        self.dataset_name = dataset_name
+        assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "drugbankddi"]
+
     def generate_path(self, file_name: str) -> str:
         """
         Generate a complete url for a dataset file.
@@ -140,22 +212,12 @@ class DatasetLoader:
         Get the context feature set.
 
         Returns:
-            context_feature_set (ContextFeatureSet): The ContextFeatureSet of the dataset of interest.
+            : The ContextFeatureSet of the dataset of interest.
         """
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {k: torch.FloatTensor(np.array(v).reshape(1, -1)) for k, v in raw_data.items()}
         return ContextFeatureSet(raw_data)
-
-    @property
-    def num_contexts(self) -> int:
-        """Get the number of contexts."""
-        return len(self.get_context_features())
-
-    @property
-    def context_channels(self) -> int:
-        """Get the number of features for each context."""
-        return next(iter(self.get_context_features().values())).shape[1]
 
     @lru_cache(maxsize=1)
     def get_drug_features(self):
@@ -163,7 +225,7 @@ class DatasetLoader:
         Get the drug feature set.
 
         Returns:
-            drug_feature_set (DrugFeatureSet): The DrugFeatureSet of the dataset of interest.
+            : The DrugFeatureSet of the dataset of interest.
         """
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
@@ -173,50 +235,20 @@ class DatasetLoader:
         }
         return DrugFeatureSet.from_dict(raw_data)
 
-    @property
-    def num_drugs(self) -> int:
-        """Get the number of drugs."""
-        return len(self.get_drug_features())
-
-    @property
-    def drug_channels(self) -> int:
-        """Get the number of features for each drug."""
-        return next(iter(self.get_drug_features().values()))["features"].shape[1]
-
     @lru_cache(maxsize=1)
     def get_labeled_triples(self):
         """
         Get the labeled triples file from the storage.
 
         Returns:
-            labeled_triples (LabeledTriples): The labeled triples in the dataset.
+            : The labeled triples in the dataset.
         """
         path = self.generate_path("labeled_triples.csv")
         df = self.load_raw_csv_data(path)
         return LabeledTriples(df)
 
-    @property
-    def num_labeled_triples(self) -> int:
-        """Get the number of labeled triples."""
-        return len(self.get_labeled_triples())
 
-    def summarize(self) -> None:
-        """Summarize the dataset."""
-        print(
-            dedent(
-                f"""\
-            Name: {self.dataset_name}
-            Contexts: {self.num_contexts}
-            Context Feature Size: {self.context_channels}
-            Drugs: {self.num_drugs}
-            Drug Feature Size: {self.drug_channels}
-            Triples: {self.num_labeled_triples}
-        """
-            )
-        )
-
-
-class DrugCombDB(DatasetLoader):
+class DrugCombDB(RemoteDatasetLoader):
     """A dataset loader for `DrugCombDB <http://drugcombdb.denglab.org>`_."""
 
     def __init__(self):
@@ -224,7 +256,7 @@ class DrugCombDB(DatasetLoader):
         super().__init__("drugcombdb")
 
 
-class DrugComb(DatasetLoader):
+class DrugComb(RemoteDatasetLoader):
     """A dataset loader for `DrugComb <https://drugcomb.fimm.fi/>`_."""
 
     def __init__(self):
@@ -232,7 +264,7 @@ class DrugComb(DatasetLoader):
         super().__init__("drugcomb")
 
 
-class TwoSides(DatasetLoader):
+class TwoSides(RemoteDatasetLoader):
     """A dataset loader for a sample of `TWOSIDES <http://tatonettilab.org/offsides/>`_."""
 
     def __init__(self):
@@ -240,7 +272,7 @@ class TwoSides(DatasetLoader):
         super().__init__("twosides")
 
 
-class DrugbankDDI(DatasetLoader):
+class DrugbankDDI(RemoteDatasetLoader):
     """A dataset loader for `Drugbank DDI <https://www.pnas.org/content/115/18/E4304>`_."""
 
     def __init__(self):

@@ -9,7 +9,7 @@ from class_resolver import Resolver
 
 import chemicalx.models
 from chemicalx import pipeline
-from chemicalx.data import DatasetLoader, DrugCombDB
+from chemicalx.data import DatasetLoader, DrugComb, DrugCombDB
 from chemicalx.models import (
     CASTER,
     EPGCNDS,
@@ -111,7 +111,7 @@ class TestModels(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case with a dataset."""
-        cls.loader = DatasetLoader("drugcomb")
+        cls.loader = DrugComb()
 
     def setUp(self):
         """Set up the test case."""

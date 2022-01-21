@@ -3,7 +3,7 @@
 import unittest
 from typing import ClassVar
 
-from chemicalx.data import DatasetLoader
+from chemicalx.data import DatasetLoader, DrugCombDB
 
 
 class TestGeneratorDrugCombDB(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestGeneratorDrugCombDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the class with a dataset loader."""
-        cls.loader = DatasetLoader("drugcombdb")
+        cls.loader = DrugCombDB()
 
     def test_all_true(self):
         """Test sizes of drug features during batch generation."""

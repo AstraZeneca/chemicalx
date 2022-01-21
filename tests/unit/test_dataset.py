@@ -3,7 +3,7 @@
 import unittest
 from typing import ClassVar
 
-from chemicalx.data import DatasetLoader
+from chemicalx.data import DatasetLoader, DrugbankDDI, DrugComb, DrugCombDB, TwoSides
 
 
 class TestDrugComb(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestDrugComb(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case."""
-        cls.loader = DatasetLoader("drugcomb")
+        cls.loader = DrugComb()
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -40,7 +40,7 @@ class TestDrugCombDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case."""
-        cls.loader = DatasetLoader("drugcombdb")
+        cls.loader = DrugCombDB()
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -66,7 +66,7 @@ class TestDeepDDI(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case."""
-        cls.loader = DatasetLoader("drugbankddi")
+        cls.loader = DrugbankDDI()
 
     def test_get_context_features(self):
         """Test the number of context features."""
@@ -92,7 +92,7 @@ class TestTwoSides(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up the test case."""
-        cls.loader = DatasetLoader("twosides")
+        cls.loader = TwoSides()
 
     def test_get_context_features(self):
         """Test the number of context features."""
