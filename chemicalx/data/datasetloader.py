@@ -272,7 +272,7 @@ class TwoSides(RemoteDatasetLoader):
         super().__init__("twosides")
 
 
-class DrugbankDDI(DatasetLoader):
+class DrugbankDDI(RemoteDatasetLoader):
     """A dataset loader for `Drugbank DDI <https://www.pnas.org/content/115/18/E4304>`_."""
 
     def __init__(self):
