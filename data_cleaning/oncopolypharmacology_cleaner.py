@@ -21,7 +21,7 @@ def main():
     ))
     write_drugs(drugs, output_directory)
 
-    contexts = {key: values.tolist() for key, values in df[["Cell_Line_ID", "Cell_Line"]].values}
+    contexts = {key: values.round(4).tolist() for key, values in df[["Cell_Line_ID", "Cell_Line"]].values}
     write_contexts(contexts, output_directory)
 
     triples_df = df[["Drug1_ID", "Drug2_ID", "Cell_Line_ID", "Y"]].rename(columns={
