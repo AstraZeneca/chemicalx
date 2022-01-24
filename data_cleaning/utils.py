@@ -3,22 +3,20 @@
 Requires ``pip install PyTDC pystow tabulate``.
 """
 
-import json
 from pathlib import Path
 from random import Random
-from typing import Collection, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Collection, Dict, List, Mapping, Sequence, Tuple
 
-import numpy as np
 import pandas as pd
 import pystow
-import rdkit
-from rdkit.Chem import AllChem, DataStructs
-from tdc.multi_pred import DDI, DrugSyn
+from tdc.multi_pred import DDI
 from tqdm import trange
+
+from chemicalx.data.utils import get_features, write_contexts, write_drugs
 
 __all__ = [
     "OUTPUT",
-    "get_tdc_ddi",
+    "get_tdc",
     "get_features",
     "map_context",
     "get_samples",
@@ -31,33 +29,15 @@ OUTPUT = HERE.parent.joinpath("dataset")
 COLUMNS = ["drug_1", "drug_2", "context", "label"]
 
 
-def get_tdc_ddi(name: str, out_name: str) -> Tuple[Path, Path]:
+def get_tdc(name: str, out_name: str) -> Tuple[Path, Path]:
     """Get the input and output directories for a given DDI dataset from Therapeutic Data Commons."""
-    return _get_tdc(name=name, out_name=out_name, loader_cls=DDI)
-
-
-def get_tdc_synergy(name: str, out_name: Optional[str] = None) -> Tuple[Path, Path]:
-    """Get the input and output directories for a given drug synergy dataset from Therapeutic Data Commons."""
-    return _get_tdc(name=name, out_name=out_name, loader_cls=DrugSyn)
-
-
-def _get_tdc(name: str, out_name: Optional[str] = None, *, loader_cls):
     if out_name is None:
         out_name = name.casefold()
     directory = pystow.join("tdc", name)
-    loader_cls(name=name, path=directory)
+    DDI(name=name, path=directory)
     od = OUTPUT.joinpath(out_name)
     od.mkdir(exist_ok=True, parents=True)
     return directory, od
-
-
-def get_features(smiles: str):
-    """Get a morgan fingerprint vector for the given molecule."""
-    molecule = rdkit.Chem.MolFromSmiles(smiles)
-    features = AllChem.GetHashedMorganFingerprint(molecule, 2, nBits=256)
-    array = np.zeros((0,), dtype=np.int8)
-    DataStructs.ConvertToNumpyArray(features, array)
-    return array.tolist()
 
 
 def map_context(index: int, context_count: int) -> List[int]:
@@ -92,24 +72,6 @@ def get_index(df: pd.DataFrame) -> Tuple[Dict[str, str], Dict[Tuple[str, str, st
         big_map[left_id, right_id, context] = 1
         big_map[right_id, left_id, context] = 1
     return drugs_raw, big_map
-
-
-def write_drugs(drugs_raw: Mapping[str, str], output_directory: Path) -> None:
-    """Write drugs dictionary."""
-    drug_set = {drug: {"smiles": smiles, "features": get_features(smiles)} for drug, smiles in drugs_raw.items()}
-    with output_directory.joinpath("drug_set.json").open("w") as file:
-        json.dump(drug_set, file)
-
-
-def write_contexts(context_set: Mapping[str, List[str]], output_directory: Path) -> None:
-    """Write contexts dictionary."""
-    with output_directory.joinpath("context_set.json").open("w") as file:
-        json.dump(context_set, file)
-
-
-def write_triples(df: pd.DataFrame, output_directory: Path) -> None:
-    """Write labeled triples."""
-    df.to_csv(output_directory.joinpath("labeled_triples.csv"), index=False)
 
 
 def write_artifacts(output_directory: Path, drugs_raw: Mapping[str, str], contexts: Sequence[str]) -> None:
