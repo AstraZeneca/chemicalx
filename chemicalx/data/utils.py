@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import List, Mapping
+from typing import Mapping, Sequence
 
 import numpy as np
 import pandas as pd
@@ -49,7 +49,7 @@ def write_drugs_json(drugs_raw: Mapping[str, str], output_directory: Path) -> Pa
     return path
 
 
-def write_contexts_json(context_set: Mapping[str, List[str]], output_directory: Path) -> Path:
+def write_contexts_json(context_set: Mapping[str, Sequence[float]], output_directory: Path) -> Path:
     """Write contexts dictionary."""
     path = output_directory.joinpath(CONTEXT_FILE_NAME)
     with path.open("w") as file:

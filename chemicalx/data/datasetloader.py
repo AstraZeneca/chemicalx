@@ -6,24 +6,24 @@ import urllib.request
 from abc import ABC, abstractmethod
 from functools import lru_cache
 from itertools import chain
-from pathlib import Path
 from textwrap import dedent
-from typing import Dict, Mapping, Optional, Sequence, Tuple, cast
+from typing import ClassVar, Dict, Mapping, Optional, Sequence, Tuple, cast
 
 import numpy as np
 import pandas as pd
+import pystow as pystow
 import torch
 
-from .labeledtriples import LabeledTriples
 from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
+from .labeledtriples import LabeledTriples
 from .utils import CONTEXT_FILE_NAME, DRUG_FILE_NAME, LABELS_FILE_NAME, get_features
 
 __all__ = [
     "DatasetLoader",
     "RemoteDatasetLoader",
-    "LocalDatsetLoader",
+    "LocalDatasetLoader",
     # Actual datasets
     "DrugCombDB",
     "DrugComb",
@@ -161,7 +161,7 @@ class DatasetLoader(ABC):
 
 
 class RemoteDatasetLoader(DatasetLoader):
-    """General dataset loader for the integrated drug pair scoring datasets."""
+    """A dataset loader for remote data."""
 
     def __init__(self, dataset_name: str):
         """Instantiate the dataset loader.
@@ -286,9 +286,14 @@ class DrugbankDDI(RemoteDatasetLoader):
         super().__init__("drugbankddi")
 
 
-class LocalDatsetLoader(DatasetLoader):
-    def __init__(self, directory: Path):
-        self.directory = Path(directory)
+class LocalDatasetLoader(DatasetLoader):
+    """A dataset loader that processes and caches data locally."""
+
+    name: ClassVar[str]
+
+    def __init__(self):
+        """Instantiate the local dataset loader."""
+        self.directory = pystow.join("chemicalx", self.name)
         self.drugs_path = self.directory.joinpath(DRUG_FILE_NAME)
         self.contexts_path = self.directory.joinpath(CONTEXT_FILE_NAME)
         self.labels_path = self.directory.joinpath(LABELS_FILE_NAME)
@@ -298,45 +303,54 @@ class LocalDatsetLoader(DatasetLoader):
 
     @abstractmethod
     def preprocess(self):
-        raise NotImplementedError
+        """Download and preprocess the dataset.
+
+        The implementation of this function should write to all three of ``self.drugs_path``,
+        ``self.contexts_path``, and ``self.labels_path`` using respectively :func:`write_drugs`,
+        :func:`write_contexts`, and :func:`write_labels`.
+        """
 
     @lru_cache(maxsize=1)
     def get_drug_features(self) -> DrugFeatureSet:
-        return DrugFeatureSet.from_dict(self.load_drugs())
+        """Get the drug feature set."""
+        return DrugFeatureSet.from_dict(json.loads(self.drugs_path.read_text()))
 
-    def load_drugs(self):
-        return json.loads(self.drugs_path.read_text())
-
-    def write_drugs(self, drugs: Mapping[str, str]):
+    def write_drugs(self, drugs: Mapping[str, str]) -> None:
+        """Write the drugs dictionary."""
         wv = {drug: {"smiles": smiles, "features": get_features(smiles)} for drug, smiles in drugs.items()}
         with self.drugs_path.open("w") as file:
             json.dump(wv, file)
 
     @lru_cache(maxsize=1)
     def get_context_features(self) -> ContextFeatureSet:
-        return ContextFeatureSet.from_dict(self.load_contexts())
-
-    def load_contexts(self) -> Mapping[str, Sequence[float]]:
-        return json.loads(self.contexts_path.read_text())
+        """Get the context feature set."""
+        return ContextFeatureSet.from_dict(json.loads(self.contexts_path.read_text()))
 
     def write_contexts(self, contexts: Mapping[str, Sequence[float]]):
+        """Write the context feature set."""
         with self.contexts_path.open("w") as file:
             json.dump(contexts, file)
 
     @lru_cache(maxsize=1)
     def get_labeled_triples(self) -> LabeledTriples:
-        return LabeledTriples(self.load_labels())
-
-    def load_labels(self) -> pd.DataFrame:
-        return pd.read_csv(self.labels_path)
+        """Get the labeled triples dataframe."""
+        return LabeledTriples(pd.read_csv(self.labels_path))
 
     def write_labels(self, df: pd.DataFrame):
+        """Write the labeled triples dataframe."""
         df.to_csv(self.labels_path, index=False, sep="\t")
 
 
-class OncoPolyPharmacology(LocalDatsetLoader):
+class OncoPolyPharmacology(LocalDatasetLoader):
+    """A large-scale oncology screen of drug-drug synergy.
+
+    .. [oneil2016] O’Neil, J., *et al.* (2016). `An Unbiased Oncology Compound Screen to Identify Novel
+       Combination Strategies <https://doi.org/10.1158/1535-7163.MCT-15-0843>`_. *Molecular Cancer
+       Therapeutics*, 15(6), 1155–1162.
+    """
+
     def preprocess(self) -> None:
-        """Download and pre-process the dataset."""
+        """Download and process the OncoPolyPharmacology dataset."""
         from tdc.multi_pred import DrugSyn
 
         DrugSyn(name="OncoPolyPharmacology", path=self.directory.as_posix())

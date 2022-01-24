@@ -12,12 +12,11 @@ import pystow
 from tdc.multi_pred import DDI
 from tqdm import trange
 
-from chemicalx.data.utils import get_features, write_contexts_json, write_drugs_json
+from chemicalx.data.utils import write_contexts_json, write_drugs_json
 
 __all__ = [
     "OUTPUT",
     "get_tdc",
-    "get_features",
     "map_context",
     "get_samples",
     "get_index",
@@ -40,10 +39,10 @@ def get_tdc(name: str, out_name: str) -> Tuple[Path, Path]:
     return directory, od
 
 
-def map_context(index: int, context_count: int) -> List[int]:
+def map_context(index: int, context_count: int) -> Sequence[float]:
     """Get a one-hot encoding for the given context."""
-    context_vector = [0 for _ in range(context_count)]
-    context_vector[index] = 1
+    context_vector = [0.0 for _ in range(context_count)]
+    context_vector[index] = 1.0
     return context_vector
 
 
