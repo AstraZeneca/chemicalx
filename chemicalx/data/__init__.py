@@ -8,6 +8,8 @@ from .datasetloader import (
     DrugbankDDI,
     DrugComb,
     DrugCombDB,
+    LocalDatsetLoader,
+    OncoPolyPharmacology,
     RemoteDatasetLoader,
     TwoSides,
 )
@@ -27,6 +29,7 @@ __all__ = [
     "TwoSides",
     "DrugComb",
     "DrugCombDB",
+    "OncoPolyPharmacology",
 ]
 
-dataset_resolver = Resolver.from_subclasses(base=DatasetLoader, skip={RemoteDatasetLoader})
+dataset_resolver = Resolver.from_subclasses(base=DatasetLoader, skip={RemoteDatasetLoader, LocalDatsetLoader})

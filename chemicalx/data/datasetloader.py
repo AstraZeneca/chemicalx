@@ -5,26 +5,31 @@ import json
 import urllib.request
 from abc import ABC, abstractmethod
 from functools import lru_cache
+from itertools import chain
+from pathlib import Path
 from textwrap import dedent
-from typing import Dict, Optional, Tuple, cast
+from typing import Dict, Mapping, Optional, Sequence, Tuple, cast
 
 import numpy as np
 import pandas as pd
 import torch
 
+from .labeledtriples import LabeledTriples
 from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
-from .labeledtriples import LabeledTriples
+from .utils import CONTEXT_FILE_NAME, DRUG_FILE_NAME, LABELS_FILE_NAME, get_features
 
 __all__ = [
     "DatasetLoader",
     "RemoteDatasetLoader",
+    "LocalDatsetLoader",
     # Actual datasets
     "DrugCombDB",
     "DrugComb",
     "TwoSides",
     "DrugbankDDI",
+    "OncoPolyPharmacology",
 ]
 
 
@@ -125,6 +130,7 @@ class DatasetLoader(ABC):
         """Get the number of features for each drug."""
         return next(iter(self.get_drug_features().values()))["features"].shape[1]
 
+    @abstractmethod
     def get_labeled_triples(self) -> LabeledTriples:
         """
         Get the labeled triples file from the storage.
@@ -278,3 +284,81 @@ class DrugbankDDI(RemoteDatasetLoader):
     def __init__(self):
         """Instantiate the Drugbank DDI dataset loader."""
         super().__init__("drugbankddi")
+
+
+class LocalDatsetLoader(DatasetLoader):
+    def __init__(self, directory: Path):
+        self.directory = Path(directory)
+        self.drugs_path = self.directory.joinpath(DRUG_FILE_NAME)
+        self.contexts_path = self.directory.joinpath(CONTEXT_FILE_NAME)
+        self.labels_path = self.directory.joinpath(LABELS_FILE_NAME)
+
+        if any(not path.exists() for path in (self.drugs_path, self.contexts_path, self.labels_path)):
+            self.preprocess()
+
+    @abstractmethod
+    def preprocess(self):
+        raise NotImplementedError
+
+    @lru_cache(maxsize=1)
+    def get_drug_features(self) -> DrugFeatureSet:
+        return DrugFeatureSet.from_dict(self.load_drugs())
+
+    def load_drugs(self):
+        return json.loads(self.drugs_path.read_text())
+
+    def write_drugs(self, drugs: Mapping[str, str]):
+        wv = {drug: {"smiles": smiles, "features": get_features(smiles)} for drug, smiles in drugs.items()}
+        with self.drugs_path.open("w") as file:
+            json.dump(wv, file)
+
+    @lru_cache(maxsize=1)
+    def get_context_features(self) -> ContextFeatureSet:
+        return ContextFeatureSet.from_dict(self.load_contexts())
+
+    def load_contexts(self) -> Mapping[str, Sequence[float]]:
+        return json.loads(self.contexts_path.read_text())
+
+    def write_contexts(self, contexts: Mapping[str, Sequence[float]]):
+        with self.contexts_path.open("w") as file:
+            json.dump(contexts, file)
+
+    @lru_cache(maxsize=1)
+    def get_labeled_triples(self) -> LabeledTriples:
+        return LabeledTriples(self.load_labels())
+
+    def load_labels(self) -> pd.DataFrame:
+        return pd.read_csv(self.labels_path)
+
+    def write_labels(self, df: pd.DataFrame):
+        df.to_csv(self.labels_path, index=False, sep="\t")
+
+
+class OncoPolyPharmacology(LocalDatsetLoader):
+    def preprocess(self) -> None:
+        """Download and pre-process the dataset."""
+        from tdc.multi_pred import DrugSyn
+
+        DrugSyn(name="OncoPolyPharmacology", path=self.directory.as_posix())
+        df = pd.read_pickle(self.directory.joinpath("oncopolypharmacology.pkl"))
+
+        drugs = dict(
+            chain(
+                df[["Drug1_ID", "Drug1"]].values,
+                df[["Drug2_ID", "Drug2"]].values,
+            )
+        )
+        self.write_drugs(drugs)
+
+        contexts = {key: values.round(4).tolist() for key, values in df[["Cell_Line_ID", "Cell_Line"]].values}
+        self.write_contexts(contexts)
+
+        labels_df = df[["Drug1_ID", "Drug2_ID", "Cell_Line_ID", "Y"]].rename(
+            columns={
+                "Drug1_ID": "drug_1",
+                "Drug2_ID": "drug_2",
+                "Cell_Line_ID": "context",
+                "Y": "label",
+            }
+        )
+        self.write_labels(labels_df)

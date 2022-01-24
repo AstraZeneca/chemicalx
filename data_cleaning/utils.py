@@ -12,7 +12,7 @@ import pystow
 from tdc.multi_pred import DDI
 from tqdm import trange
 
-from chemicalx.data.utils import get_features, write_contexts, write_drugs
+from chemicalx.data.utils import get_features, write_contexts_json, write_drugs_json
 
 __all__ = [
     "OUTPUT",
@@ -76,7 +76,7 @@ def get_index(df: pd.DataFrame) -> Tuple[Dict[str, str], Dict[Tuple[str, str, st
 
 def write_artifacts(output_directory: Path, drugs_raw: Mapping[str, str], contexts: Sequence[str]) -> None:
     """Write drugs and one-hot contexts files."""
-    write_drugs(drugs_raw=drugs_raw, output_directory=output_directory)
+    write_drugs_json(drugs_raw=drugs_raw, output_directory=output_directory)
     # with output_directory.joinpath("structures.tsv").open("w") as structures_file, output_directory.joinpath(
     #     "features.tsv"
     # ).open("w") as features_file:
@@ -87,7 +87,7 @@ def write_artifacts(output_directory: Path, drugs_raw: Mapping[str, str], contex
     # Generate contexts file
     context_count = len(contexts)
     context_set = {context: map_context(i, context_count) for i, context in enumerate(contexts)}
-    write_contexts(context_set, output_directory)
+    write_contexts_json(context_set, output_directory)
     # with output_directory.joinpath("contexts.tsv").open("w") as file:
     #     for context, v in sorted(context_set.items()):
     #         print(context, *v, sep="\t", file=file)
