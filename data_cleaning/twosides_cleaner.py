@@ -8,7 +8,7 @@ from random import Random
 import click
 import pandas as pd
 from tabulate import tabulate
-from utils import get_index, get_samples, get_tdc, write_artifacts
+from utils import get_index, get_samples, get_tdc_ddi, write_artifacts
 
 
 @click.command()
@@ -18,7 +18,7 @@ from utils import get_index, get_samples, get_tdc, write_artifacts
 def main(seed: int, ratio: float, top: int):
     """Download and pre-process the TWOSIDES dataset."""
     rng = Random(seed)
-    input_directory, output_directory = get_tdc("TWOSIDES", "twosides")
+    input_directory, output_directory = get_tdc_ddi("TWOSIDES", "twosides")
 
     positive_samples = pd.read_csv(
         input_directory.joinpath("twosides.csv"),

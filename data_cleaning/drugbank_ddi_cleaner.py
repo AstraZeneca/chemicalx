@@ -5,7 +5,7 @@ from random import Random
 
 import click
 import pandas as pd
-from utils import get_index, get_samples, get_tdc, write_artifacts
+from utils import get_index, get_samples, get_tdc_ddi, write_artifacts
 
 
 @click.command()
@@ -14,7 +14,7 @@ from utils import get_index, get_samples, get_tdc, write_artifacts
 def main(seed: int, ratio: float):
     """Download and pre-process the DrugBank DDI dataset."""
     rng = Random(seed)
-    input_directory, output_directory = get_tdc("drugbank", "drugbankddi")
+    input_directory, output_directory = get_tdc_ddi("drugbank", "drugbankddi")
 
     positive_samples = pd.read_csv(
         input_directory.joinpath("drugbank.tab"),
