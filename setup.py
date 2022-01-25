@@ -10,7 +10,8 @@ install_requires = [
     "pandas<=1.3.5",
     "tqdm",
     "scikit-learn",
-    "class-resolver",
+    "class-resolver>=0.2.1",
+    "tabulate",
 ]
 
 

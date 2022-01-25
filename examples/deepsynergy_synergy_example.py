@@ -1,13 +1,21 @@
-"""Example with DeepSynergy."""
+"""Example with DeepSynergy.
+
+Because the OncoPolyPharmacology dataset has a continuous
+output instead of a binary one, the MSE loss is used instead
+of the BCE loss.
+"""
+
+from torch import nn
 
 from chemicalx import pipeline
-from chemicalx.data import DrugCombDB
+from chemicalx.data import OncoPolyPharmacology
 from chemicalx.models import DeepSynergy
 
 
 def main():
     """Train and evaluate the DeepSynergy model."""
-    dataset = DrugCombDB()
+    dataset = OncoPolyPharmacology()
+    dataset.summarize()
     model = DeepSynergy(context_channels=dataset.context_channels, drug_channels=dataset.drug_channels)
     results = pipeline(
         dataset=dataset,
@@ -17,9 +25,8 @@ def main():
         context_features=True,
         drug_features=True,
         drug_molecules=False,
-        metrics=[
-            "roc_auc",
-        ],
+        loss_cls=nn.MSELoss,
+        metrics=["mae", "mse"],
     )
     results.summarize()
 

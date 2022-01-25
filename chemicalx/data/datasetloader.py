@@ -1,5 +1,6 @@
 """A module for dataset loaders."""
 
+import csv
 import io
 import json
 import urllib.request
@@ -7,7 +8,7 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from itertools import chain
 from textwrap import dedent
-from typing import ClassVar, Dict, Mapping, Optional, Sequence, Tuple, cast
+from typing import Dict, Mapping, Optional, Sequence, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -286,16 +287,14 @@ class DrugbankDDI(RemoteDatasetLoader):
         super().__init__("drugbankddi")
 
 
-class LocalDatasetLoader(DatasetLoader):
+class LocalDatasetLoader(DatasetLoader, ABC):
     """A dataset loader that processes and caches data locally."""
-
-    name: ClassVar[str]
 
     def __init__(self):
         """Instantiate the local dataset loader."""
-        self.directory = pystow.join("chemicalx", self.name)
+        self.directory = pystow.join("chemicalx", self.__class__.__name__.lower())
         self.drugs_path = self.directory.joinpath(DRUG_FILE_NAME)
-        self.contexts_path = self.directory.joinpath(CONTEXT_FILE_NAME)
+        self.contexts_path = self.directory.joinpath("context.tsv")
         self.labels_path = self.directory.joinpath(LABELS_FILE_NAME)
 
         if any(not path.exists() for path in (self.drugs_path, self.contexts_path, self.labels_path)):
@@ -324,17 +323,21 @@ class LocalDatasetLoader(DatasetLoader):
     @lru_cache(maxsize=1)
     def get_context_features(self) -> ContextFeatureSet:
         """Get the context feature set."""
-        return ContextFeatureSet.from_dict(json.loads(self.contexts_path.read_text()))
+        with self.contexts_path.open() as file:
+            return ContextFeatureSet.from_dict(
+                {key: [float(v) for v in values] for key, *values in csv.reader(file, delimiter="\t")}
+            )
 
     def write_contexts(self, contexts: Mapping[str, Sequence[float]]):
         """Write the context feature set."""
         with self.contexts_path.open("w") as file:
-            json.dump(contexts, file)
+            for key, values in contexts.items():
+                print(key, *values, sep="\t", file=file)
 
     @lru_cache(maxsize=1)
     def get_labeled_triples(self) -> LabeledTriples:
         """Get the labeled triples dataframe."""
-        return LabeledTriples(pd.read_csv(self.labels_path))
+        return LabeledTriples(pd.read_csv(self.labels_path, sep="\t"))
 
     def write_labels(self, df: pd.DataFrame):
         """Write the labeled triples dataframe."""

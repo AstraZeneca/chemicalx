@@ -16,7 +16,7 @@ class ContextFeatureSet(UserDict, Mapping[str, torch.FloatTensor]):
     @classmethod
     def from_dict(cls, data: Mapping[str, Sequence[float]]) -> "ContextFeatureSet":
         """Generate a context feature set from a data dictionary."""
-        return cls({key: torch.FloatTensor(values) for key, values in data.items()})
+        return cls({key: torch.FloatTensor(values).view(1, -1) for key, values in data.items()})
 
     def get_feature_matrix(self, contexts: Iterable[str]) -> torch.FloatTensor:
         """Get the feature matrix for a list of contexts.

@@ -4,12 +4,13 @@ import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List, Mapping, Optional, Type, Union
+from typing import Any, List, Mapping, Optional, Sequence, Type, Union
 
 import pandas as pd
 import torch
-from class_resolver import HintOrType
-from sklearn.metrics import roc_auc_score
+from class_resolver import FunctionResolver, HintOrType
+from sklearn.metrics import mean_absolute_error, mean_squared_error, roc_auc_score
+from tabulate import tabulate
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from tqdm import trange
@@ -23,6 +24,11 @@ __all__ = [
     "pipeline",
 ]
 
+metric_resolver = FunctionResolver([])
+metric_resolver.register(roc_auc_score, synonyms={"roc_auc", "auc_roc", "auroc"})
+metric_resolver.register(mean_squared_error, synonyms={"mse"})
+metric_resolver.register(mean_absolute_error, synonyms={"mae"})
+
 
 @dataclass
 class Result:
@@ -33,11 +39,11 @@ class Result:
     losses: List[float]
     train_time: float
     evaluation_time: float
-    roc_auc: float
+    metrics: Mapping[str, float]
 
     def summarize(self) -> None:
         """Print results to the console."""
-        print(f"AUC-ROC: {self.roc_auc:0.3f}")
+        print(tabulate(sorted(self.metrics.items()), headers=["Metric", "Value"]))
 
     def save(self, directory: Union[str, Path]) -> None:
         """Save the results to a directory."""
@@ -50,9 +56,7 @@ class Result:
         directory.joinpath("results.json").write_text(
             json.dumps(
                 {
-                    "evaluation": {
-                        "auc_roc": self.roc_auc,
-                    },
+                    "evaluation": self.metrics,
                     "losses": self.losses,
                     "training_time": self.train_time,
                     "evaluation_time": self.evaluation_time,
@@ -79,6 +83,7 @@ def pipeline(
     drug_molecules: bool,
     train_size: Optional[float] = None,
     random_state: Optional[int] = None,
+    metrics: Optional[Sequence[str]] = None,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -118,6 +123,8 @@ def pipeline(
         The ratio of training triples. Default is 0.8 if None is passed.
     :param random_state:
         The random seed for splitting the triples. Default is 42. Set to none for no fixed seed.
+    :param metrics:
+        The list of metrics to use.
     :returns:
         A result object with the trained model and evaluation results
     """
@@ -165,11 +172,18 @@ def pipeline(
 
     predictions_df = pd.concat(predictions)
 
+    if metrics is None:
+        metric_dict = {"roc_auc": roc_auc_score}
+    else:
+        metric_dict = {name: metric_resolver.lookup(name) for name in metrics}
+
     return Result(
         model=model,
         predictions=predictions_df,
         losses=losses,
         train_time=train_time,
         evaluation_time=evaluation_time,
-        roc_auc=roc_auc_score(predictions_df["label"], predictions_df["prediction"]),
+        metrics={
+            name: func(predictions_df["label"], predictions_df["prediction"]) for name, func in metric_dict.items()
+        },
     )
