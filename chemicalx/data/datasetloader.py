@@ -20,7 +20,7 @@ from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
 from .labeledtriples import LabeledTriples
-from .utils import DRUG_FILE_NAME, LABELS_FILE_NAME, get_features, get_tdc_synergy
+from .utils import get_features, get_tdc_synergy
 
 __all__ = [
     "DatasetLoader",
@@ -294,11 +294,15 @@ class LocalDatasetLoader(DatasetLoader, ABC):
     def __init__(self, directory: Optional[Path] = None):
         """Instantiate the local dataset loader."""
         self.directory = directory or pystow.join("chemicalx", self.__class__.__name__.lower())
-        self.drugs_path = self.directory.joinpath(DRUG_FILE_NAME)
+        self.drug_structures_path = self.directory.joinpath("structures.tsv")
+        self.drug_features_path = self.directory.joinpath("features.tsv")
         self.contexts_path = self.directory.joinpath("context.tsv")
-        self.labels_path = self.directory.joinpath(LABELS_FILE_NAME)
+        self.labels_path = self.directory.joinpath("labels.tsv")
 
-        if any(not path.exists() for path in (self.drugs_path, self.contexts_path, self.labels_path)):
+        if any(
+            not path.exists()
+            for path in (self.drug_features_path, self.drug_structures_path, self.contexts_path, self.labels_path)
+        ):
             self.preprocess()
 
     @abstractmethod
@@ -313,13 +317,22 @@ class LocalDatasetLoader(DatasetLoader, ABC):
     @lru_cache(maxsize=1)
     def get_drug_features(self) -> DrugFeatureSet:
         """Get the drug feature set."""
-        return DrugFeatureSet.from_dict(json.loads(self.drugs_path.read_text()))
+        with self.drug_structures_path.open() as struct_file, self.drug_features_path.open() as feat_file:
+            struct_reader = csv.reader(struct_file, delimiter="\t")
+            feat_reader = csv.reader(feat_file, delimiter="\t")
+            return DrugFeatureSet.from_dict(
+                {
+                    drug: {"smiles": smiles, "features": [float(f) for f in features]}
+                    for (drug, smiles), (_, *features) in zip(struct_reader, feat_reader)
+                }
+            )
 
     def write_drugs(self, drugs: Mapping[str, str]) -> None:
-        """Write the drugs dictionary."""
-        wv = {drug: {"smiles": smiles, "features": get_features(smiles)} for drug, smiles in drugs.items()}
-        with self.drugs_path.open("w") as file:
-            json.dump(wv, file)
+        """Write the drug data."""
+        with self.drug_structures_path.open("w") as struct_file, self.drug_features_path.open("w") as feat_file:
+            for drug, smiles in sorted(drugs.items()):
+                print(drug, smiles, sep="\t", file=struct_file)
+                print(drug, *get_features(smiles), sep="\t", file=feat_file)
 
     @lru_cache(maxsize=1)
     def get_context_features(self) -> ContextFeatureSet:

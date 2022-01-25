@@ -20,7 +20,7 @@ class TestDatasetLoader(LocalDatasetLoader):
     """A mock dataset loader."""
 
     def preprocess(self):
-        """A mock preprocessing function."""
+        """Mock the preprocessing function to be no-op."""
 
 
 class TestMock(unittest.TestCase):
