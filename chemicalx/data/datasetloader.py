@@ -9,7 +9,7 @@ from functools import lru_cache
 from itertools import chain
 from pathlib import Path
 from textwrap import dedent
-from typing import Dict, Mapping, Optional, Sequence, Tuple, cast
+from typing import ClassVar, Dict, Mapping, Optional, Sequence, Tuple, cast
 
 import numpy as np
 import pandas as pd
@@ -291,13 +291,18 @@ class DrugbankDDI(RemoteDatasetLoader):
 class LocalDatasetLoader(DatasetLoader, ABC):
     """A dataset loader that processes and caches data locally."""
 
+    structures_name: ClassVar[str] = "structures.tsv"
+    features_name: ClassVar[str] = "features.tsv"
+    contexts_name: ClassVar[str] = "contexts.tsv"
+    labels_name: ClassVar[str] = "labels.tsv"
+
     def __init__(self, directory: Optional[Path] = None):
         """Instantiate the local dataset loader."""
         self.directory = directory or pystow.join("chemicalx", self.__class__.__name__.lower())
-        self.drug_structures_path = self.directory.joinpath("structures.tsv")
-        self.drug_features_path = self.directory.joinpath("features.tsv")
-        self.contexts_path = self.directory.joinpath("context.tsv")
-        self.labels_path = self.directory.joinpath("labels.tsv")
+        self.drug_structures_path = self.directory.joinpath(self.structures_name)
+        self.drug_features_path = self.directory.joinpath(self.features_name)
+        self.contexts_path = self.directory.joinpath(self.contexts_name)
+        self.labels_path = self.directory.joinpath(self.labels_name)
 
         if any(
             not path.exists()
