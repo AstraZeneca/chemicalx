@@ -20,7 +20,7 @@ class DrugFeatureSet(UserDict, Mapping[str, Mapping[str, Union[torch.FloatTensor
         return cls(
             {
                 key: {
-                    "features": torch.FloatTensor(features["features"]),
+                    "features": torch.FloatTensor(features["features"]).view(1, -1),
                     "molecule": Molecule.from_smiles(features["smiles"]),
                 }
                 for key, features in data.items()
