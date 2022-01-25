@@ -345,7 +345,7 @@ class LocalDatasetLoader(DatasetLoader, ABC):
 
 
 class OncoPolyPharmacology(LocalDatasetLoader):
-    """A large-scale oncology screen of drug-drug synergy.
+    """A large-scale oncology screen of drug-drug synergy from [oneil2016]_.
 
     .. [oneil2016] O’Neil, J., *et al.* (2016). `An Unbiased Oncology Compound Screen to Identify Novel
        Combination Strategies <https://doi.org/10.1158/1535-7163.MCT-15-0843>`_. *Molecular Cancer
