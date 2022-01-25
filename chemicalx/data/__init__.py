@@ -22,9 +22,12 @@ __all__ = [
     "DrugFeatureSet",
     "DrugPairBatch",
     "LabeledTriples",
-    # Datasets
+    # Abstract datasets
     "dataset_resolver",
     "DatasetLoader",
+    "RemoteDatasetLoader",
+    "LocalDatasetLoader",
+    # Datasets
     "DrugbankDDI",
     "TwoSides",
     "DrugComb",

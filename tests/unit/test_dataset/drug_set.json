@@ -1,0 +1,20 @@
+{
+  "5-FU": {
+    "smiles": "O=c1[nH]cc(F)c(=O)[nH]1",
+    "features": [
+      0,
+      1,
+      1,
+      0
+    ]
+  },
+  "ABT-888": {
+    "smiles": "CC1(c2nc3c(C(N)=O)cccc3[nH]2)CCCN1",
+    "features": [
+      0,
+      1,
+      0,
+      1
+    ]
+  }
+}

@@ -7,6 +7,7 @@ import urllib.request
 from abc import ABC, abstractmethod
 from functools import lru_cache
 from itertools import chain
+from pathlib import Path
 from textwrap import dedent
 from typing import Dict, Mapping, Optional, Sequence, Tuple, cast
 
@@ -290,9 +291,9 @@ class DrugbankDDI(RemoteDatasetLoader):
 class LocalDatasetLoader(DatasetLoader, ABC):
     """A dataset loader that processes and caches data locally."""
 
-    def __init__(self):
+    def __init__(self, directory: Optional[Path] = None):
         """Instantiate the local dataset loader."""
-        self.directory = pystow.join("chemicalx", self.__class__.__name__.lower())
+        self.directory = directory or pystow.join("chemicalx", self.__class__.__name__.lower())
         self.drugs_path = self.directory.joinpath(DRUG_FILE_NAME)
         self.contexts_path = self.directory.joinpath("context.tsv")
         self.labels_path = self.directory.joinpath(LABELS_FILE_NAME)
