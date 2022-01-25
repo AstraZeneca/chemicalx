@@ -5,14 +5,12 @@ Requires ``pip install PyTDC pystow tabulate``.
 
 from pathlib import Path
 from random import Random
-from typing import Collection, Dict, List, Mapping, Sequence, Tuple
+from typing import Collection, Dict, Mapping, Sequence, Tuple
 
 import pandas as pd
-import pystow
-from tdc.multi_pred import DDI
 from tqdm import trange
 
-from chemicalx.data.utils import write_contexts_json, write_drugs_json
+from chemicalx.data.utils import get_tdc_ddi, write_contexts_json, write_drugs_json
 
 __all__ = [
     "OUTPUT",
@@ -30,10 +28,7 @@ COLUMNS = ["drug_1", "drug_2", "context", "label"]
 
 def get_tdc(name: str, out_name: str) -> Tuple[Path, Path]:
     """Get the input and output directories for a given DDI dataset from Therapeutic Data Commons."""
-    if out_name is None:
-        out_name = name.casefold()
-    directory = pystow.join("tdc", name)
-    DDI(name=name, path=directory)
+    directory = get_tdc_ddi(name)
     od = OUTPUT.joinpath(out_name)
     od.mkdir(exist_ok=True, parents=True)
     return directory, od

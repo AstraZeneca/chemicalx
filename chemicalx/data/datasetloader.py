@@ -19,7 +19,7 @@ from .batchgenerator import BatchGenerator
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
 from .labeledtriples import LabeledTriples
-from .utils import CONTEXT_FILE_NAME, DRUG_FILE_NAME, LABELS_FILE_NAME, get_features
+from .utils import DRUG_FILE_NAME, LABELS_FILE_NAME, get_features, get_tdc_synergy
 
 __all__ = [
     "DatasetLoader",
@@ -354,10 +354,8 @@ class OncoPolyPharmacology(LocalDatasetLoader):
 
     def preprocess(self) -> None:
         """Download and process the OncoPolyPharmacology dataset."""
-        from tdc.multi_pred import DrugSyn
-
-        DrugSyn(name="OncoPolyPharmacology", path=self.directory.as_posix())
-        df = pd.read_pickle(self.directory.joinpath("oncopolypharmacology.pkl"))
+        tdc_directory = get_tdc_synergy("OncoPolyPharmacology")
+        df = pd.read_pickle(tdc_directory.joinpath("oncopolypharmacology.pkl"))
 
         drugs = dict(
             chain(

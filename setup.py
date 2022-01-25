@@ -12,6 +12,7 @@ install_requires = [
     "scikit-learn",
     "class-resolver>=0.2.1",
     "tabulate",
+    "pystow",
 ]
 
 
