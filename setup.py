@@ -13,6 +13,7 @@ install_requires = [
     "class-resolver>=0.2.1",
     "tabulate",
     "pystow",
+    "pytdc",
 ]
 
 
