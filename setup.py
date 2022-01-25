@@ -16,7 +16,8 @@ install_requires = [
 
 setup_requires = ["pytest-runner"]
 
-tests_require = ["pytest", "pytest-cov"]
+tests_require = ["pytest", "pytest-cov", "coverage"]
+
 
 extras_require = {
     "tests": tests_require,
