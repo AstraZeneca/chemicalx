@@ -85,9 +85,9 @@ class DeepDDS(Model):
             molecules_left (torch.FloatTensor): A matrix of left drug features
             molecules_right (torch.FloatTensor): A matrix of right drug features
         Returns:
-            (torch.FloarTensor): A column vector of predicted synergy scores
+            (torch.FloatTensor): A column vector of predicted synergy scores
         """
-        # Run the MLP forward
+        # Run the MLP forward for the cell line features
         mlp_out = self.cell_mlp(normalize(context_features, p=2, dim=1))
 
         # Todo: source code does not run a final activation before
@@ -99,7 +99,7 @@ class DeepDDS(Model):
         features_right = self.mlp_right(features_right)
         features_right = self.max_readout.forward(input=features_right, graph=molecules_right)
         print(mlp_out.shape, features_left.shape, features_right.shape)
-        # Getting this from the prinout with
+        # Getting this from the printout with
         # context_feature_size=112, context_output_size=10, in_channels=69
         # as arguments in the example
         # torch.Size([5120, 10]) torch.Size([147702, 10]) torch.Size([138287, 10])
