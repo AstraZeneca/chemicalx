@@ -19,8 +19,8 @@ synergistic or antagonistic.
 import torch
 from torch.nn.functional import normalize, softmax
 from torchdrug.data import PackedGraph
-from torchdrug.layers import MLP
-from torchdrug.models import GraphConvolutionalNetwork
+from torchdrug.layers import MLP, MaxReadout
+from torchdrug.models import GraphAttentionNetwork, GraphConvolutionalNetwork
 
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
@@ -69,6 +69,7 @@ class DeepDDS(Model):
         )
         self.mlp_right = MLP(input_dim=in_channels * 4, hidden_dims=[in_channels * 2, context_output_size])
         self.mlp_final = MLP(context_output_size * 3, [1024, 512, 128, 1], dropout=dropout)
+        self.max_readout = MaxReadout()
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features and right drug features."""
@@ -93,8 +94,10 @@ class DeepDDS(Model):
         #  concatenating; torch does this automatically
         features_left = self.conv_left(molecules_left, molecules_left.data_dict["node_feature"])["node_feature"]
         features_left = self.mlp_left(features_left)
+        features_left = self.max_readout.forward(input=features_left, graph=molecules_left)
         features_right = self.conv_right(molecules_right, molecules_right.data_dict["node_feature"])["node_feature"]
         features_right = self.mlp_right(features_right)
+        features_right = self.max_readout.forward(input=features_right, graph=molecules_right)
         print(mlp_out.shape, features_left.shape, features_right.shape)
         # Getting this from the prinout with
         # context_feature_size=112, context_output_size=10, in_channels=69
