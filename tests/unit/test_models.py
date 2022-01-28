@@ -165,8 +165,22 @@ class TestModels(unittest.TestCase):
 
     def test_deepddi(self):
         """Test DeepDDI."""
-        model = DeepDDI(x=2)
-        assert model.x == 2
+        model = DeepDDI(
+            drug_channels=self.loader.drug_channels,
+            hidden_channels=16,
+            hidden_layers_num=2,
+        )
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.drug_features_left, batch.drug_features_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_deepdrug(self):
         """Test DeepDrug."""
