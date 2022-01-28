@@ -1,9 +1,52 @@
 """Tests for datasets."""
 
+import pathlib
 import unittest
 from typing import ClassVar
 
-from chemicalx.data import DatasetLoader, DrugbankDDI, DrugComb, DrugCombDB, TwoSides
+from chemicalx.data import (
+    DatasetLoader,
+    DrugbankDDI,
+    DrugComb,
+    DrugCombDB,
+    LocalDatasetLoader,
+    TwoSides,
+)
+
+HERE = pathlib.Path(__file__).parent.resolve()
+
+
+class TestDatasetLoader(LocalDatasetLoader):
+    """A mock dataset loader."""
+
+    def preprocess(self):
+        """Mock the preprocessing function to be no-op."""
+
+
+class TestMock(unittest.TestCase):
+    """A test case for the mock dataset."""
+
+    loader: DatasetLoader
+
+    def setUp(self) -> None:
+        """Set up the test case."""
+        self.loader = TestDatasetLoader(directory=HERE.joinpath("test_dataset"))
+
+    def test_get_context_features(self):
+        """Test the number of context features."""
+        assert self.loader.num_contexts == 2
+        assert self.loader.context_channels == 5
+
+    def test_get_drug_features(self):
+        """Test the number of drug features."""
+        assert self.loader.num_drugs == 2
+        assert self.loader.drug_channels == 4
+
+    def test_get_labeled_triples(self):
+        """Test the shape of the labeled triples."""
+        assert self.loader.num_labeled_triples == 2
+        labeled_triples = self.loader.get_labeled_triples()
+        assert labeled_triples.data.shape == (2, 4)
 
 
 class TestDrugComb(unittest.TestCase):

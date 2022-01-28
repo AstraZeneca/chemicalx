@@ -50,7 +50,7 @@ class TestPipeline(unittest.TestCase):
             drug_features=True,
             drug_molecules=False,
         )
-        self.assertIsInstance(results.roc_auc, float)
+        self.assertIsInstance(results.metrics["roc_auc"], float)
 
     def test_train_contextless(self):
         """Test training and evaluating on a model that does not use context in its forward function."""
@@ -65,7 +65,7 @@ class TestPipeline(unittest.TestCase):
             drug_features=True,
             drug_molecules=True,
         )
-        self.assertIsInstance(results.roc_auc, float)
+        self.assertIsInstance(results.metrics["roc_auc"], float)
 
 
 class MetaModelTestCase(unittest.TestCase):
