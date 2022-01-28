@@ -5,7 +5,9 @@ from turtle import forward
 import torch
 import torch.nn as nn
 import torch.nn.functional as F  # noqa:N812
+from torchdrug.data import PackedGraph
 import numpy as np
+from torchdrug.models import MessagePassingNeuralNetwork
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -47,7 +49,7 @@ class MessagePassing(nn.Module):
     between atoms in the molecule.
     """
 
-    def __init(self, d_node: int, d_edge: int, d_hid: int, node_out_feat: int, dropout=0.1):
+    def __init__(self, d_node: int, d_edge: int, d_hid: int, dropout=0.1):
         """Instantiate the MessagePassing network.
 
         :param d_node: Dimension of node features
@@ -67,14 +69,16 @@ class MessagePassing(nn.Module):
             nn.Linear(d_hid, d_hid), nn.LeakyReLU(), dropout, nn.Linear(d_hid, d_hid), dropout
         )
 
-    def forward(self, node, edge, seg_i, idx_j):
+    def forward(self, node: torch.Tensor, edge: torch.Tensor, seg_i: torch.Tensor, idx_j: torch.Tensor):
         """
         Calculate forward pass of message passing network
 
-        :param node: Input node features
-        :param edge: Input edge features
-        :param seg_i: TODO: what is this
-        :param idx_j: TODO: what is this
+        seg_i and idx_j are the same length
+
+        :param node: Nxd node feature matrix
+        :param edge: Nxd edge feature matrix
+        :param seg_i: List of node indices from where edges in the molecular graph start
+        :param idx_j: List of node indices from where edges in the molecular graph end
         """
         edge = self.edge_proj(edge)
         msg = self.node_proj(node)
@@ -227,7 +231,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
 
         self.lns = nn.ModuleList([nn.LayerNorm(d_hid * x_d_node(step_i)) for step_i in range(n_prop_step)])
 
-        self.pre_readout_proj = nn.Sequential([nn.Linear(d_hid * x_d_node(n_prop_step), d_readout, nn.LeakyReLU())])
+        self.pre_readout_proj = nn.Sequential(nn.Linear(d_hid * x_d_node(n_prop_step), d_readout, nn.LeakyReLU()))
 
     def forward(
         self,
@@ -252,7 +256,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
             inner_msg2 = self.mps[step_i](node2, edge2, inn_seg_i2, inn_idx_j2)
 
             outer_msg1, outer_msg2, attn1, attn2 = self.coats[step_i](
-                node1, out_seg_i1, out_idx_j1, node2, out_seg_i2, out_idx_j2, []
+                node1, out_seg_i1, out_idx_j1, node2, out_seg_i2, out_idx_j2
             )
 
             node1 = self.lns[step_i](self.update_fn(node1, inner_msg1, outer_msg1))
@@ -282,14 +286,14 @@ class MHCADDI(Model):
 
     def __init__(
         self,
+        d_atom_feat,
         n_atom_type,
         n_bond_type,
-        d_node,
-        d_edge,
-        d_atom_feat,
-        d_hid,
-        d_readout,
-        n_prop_step,
+        d_node: int = 32,
+        d_edge: int = 32,
+        d_hid: int = 32,
+        d_readout: int = 32,
+        n_prop_step: int = 3,
         n_side_effect=None,
         n_lbls=12,
         n_head=1,
@@ -299,7 +303,7 @@ class MHCADDI(Model):
     ):
         super(MHCADDI, self).__init__()
 
-        self.dropout = dropout
+        self.dropout = nn.Dropout(p=dropout)
 
         self.atom_proj = nn.Linear(d_node + d_atom_feat, d_node)
         self.atom_emb = nn.Embedding(n_atom_type, d_node, padding_idx=0)
@@ -356,9 +360,7 @@ class MHCADDI(Model):
         se_idx=None,
         drug_se_seg=None,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the MHCADDI model.
-        """
+
         atom1 = self.dropout(self.atom_comp(atom_feat1, atom_type1))
         atom2 = self.dropout(self.atom_comp(atom_feat2, atom_type2))
 
@@ -396,6 +398,7 @@ class MHCADDI(Model):
         else:
             pred1 = self.lbl_predict(d1_vec)
             pred2 = self.lbl_predict(d2_vec)
+
             return pred1, pred2, attn1, attn2
 
     def atom_comp(self, atom_feat, atom_idx):
@@ -408,15 +411,80 @@ class MHCADDI(Model):
         return torch.norm(head + rel - tail, dim=1)
 
     def unpack(self, batch: DrugPairBatch):
-        """Return the context features, left drug features, and right drug features."""
+        """
+        Adjust drug pair batch to model design
+        """
+
+        # Left Drugs
+        atom_type1 = batch.drug_molecules_left.atom_type
+        bond_type1 = batch.drug_molecules_left.bond_type
+        atom_feat1 = batch.drug_molecules_left.node_feature  # TODO: Drug features or atom features?
+        inn_seg_i1 = batch.drug_molecules_left.edge_list[:, 0]
+        inn_idx_j1 = batch.drug_molecules_left.edge_list[:, 1]
+        seg_m1 = torch.tensor([], dtype=torch.int64)
+        out_seg_i1 = torch.tensor([], dtype=torch.int64)
+        out_idx_j1 = torch.tensor([], dtype=torch.int64)
+
+        # Right Drugs
+        atom_type2 = batch.drug_molecules_right.atom_type
+        atom_feat2 = batch.drug_molecules_right.node_feature
+        bond_type2 = batch.drug_molecules_right.bond_type
+        inn_seg_i2 = batch.drug_molecules_right.edge_list[:, 0]
+        inn_idx_j2 = batch.drug_molecules_right.edge_list[:, 1]
+
+        seg_m2 = torch.tensor([], dtype=torch.int64)
+        out_seg_i2 = torch.tensor([], dtype=torch.int64)
+        out_idx_j2 = torch.tensor([], dtype=torch.int64)
+
+        ldrug_prev_max_ix = 0
+        rdrug_prev_max_ix = 0
+        for i_pair in range(batch.drug_molecules_left.batch_size):
+
+            left_drug = batch.drug_molecules_left[i_pair]
+            right_drug = batch.drug_molecules_right[i_pair]
+
+            seg = torch.tensor([i_pair], dtype=torch.int64)
+            seg_m1 = torch.cat([seg_m1, seg.repeat_interleave(left_drug.num_node)])
+            seg_m2 = torch.cat([seg_m2, seg.repeat_interleave(right_drug.num_node)])
+
+            # caclulate out_seg_i1
+            ldrug_out_seg = torch.tensor(range(ldrug_prev_max_ix, ldrug_prev_max_ix + left_drug.num_node))
+            ldrug_prev_max_ix = ldrug_out_seg.max() + 1
+            ldrug_out_seg = ldrug_out_seg.repeat_interleave(right_drug.num_node)
+            out_seg_i1 = torch.cat([out_seg_i1, ldrug_out_seg])
+
+            # caclulate out_seg_i2
+            rdrug_out_seg = torch.tensor(range(rdrug_prev_max_ix, rdrug_prev_max_ix + right_drug.num_node))
+            rdrug_prev_max_ix = rdrug_out_seg.max() + 1
+            rdrug_out_seg = rdrug_out_seg.repeat_interleave(left_drug.num_node)
+            out_seg_i2 = torch.cat([out_seg_i2, rdrug_out_seg])
+
+            # calculate out_idx_j1
+            ldrug_idx_j1 = torch.tensor(range(right_drug.num_node))
+            ldrug_idx_j1 = ldrug_idx_j1.repeat_interleave(left_drug.num_node)
+            out_idx_j1 = torch.cat([out_idx_j1, ldrug_idx_j1])
+
+            # calculate out_idx_j2
+            rdrug_idx_j1 = torch.tensor(range(left_drug.num_node))
+            rdrug_idx_j1 = rdrug_idx_j1.repeat_interleave(right_drug.num_node)
+            out_idx_j2 = torch.cat([out_idx_j2, rdrug_idx_j1])
+
+        a = 1
         return (
-            batch.context_features,
-            batch.drug_features_left,
-            batch.drug_features_right,
+            seg_m1,
+            atom_type1,
+            atom_feat1,
+            bond_type1,
+            inn_seg_i1,
+            inn_idx_j1,
+            out_seg_i1,
+            out_idx_j1,
+            seg_m2,
+            atom_type2,
+            atom_feat2,
+            bond_type2,
+            inn_seg_i2,
+            inn_idx_j2,
+            out_seg_i2,
+            out_idx_j2,
         )
-
-    def forward(
-        self,
-    ) -> torch.FloatTensor:
-
-        pass
