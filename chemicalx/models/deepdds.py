@@ -60,15 +60,23 @@ class DeepDDS(Model):
         """
         super(DeepDDS, self).__init__()
         self.cell_mlp = MLP(input_dim=context_feature_size, hidden_dims=[2048, 512, context_output_size])
-        self.conv_left = GraphConvolutionalNetwork(in_channels, [in_channels, in_channels * 2, in_channels * 4])
-        self.conv_right = GraphConvolutionalNetwork(in_channels, [in_channels, in_channels * 2, in_channels * 4])
+        self.conv_left = GraphConvolutionalNetwork(
+            input_dim=in_channels, hidden_dims=[in_channels, in_channels * 2, in_channels * 4]
+        )
+        self.conv_right = GraphConvolutionalNetwork(
+            input_dim=in_channels, hidden_dims=[in_channels, in_channels * 2, in_channels * 4]
+        )
         self.mlp_left = MLP(
             input_dim=in_channels * 4,
             hidden_dims=[in_channels * 2, context_output_size],
             dropout=dropout,
         )
-        self.mlp_right = MLP(input_dim=in_channels * 4, hidden_dims=[in_channels * 2, context_output_size])
-        self.mlp_final = MLP(context_output_size * 3, [1024, 512, 128, 1], dropout=dropout)
+        self.mlp_right = MLP(
+            input_dim=in_channels * 4,
+            hidden_dims=[in_channels * 2, context_output_size],
+            dropout=dropout,
+        )
+        self.mlp_final = MLP(input_dim=context_output_size * 3, hidden_dims=[1024, 512, 128, 1], dropout=dropout)
         self.max_readout = MaxReadout()
 
     def unpack(self, batch: DrugPairBatch):
@@ -90,7 +98,7 @@ class DeepDDS(Model):
         # Run the MLP forward for the cell line features
         mlp_out = self.cell_mlp(normalize(context_features, p=2, dim=1))
 
-        # Todo: source code does not run a final activation before
+        # Todo: source code does *not* run a final activation before
         #  concatenating; torch does this automatically
         features_left = self.conv_left(molecules_left, molecules_left.data_dict["node_feature"])["node_feature"]
         features_left = self.mlp_left(features_left)
@@ -98,11 +106,6 @@ class DeepDDS(Model):
         features_right = self.conv_right(molecules_right, molecules_right.data_dict["node_feature"])["node_feature"]
         features_right = self.mlp_right(features_right)
         features_right = self.max_readout.forward(input=features_right, graph=molecules_right)
-        print(mlp_out.shape, features_left.shape, features_right.shape)
-        # Getting this from the printout with
-        # context_feature_size=112, context_output_size=10, in_channels=69
-        # as arguments in the example
-        # torch.Size([5120, 10]) torch.Size([147702, 10]) torch.Size([138287, 10])
 
         # Concatenate the output of the MLP and the GNN
         concat_in = torch.cat([mlp_out, features_left, features_right], dim=1)
