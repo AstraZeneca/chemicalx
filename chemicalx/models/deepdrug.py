@@ -2,8 +2,7 @@
 
 import torch
 from torchdrug.data import PackedGraph
-from torchdrug.layers import MaxReadout
-from torchdrug.models import GraphConvolutionalNetwork
+from torchdrug.layers import GraphConv, MaxReadout
 
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
@@ -42,15 +41,13 @@ class DeepDrug(Model):
         super(DeepDrug, self).__init__()
         self.num_gcn_layers = num_gcn_layers
         self.gcn_layer_hidden_size = gcn_layer_hidden_size
-        self.graph_convolution_first = GraphConvolutionalNetwork(
-            molecule_channels, self.gcn_layer_hidden_size, batch_norm=True
-        )
+        self.graph_convolution_first = GraphConv(molecule_channels, self.gcn_layer_hidden_size, batch_norm=True)
 
         # add remaining GCN layers
         self.gcn_layer_list = torch.nn.ModuleList()
         for i in range(num_gcn_layers - 1):
             self.gcn_layer_list.append(
-                GraphConvolutionalNetwork(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
+                GraphConv(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
             )
 
         self.max_readout = MaxReadout()
@@ -71,18 +68,14 @@ class DeepDrug(Model):
         self, context_features: torch.FloatTensor, molecules_left: PackedGraph, molecules_right: PackedGraph
     ) -> torch.FloatTensor:
 
-        features_left = self.graph_convolution_first(molecules_left, molecules_left.data_dict["node_feature"])[
-            "node_feature"
-        ]
-        features_right = self.graph_convolution_first(molecules_right, molecules_right.data_dict["node_feature"])[
-            "node_feature"
-        ]
+        features_left = self.graph_convolution_first(molecules_left, molecules_left.data_dict["node_feature"])
+        features_right = self.graph_convolution_first(molecules_right, molecules_right.data_dict["node_feature"])
 
         # run remaining GCN layers
         for i in range(self.num_gcn_layers - 1):
             layer_i = self.gcn_layer_list[i]
-            features_left = layer_i(molecules_left, features_left)["node_feature"]
-            features_right = layer_i(molecules_right, features_right)["node_feature"]
+            features_left = layer_i(molecules_left, features_left)
+            features_right = layer_i(molecules_right, features_right)
 
         features_left = self.max_readout(molecules_left, features_left)
         features_right = self.max_readout(molecules_right, features_right)
