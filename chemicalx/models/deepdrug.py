@@ -28,6 +28,7 @@ class DeepDrug(Model):
         num_gcn_layers: int = 4,
         gcn_layer_hidden_size: int = 64,
         out_channels: int = 1,
+        dropout_rate: float = 0.1,
     ):
         """Instantiate the DeepDrug model.
 
@@ -36,22 +37,27 @@ class DeepDrug(Model):
         :param num_gcn_layers: Number of GCN layers
         :param gcn_layer_hidden_size: number of hidden units in GCN layers
         :param out_channels: The number of output channels.
+        :param dropout_rate: Dropout rate on the final fully-connected layer.
         """
         super(DeepDrug, self).__init__()
         self.num_gcn_layers = num_gcn_layers
         self.gcn_layer_hidden_size = gcn_layer_hidden_size
-        self.graph_convolution_first = GraphConvolutionalNetwork(molecule_channels, self.gcn_layer_hidden_size)
+        self.graph_convolution_first = GraphConvolutionalNetwork(
+            molecule_channels, self.gcn_layer_hidden_size, batch_norm=True
+        )
 
         # add remaining GCN layers
         self.gcn_layer_list = torch.nn.ModuleList()
         for i in range(num_gcn_layers - 1):
             self.gcn_layer_list.append(
-                GraphConvolutionalNetwork(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size)
+                GraphConvolutionalNetwork(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
             )
 
         self.max_readout = MaxReadout()
         self.middle_channels = 2 * self.gcn_layer_hidden_size + context_channels  # left/right feats + context
-        self.final = torch.nn.Linear(self.middle_channels, out_channels)
+        self.dropout = torch.nn.Dropout(p=dropout_rate)
+        self.batch_norm = torch.nn.BatchNorm1d(self.middle_channels)
+        self.final_fc = torch.nn.Linear(self.middle_channels, out_channels)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug molecules, and right drug molecules."""
@@ -82,7 +88,8 @@ class DeepDrug(Model):
         features_right = self.max_readout(molecules_right, features_right)
 
         hidden = torch.cat([features_left, features_right, context_features], dim=1)
-        hidden = self.final(hidden)
+        hidden = self.batch_norm(hidden)
+        hidden = self.final_fc(hidden)
         hidden = torch.sigmoid(hidden)
 
         return hidden
