@@ -4,6 +4,7 @@ import torch
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
+
 __all__ = [
     "DeepDDI",
 ]
@@ -12,7 +13,8 @@ __all__ = [
 class DeepDDI(Model):
     """An implementation of the DeepDDI model.
 
-    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/2
+    .. [DeepDDI] `Deep learning improves prediction of drug–drug and drug–food interactions
+       <https://www.pnas.org/content/115/18/E4304>`_
     """
 
     def __init__(
@@ -30,11 +32,9 @@ class DeepDDI(Model):
         :param hidden_layers_num: The number of hidden layers.
         :param out_channels: The number of output channels.
         """
-
         super(DeepDDI, self).__init__()
         assert hidden_layers_num > 1
-        dnn = []
-        dnn.extend([
+        dnn = [
             torch.nn.Linear(drug_channels * 2, hidden_channels),
             torch.nn.ReLU(),
             torch.nn.BatchNorm1d(
@@ -43,7 +43,7 @@ class DeepDDI(Model):
                 momentum=None
             ),
             torch.nn.ReLU()
-        ])
+        ]
         for _ in range(hidden_layers_num - 1):
             dnn.extend([
                 torch.nn.Linear(hidden_channels, hidden_channels),
@@ -74,17 +74,14 @@ class DeepDDI(Model):
             drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
         """
-                Run a forward pass of the DeepDDI model.
+        Run a forward pass of the DeepDDI model.
 
-                Args:
-                    drug_features_left (torch.FloatTensor): A matrix of head drug features.
-                    drug_features_right (torch.FloatTensor): A matrix of tail drug features.
-                Returns:
-                    hidden (torch.FloatTensor): A column vector of predicted interaction scores.
-                """
+        Args:
+            drug_features_left (torch.FloatTensor): A matrix of head drug features.
+            drug_features_right (torch.FloatTensor): A matrix of tail drug features.
+        Returns:
+            hidden (torch.FloatTensor): A column vector of predicted interaction scores.
+        """
         input_feature = torch.cat([drug_features_left, drug_features_right], 1)
         hidden = self.dnn(input_feature)
         return hidden
-
-
-
