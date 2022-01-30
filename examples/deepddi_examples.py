@@ -19,7 +19,7 @@ def main():
         drug_molecules=False,
         metrics=[
             "roc_auc",
-        ]
+        ],
     )
     results.summarize()
 
