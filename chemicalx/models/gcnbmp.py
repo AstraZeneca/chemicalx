@@ -63,22 +63,21 @@ class AttentionPooling(nn.Module):
         )  # weights here must be shared across all nodes according to the paper
         self.last_rep = nn.Linear(hidden_channels, hidden_channels)
 
-    def forward(self, input_rep, final_rep):
+    def forward(self, input_rep, final_rep, graph_index):
         #        print("Input and Final representation shapes: ")
         #        print(input_rep.shape, final_rep.shape)
         att = torch.sigmoid(self.lin(torch.cat((input_rep, final_rep), 1)))  # .mul(input)
         #        print("Attention shape", att.shape)
         g = att.mul(self.last_rep(final_rep))
-        g = torch.sum(g, dim=0)
-        print("g shape: ", g.shape)
-        print("g after sum",)
+
+        g = scatter_add(g, graph_index, dim=0)
+
 
         return g
 
 
 class GCNBMP(Model):
     r"""An implementation of the GCNBMP model.
-
     .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/21
     """
 
@@ -114,10 +113,6 @@ class GCNBMP(Model):
         )
 
     def forward(self, molecules_left: torch.FloatTensor, molecules_right: torch.FloatTensor,) -> torch.FloatTensor:
-        print(molecules_left.shape)
-        print(molecules_right.shape)
-
-        print(molecules_left.data_dict["node_feature"].shape, molecules_right.data_dict["node_feature"].shape)
 
         features_left = self.graph_convolution_in(molecules_left, molecules_left.data_dict["node_feature"])[
             "node_feature"
@@ -127,19 +122,15 @@ class GCNBMP(Model):
             "node_feature"
         ]
 
-        print(features_left.shape, features_right.shape)
-
         # for i,l in enumerate(self.encoding_backbone):
         #    print(i, l)
 
-        features_left = self.attention_readout_left(molecules_left.data_dict["node_feature"], features_left)
-        features_right = self.attention_readout_right(molecules_right.data_dict["node_feature"], features_right)
-
-        print(features_left.shape, features_right.shape)
+        features_left = self.attention_readout_left(molecules_left.data_dict["node_feature"], features_left, molecules_left.node2graph)
+        features_right = self.attention_readout_right(molecules_right.data_dict["node_feature"], features_right, molecules_right.node2graph)
 
         joint_rep = circular_correlation(features_left, features_right)
 
-        print(joint_rep.shape)
+
 
         # features_left = self.graph_convolution_out(molecules_left, features_left)["node_feature"]
         # features_right = self.graph_convolution_out(molecules_right, features_right)["node_feature"]
