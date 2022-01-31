@@ -16,7 +16,7 @@ __all__ = [
 class DeepDrug(Model):
     """An implementation of the DeepDrug model.
 
-    .. see also:: https://github.com/AstraZeneca/chemicalx/issues/14
+    .. based on:: https://www.biorxiv.org/content/biorxiv/early/2020/11/10/2020.11.09.375626.full.pdf
     """
 
     def __init__(
