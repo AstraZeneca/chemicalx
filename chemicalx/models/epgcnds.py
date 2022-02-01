@@ -1,6 +1,7 @@
 """An implementation of the EPGCN-DS model."""
 
 import torch
+from torch import nn
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
@@ -41,7 +42,7 @@ class EPGCNDS(Model):
         self.graph_convolution_in = GraphConvolutionalNetwork(molecule_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
-        self.final = torch.nn.Linear(middle_channels, out_channels)
+        self.final = nn.Sequential(nn.Linear(middle_channels, out_channels), nn.Sigmoid())
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left molecular graph and right molecular graph."""
@@ -69,5 +70,5 @@ class EPGCNDS(Model):
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)
         hidden = features_left + features_right
-        hidden = torch.sigmoid(self.final(hidden))
+        hidden = self.final(hidden)
         return hidden
