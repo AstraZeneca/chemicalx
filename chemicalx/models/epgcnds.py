@@ -37,7 +37,7 @@ class EPGCNDS(Model):
         :param middle_channels: The number of hidden layer neurons in the last layer.
         :param out_channels: The number of output channels.
         """
-        super(EPGCNDS, self).__init__()
+        super().__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(molecule_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
@@ -50,28 +50,24 @@ class EPGCNDS(Model):
             batch.drug_molecules_right,
         )
 
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
+        features = self.graph_convolution_in(molecules, molecules.data_dict["node_feature"])["node_feature"]
+        features = self.graph_convolution_out(molecules, features)["node_feature"]
+        features = self.mean_readout(molecules, features)
+        return features
+
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
         Run a forward pass of the EPGCN-DS model.
 
         Args:
-            molecules_left (torch.FloatTensor): Batched molecules for the left side drugs.
-            molecules_right (torch.FloatTensor): Batched molecules for the right side drugs.
+            molecules_left: Batched molecules for the left side drugs.
+            molecules_right: Batched molecules for the right side drugs.
         Returns:
-            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+            : A column vector of predicted synergy scores.
         """
-        features_left = self.graph_convolution_in(molecules_left, molecules_left.data_dict["node_feature"])[
-            "node_feature"
-        ]
-        features_right = self.graph_convolution_in(molecules_right, molecules_right.data_dict["node_feature"])[
-            "node_feature"
-        ]
-
-        features_left = self.graph_convolution_out(molecules_left, features_left)["node_feature"]
-        features_right = self.graph_convolution_out(molecules_right, features_right)["node_feature"]
-
-        features_left = self.mean_readout(molecules_left, features_left)
-        features_right = self.mean_readout(molecules_right, features_right)
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
         hidden = features_left + features_right
         hidden = torch.sigmoid(self.final(hidden))
         return hidden
