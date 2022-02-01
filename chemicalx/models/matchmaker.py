@@ -12,7 +12,7 @@ __all__ = [
 
 
 class MatchMaker(Model):
-    """An implementation of the MatchMaker model.
+    """An implementation of the MatchMaker model from [matchmaker]_.
 
     .. [matchmaker] `MatchMaker: A Deep Learning Framework for Drug Synergy Prediction
        <https://www.biorxiv.org/content/10.1101/2020.05.24.113241v3.full>`_
