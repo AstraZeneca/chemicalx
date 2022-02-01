@@ -58,7 +58,7 @@ class TestPipeline(unittest.TestCase):
         results = pipeline(
             dataset=self.loader,
             model=model,
-            optimizer_kwargs=dict(lr=0.01, weight_decay=10**-7),
+            optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
             batch_size=1024,
             epochs=1,
             context_features=True,
@@ -202,5 +202,22 @@ class TestModels(unittest.TestCase):
 
     def test_matchmaker(self):
         """Test MatchMaker."""
-        model = MatchMaker(x=2)
-        assert model.x == 2
+        model = MatchMaker(
+            context_channels=self.loader.context_channels,
+            drug_channels=self.loader.drug_channels,
+            input_hidden_channels=32,
+            middle_hidden_channels=16,
+            final_hidden_channels=16,
+            dropout_rate=0.5,
+        )
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.context_features, batch.drug_features_left, batch.drug_features_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
