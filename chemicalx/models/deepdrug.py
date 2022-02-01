@@ -33,7 +33,8 @@ class DeepDrug(Model):
     ):
         """Instantiate the DeepDrug model.
 
-        :param context_channels: The number of contexts used for learning. Set to 0 if not using any context.
+        :param context_channels: The number of contexts used for learning. Set to 0 if not using any context. In that
+        case make sure you're not calling forward() with the context feature tensor.
         :param molecule_channels: The number of molecular features.
         :param num_gcn_layers: Number of GCN layers.
         :param gcn_layer_hidden_size: number of hidden units in GCN layers
