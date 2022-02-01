@@ -62,11 +62,17 @@ class DeepDrug(Model):
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug molecules, and right drug molecules."""
-        return (
-            batch.context_features,
-            batch.drug_molecules_left,
-            batch.drug_molecules_right,
-        )
+        if self.context_channels > 0:
+            return (
+                batch.context_features,
+                batch.drug_molecules_left,
+                batch.drug_molecules_right,
+            )
+        else:
+            return (
+                batch.drug_molecules_left,
+                batch.drug_molecules_right,
+            )
 
     def forward(
         self, context_features: Optional[torch.FloatTensor], molecules_left: PackedGraph, molecules_right: PackedGraph
