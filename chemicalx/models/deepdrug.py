@@ -1,10 +1,10 @@
 """An implementation of the DeepDrug model."""
 
+from typing import Optional
+
 import torch
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
-
-from typing import Optional
 
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
