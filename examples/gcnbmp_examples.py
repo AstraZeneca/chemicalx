@@ -8,7 +8,7 @@ from chemicalx.models import GCNBMP
 def main():
     """Train and evaluate the EPGCNDS model."""
     dataset = DrugCombDB()
-    model = GCNBMP(hidden_conv_layers=0)
+    model = GCNBMP(hidden_conv_layers=1)
 
     print(model)
 
@@ -16,7 +16,7 @@ def main():
         dataset=dataset,
         model=model,
         optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
-        batch_size=3,
+        batch_size=5,
         epochs=1,
         context_features=True,
         drug_features=True,

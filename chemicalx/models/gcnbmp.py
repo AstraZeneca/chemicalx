@@ -1,15 +1,14 @@
 """An implementation of the GCNBMP model."""
 import sys
+from collections.abc import Sequence
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.fft import fft, ifft
 
-from torchdrug import layers
-from torchdrug.data import PackedGraph
-from torchdrug.layers import MeanReadout
-from torchdrug.models import GraphConvolutionalNetwork, RelationalGraphConvolutionalNetwork
+from torchdrug import layers, core
+from torchdrug.models import RelationalGraphConvolutionalNetwork
 
 from torch_scatter import scatter_add
 
@@ -64,16 +63,78 @@ class AttentionPooling(nn.Module):
         self.last_rep = nn.Linear(hidden_channels, hidden_channels)
 
     def forward(self, input_rep, final_rep, graph_index):
-        #        print("Input and Final representation shapes: ")
-        #        print(input_rep.shape, final_rep.shape)
-        att = torch.sigmoid(self.lin(torch.cat((input_rep, final_rep), 1)))  # .mul(input)
-        #        print("Attention shape", att.shape)
+        att = torch.sigmoid(self.lin(torch.cat((input_rep, final_rep), 1)))
         g = att.mul(self.last_rep(final_rep))
-
         g = scatter_add(g, graph_index, dim=0)
-
-
         return g
+
+class GCNBMPEncoder(nn.Module, core.Configurable):
+    """
+
+    Parameters:
+    """
+
+    def __init__(self, input_dim, hidden_dims, num_relation, edge_input_dim=None, short_cut=False, batch_norm=False,
+                 activation="relu", concat_hidden=False):
+        super(GCNBMPEncoder, self).__init__()
+
+        if not isinstance(hidden_dims, Sequence):
+            hidden_dims = [hidden_dims]
+        self.input_dim = input_dim
+        self.output_dim = hidden_dims[-1] * (len(hidden_dims) if concat_hidden else 1)
+        self.dims = [input_dim] + list(hidden_dims)
+        self.num_relation = num_relation
+        self.short_cut = short_cut
+        self.concat_hidden = concat_hidden
+
+        self.layers = nn.ModuleList()
+        for i in range(len(self.dims) - 1):
+            self.layers.append(layers.RelationalGraphConv(self.dims[i], self.dims[i + 1], num_relation, edge_input_dim,
+                                                          batch_norm, activation))
+            self.layers.append(Highway(self.dims[i + 1]))
+
+    def forward(self, graph, input):
+        """
+        Compute the node representations and the graph representation(s).
+
+        Require the graph(s) to have the same number of relations as this module.
+
+        Parameters:
+            graph (Graph): :math:`n` graph(s)
+            input (Tensor): input node representations
+            all_loss (Tensor, optional): if specified, add loss to this tensor
+            metric (dict, optional): if specified, output metrics to this dict
+
+        Returns:
+            dict with ``node_feature`` and ``graph_feature`` fields:
+                node representations of shape :math:`(|V|, d)`, graph representations of shape :math:`(n, d)`
+        """
+        hiddens = []
+        layer_input = input
+
+        for i, layer in enumerate(self.layers):
+            if isinstance(layer, layers.RelationalGraphConv):# Achievable with 0==i%2, maybe better perf but less readable
+                hidden = layer(graph, layer_input)
+                if self.short_cut and hidden.shape == layer_input.shape:
+                    hidden = hidden + layer_input
+                hiddens.append(hidden)
+                layer_input = hidden
+            else:
+                hidden = layer(layer_input)
+                if self.short_cut and hidden.shape == layer_input.shape:
+                    hidden = hidden + layer_input
+                hiddens.append(hidden)
+                layer_input = hidden
+
+        if self.concat_hidden:
+            node_feature = torch.cat(hiddens, dim=-1)
+        else:
+            node_feature = hiddens[-1]
+        
+        return {
+            "node_feature": node_feature
+        }
+
 
 
 class GCNBMP(Model):
@@ -91,14 +152,7 @@ class GCNBMP(Model):
     ):
         super(GCNBMP, self).__init__()
 
-        self.graph_convolution_in = RelationalGraphConvolutionalNetwork(molecule_channels, hidden_channels, 4)
-        self.highway = Highway(hidden_channels)
-
-        self.encoding_backbone = nn.ModuleList()
-
-        for i in range(hidden_conv_layers):
-            self.encoding_backbone.append(RelationalGraphConvolutionalNetwork(hidden_channels, hidden_channels, 4))
-            self.encoding_backbone.append(Highway(hidden_channels))
+        self.graph_convolution_in = GCNBMPEncoder(molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], 4)
 
         self.attention_readout_left = AttentionPooling(molecule_channels, hidden_channels)
         self.attention_readout_right = AttentionPooling(molecule_channels, hidden_channels)
@@ -122,21 +176,11 @@ class GCNBMP(Model):
             "node_feature"
         ]
 
-        # for i,l in enumerate(self.encoding_backbone):
-        #    print(i, l)
-
         features_left = self.attention_readout_left(molecules_left.data_dict["node_feature"], features_left, molecules_left.node2graph)
         features_right = self.attention_readout_right(molecules_right.data_dict["node_feature"], features_right, molecules_right.node2graph)
 
         joint_rep = circular_correlation(features_left, features_right)
 
+        interaction_estimators = torch.sigmoid(self.final(joint_rep))
 
-
-        # features_left = self.graph_convolution_out(molecules_left, features_left)["node_feature"]
-        # features_right = self.graph_convolution_out(molecules_right, features_right)["node_feature"]
-
-        # features_left = self.mean_readout(molecules_left, features_left)
-        # features_right = self.mean_readout(molecules_right, features_right)
-        # hidden = features_left + features_right
-        hidden = torch.sigmoid(self.final(joint_rep))
-        return hidden
+        return interaction_estimators
