@@ -140,7 +140,7 @@ def pipeline(
 
     model = model_resolver.make(model, model_kwargs)
 
-    optimizer = optimizer_cls(model.parameters(), lr=0.01, weight_decay=(10**-5))
+    optimizer = optimizer_cls(model.parameters(), **(optimizer_kwargs or {}))
 
     model.train()
 
