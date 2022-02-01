@@ -6,8 +6,6 @@ import torch.nn.functional as F  # noqa:N812
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
 
-from .base import UnimplementedModel
-
 __all__ = [
     "MatchMaker",
 ]
@@ -41,7 +39,6 @@ class MatchMaker(Model):
         :param out_channels: The number of output channels.
         :param dropout_rate: The rate of dropout before the scoring head is used.
         """
-
         super().__init__()
         self.encoder = torch.nn.Linear(drug_channels + context_channels, input_hidden_channels)
         self.hidden_first = torch.nn.Linear(input_hidden_channels, middle_hidden_channels)
@@ -92,7 +89,6 @@ class MatchMaker(Model):
         Returns:
             hidden (torch.FloatTensor): A column vector of predicted synergy scores.
         """
-
         # The left drug
         hidden_left = torch.cat([context_features, drug_features_left], dim=1)
         hidden_left = self._forward_hidden(hidden_left)
