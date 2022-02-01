@@ -191,7 +191,11 @@ class TestModels(unittest.TestCase):
         loss = torch.nn.BCELoss()
         for batch in self.generator:
             optimizer.zero_grad()
-            prediction = model_0(molecules_left=batch.drug_molecules_left, molecules_right=batch.drug_molecules_right)
+            prediction = model_0(
+                context_features=None,
+                molecules_left=batch.drug_molecules_left,
+                molecules_right=batch.drug_molecules_right,
+            )
             output = loss(prediction, batch.labels)
             output.backward()
             optimizer.step()
