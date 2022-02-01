@@ -82,7 +82,7 @@ class MatchMaker(Model):
         # The right drug
         hidden_right = torch.cat([context_features, drug_features_right], dim=1)
         hidden_right = self.encoder(hidden_right)
-        hidden_right = F.relu(hidden_left)
+        hidden_right = F.relu(hidden_right)
         hidden_right = self.dropout(hidden_right)
         hidden_right = self.hidden_first(hidden_right)
         hidden_right = F.relu(hidden_right)
