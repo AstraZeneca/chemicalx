@@ -1,7 +1,7 @@
 """An implementation of the MatchMaker model."""
 
 import torch
-import torch.nn.functional as F  # noqa:N812
+from torch import nn
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -40,12 +40,24 @@ class MatchMaker(Model):
         :param dropout_rate: The rate of dropout before the scoring head is used.
         """
         super().__init__()
-        self.encoder = torch.nn.Linear(drug_channels + context_channels, input_hidden_channels)
-        self.hidden_first = torch.nn.Linear(input_hidden_channels, middle_hidden_channels)
-        self.hidden_second = torch.nn.Linear(middle_hidden_channels, middle_hidden_channels)
-        self.dropout = torch.nn.Dropout(dropout_rate)
-        self.scoring_head_first = torch.nn.Linear(2 * middle_hidden_channels, final_hidden_channels)
-        self.scoring_head_second = torch.nn.Linear(final_hidden_channels, out_channels)
+        #: Applied to the left+context and right+context separately
+        self.drug_context_layer = nn.Sequential(
+            nn.Linear(drug_channels + context_channels, input_hidden_channels),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(input_hidden_channels, middle_hidden_channels),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(middle_hidden_channels, middle_hidden_channels),
+        )
+        # Applied to the concatenated left/right tensors
+        self.final = nn.Sequential(
+            nn.Linear(2 * middle_hidden_channels, final_hidden_channels),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(final_hidden_channels, out_channels),
+            nn.Sigmoid(),
+        )
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features, and right drug features."""
@@ -55,24 +67,6 @@ class MatchMaker(Model):
             batch.drug_features_right,
         )
 
-    def _forward_hidden(self, tensor: torch.FloatTensor) -> torch.FloatTensor:
-        hidden = self.encoder(tensor)
-        hidden = F.relu(hidden)
-        hidden = self.dropout(hidden)
-        hidden = self.hidden_first(hidden)
-        hidden = F.relu(hidden)
-        hidden = self.dropout(hidden)
-        hidden = self.hidden_second(hidden)
-        return hidden
-
-    def _forward_hidden_merged(self, tensor: torch.FloatTensor) -> torch.FloatTensor:
-        hidden = self.scoring_head_first(tensor)
-        hidden = F.relu(hidden)
-        hidden = self.dropout(hidden)
-        hidden = self.scoring_head_second(hidden)
-        hidden = torch.sigmoid(hidden)
-        return hidden
-
     def forward(
         self,
         context_features: torch.FloatTensor,
@@ -80,25 +74,25 @@ class MatchMaker(Model):
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
         """
-        Run a forward pass of the MatchMaker model model.
+        Run a forward pass of the MatchMaker model.
 
         Args:
-            context_features (torch.FloatTensor): A matrix of biological context features.
-            drug_features_left (torch.FloatTensor): A matrix of head drug features.
-            drug_features_right (torch.FloatTensor): A matrix of tail drug features.
+            context_features: A matrix of biological context features.
+            drug_features_left: A matrix of head drug features.
+            drug_features_right: A matrix of tail drug features.
         Returns:
-            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+            hidden: A column vector of predicted synergy scores.
         """
         # The left drug
         hidden_left = torch.cat([context_features, drug_features_left], dim=1)
-        hidden_left = self._forward_hidden(hidden_left)
+        hidden_left = self.drug_context_layer(hidden_left)
 
         # The right drug
         hidden_right = torch.cat([context_features, drug_features_right], dim=1)
-        hidden_right = self._forward_hidden(hidden_right)
+        hidden_right = self.drug_context_layer(hidden_right)
 
         # Merged
         hidden_merged = torch.cat([hidden_left, hidden_right], dim=1)
-        hidden_merged = self._forward_hidden_merged(hidden_merged)
+        hidden_merged = self.final(hidden_merged)
 
         return hidden_merged
