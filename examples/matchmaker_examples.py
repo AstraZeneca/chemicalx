@@ -25,9 +25,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# ctx_features = torch.FloatTensor(np.random.uniform(0, 1, (1000, ctx_chs)))
-# drug_features_left = torch.FloatTensor(np.random.uniform(0, 1, (1000, drug_chs)))
-# drug_features_right = torch.FloatTensor(np.random.uniform(0, 1, (1000, drug_chs)))
-
-# model.forward(ctx_features, drug_features_left, drug_features_right)
