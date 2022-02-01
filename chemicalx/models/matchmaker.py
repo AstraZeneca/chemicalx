@@ -1,11 +1,12 @@
 """An implementation of the MatchMaker model."""
 
-from .base import UnimplementedModel
-
-from chemicalx.models import Model
-from chemicalx.data import DrugPairBatch
 import torch
 import torch.nn.functional as F  # noqa:N812
+
+from chemicalx.data import DrugPairBatch
+from chemicalx.models import Model
+
+from .base import UnimplementedModel
 
 __all__ = [
     "MatchMaker",
