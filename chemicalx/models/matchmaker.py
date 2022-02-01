@@ -85,7 +85,7 @@ class MatchMaker(Model):
         hidden_right = F.relu(hidden_left)
         hidden_right = self.dropout(hidden_right)
         hidden_right = self.hidden_first(hidden_right)
-        hidden_right = F.relu(hidden_left)
+        hidden_right = F.relu(hidden_right)
         hidden_right = self.dropout(hidden_right)
         hidden_right = self.hidden_second(hidden_right)
 
