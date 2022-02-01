@@ -170,7 +170,7 @@ class TestModels(unittest.TestCase):
 
     def test_deepdrug(self):
         """Test DeepDrug."""
-        model = DeepDrug()
+        model = DeepDrug(context_channels=288)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         model.train()
