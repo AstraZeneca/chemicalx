@@ -57,6 +57,7 @@ class DeepDrug(Model):
         self.dropout = torch.nn.Dropout(p=dropout_rate)
         self.batch_norm = torch.nn.BatchNorm1d(self.middle_channels)
         self.final = torch.nn.Linear(self.middle_channels, out_channels)
+        self.context_channels = context_channels
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug molecules, and right drug molecules."""
