@@ -57,9 +57,32 @@ class MatchMaker(Model):
             batch.drug_features_right,
         )
 
-    def forward(self, context_features, drug_features_left, drug_features_right) -> torch.FloatTensor:
+    def _forward_hidden(self, tensor: torch.FloatTensor) -> torch.FloatTensor:
+        hidden = self.encoder(tensor)
+        hidden = F.relu(hidden)
+        hidden = self.dropout(hidden)
+        hidden = self.hidden_first(hidden)
+        hidden = F.relu(hidden)
+        hidden = self.dropout(hidden)
+        hidden = self.hidden_second(hidden)
+        return hidden
+
+    def _forward_hidden_merged(self, tensor: torch.FloatTensor) -> torch.FloatTensor:
+        hidden = self.scoring_head_first(tensor)
+        hidden = F.relu(hidden)
+        hidden = self.dropout(hidden)
+        hidden = self.scoring_head_second(hidden)
+        hidden = torch.sigmoid(hidden)
+        return hidden
+
+    def forward(
+        self,
+        context_features: torch.FloatTensor,
+        drug_features_left: torch.FloatTensor,
+        drug_features_right: torch.FloatTensor,
+    ) -> torch.FloatTensor:
         """
-        Run a forward pass of the DeepSynergy model.
+        Run a forward pass of the MatchMaker model model.
 
         Args:
             context_features (torch.FloatTensor): A matrix of biological context features.
@@ -71,31 +94,14 @@ class MatchMaker(Model):
 
         # The left drug
         hidden_left = torch.cat([context_features, drug_features_left], dim=1)
-        hidden_left = self.encoder(hidden_left)
-        hidden_left = F.relu(hidden_left)
-        hidden_left = self.dropout(hidden_left)
-        hidden_left = self.hidden_first(hidden_left)
-        hidden_left = F.relu(hidden_left)
-        hidden_left = self.dropout(hidden_left)
-        hidden_left = self.hidden_second(hidden_left)
+        hidden_left = self._forward_hidden(hidden_left)
 
         # The right drug
         hidden_right = torch.cat([context_features, drug_features_right], dim=1)
-        hidden_right = self.encoder(hidden_right)
-        hidden_right = F.relu(hidden_right)
-        hidden_right = self.dropout(hidden_right)
-        hidden_right = self.hidden_first(hidden_right)
-        hidden_right = F.relu(hidden_right)
-        hidden_right = self.dropout(hidden_right)
-        hidden_right = self.hidden_second(hidden_right)
+        hidden_right = self._forward_hidden(hidden_right)
 
         # Merged
         hidden_merged = torch.cat([hidden_left, hidden_right], dim=1)
+        hidden_merged = self._forward_hidden_merged(hidden_merged)
 
-        hidden_merged = self.scoring_head_first(hidden_merged)
-        hidden_merged = F.relu(hidden_merged)
-        hidden_merged = self.dropout(hidden_merged)
-
-        hidden_merged = self.scoring_head_second(hidden_merged)
-        hidden_merged = torch.sigmoid(hidden_merged)
         return hidden_merged
