@@ -4,6 +4,8 @@ import torch
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
 
+from typing import Optional
+
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -31,9 +33,9 @@ class DeepDrug(Model):
     ):
         """Instantiate the DeepDrug model.
 
-        :param context_channels: The number of contexts used for learning.
+        :param context_channels: The number of contexts used for learning. Set to 0 if not using any context.
         :param molecule_channels: The number of molecular features.
-        :param num_gcn_layers: Number of GCN layers
+        :param num_gcn_layers: Number of GCN layers.
         :param gcn_layer_hidden_size: number of hidden units in GCN layers
         :param out_channels: The number of output channels.
         :param dropout_rate: Dropout rate on the final fully-connected layer.
@@ -54,7 +56,7 @@ class DeepDrug(Model):
         self.middle_channels = 2 * self.gcn_layer_hidden_size + context_channels  # left/right feats + context
         self.dropout = torch.nn.Dropout(p=dropout_rate)
         self.batch_norm = torch.nn.BatchNorm1d(self.middle_channels)
-        self.final_fc = torch.nn.Linear(self.middle_channels, out_channels)
+        self.final = torch.nn.Linear(self.middle_channels, out_channels)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug molecules, and right drug molecules."""
@@ -65,7 +67,7 @@ class DeepDrug(Model):
         )
 
     def forward(
-        self, context_features: torch.FloatTensor, molecules_left: PackedGraph, molecules_right: PackedGraph
+        self, context_features: Optional[torch.FloatTensor], molecules_left: PackedGraph, molecules_right: PackedGraph
     ) -> torch.FloatTensor:
 
         features_left = self.graph_convolution_first(molecules_left, molecules_left.data_dict["node_feature"])
@@ -80,9 +82,13 @@ class DeepDrug(Model):
         features_left = self.max_readout(molecules_left, features_left)
         features_right = self.max_readout(molecules_right, features_right)
 
-        hidden = torch.cat([features_left, features_right, context_features], dim=1)
+        if self.context_channels > 0:
+            hidden = torch.cat([features_left, features_right, context_features], dim=1)
+        else:
+            hidden = torch.cat([features_left, features_right], dim=1)
         hidden = self.batch_norm(hidden)
-        hidden = self.final_fc(hidden)
+        hidden = self.dropout(hidden)
+        hidden = self.final(hidden)
         hidden = torch.sigmoid(hidden)
 
         return hidden
