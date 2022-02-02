@@ -1,7 +1,5 @@
 """An implementation of the DeepDrug model."""
 
-from typing import Optional
-
 import torch
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
