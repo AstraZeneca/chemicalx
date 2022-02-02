@@ -1,6 +1,8 @@
 """An implementation of the GCNBMP model."""
 from collections.abc import Sequence
-from typing import Tuple
+from typing import Tuple, Optional
+
+from more_itertools import chunked
 
 import torch
 import torch.nn as nn
@@ -26,9 +28,9 @@ def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) 
     """
     Computes the circular correlation of two vectors a and b via their fast fourier transforms
     In python code, ifft(np.conj(fft(a)) * fft(b)).real
-    :param left_x (Tensor): representation of the left molecule.
-    :param right_x (Tensor): representation of the right molecule.
-    :return circ_corr.real (Tensor): joint representation by circular correlation.
+    :param left_x: representation of the left molecule.
+    :param right_x: representation of the right molecule.
+    :return circ_corr.real: joint representation by circular correlation.
     """
     left_x_cfft = torch.conj(fft(left_x))
     right_x_fft = fft(right_x)
@@ -40,8 +42,8 @@ def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) 
 class Highway(nn.Module):
     def __init__(self, input_size: int, prev_input_size: int):
         """Instantiate the Highway update layer based on https://arxiv.org/abs/1505.00387
-        :param input_size (int): current representation size.
-        :param prev_input_size (int): size of the representation obtained by the previous convolutional layer.
+        :param input_size: current representation size.
+        :param prev_input_size: size of the representation obtained by the previous convolutional layer.
         """
         super(Highway, self).__init__()
         total_size = input_size + prev_input_size
@@ -55,11 +57,11 @@ class Highway(nn.Module):
         Compute the gated update
 
         Parameters:
-            input (Tensor): Current node representations.
-            prev_input (Tensor): Previous layer node representation.
+            input: Current node representations.
+            prev_input: Previous layer node representation.
 
         Returns:
-            gated (Tensor): the highway-updated inputs
+            gated: the highway-updated inputs
         """
         concat_inputs = torch.cat((input, prev_input), 1)
         proj_result = F.relu(self.proj(concat_inputs))
@@ -71,8 +73,8 @@ class Highway(nn.Module):
 class AttentionPooling(nn.Module):
     def __init__(self, molecule_channels: int, hidden_channels: int):
         """Instantiate the Attention pooling layer
-        :param molecules_channels (int): input node features (layer 0 of the backbone).
-        :param hidden_channels (int): final node representation (layer L of the backbone).
+        :param molecules_channels: input node features (layer 0 of the backbone).
+        :param hidden_channels: final node representation (layer L of the backbone).
         """
         super(AttentionPooling, self).__init__()
         total_features_channels = molecule_channels + hidden_channels
@@ -87,12 +89,12 @@ class AttentionPooling(nn.Module):
         RGCN encoder for one molecule.
 
         Parameters:
-            input_rep (Tensor): input nodes representations
-            final_rep (Tensor): final nodes representations
-            graph_index (Tensor): node to graph readout index
+            input_rep: input nodes representations
+            final_rep: final nodes representations
+            graph_index: node to graph readout index
 
         Returns:
-            g (Tensor): graph-level representation
+            g: graph-level representation
         """
         att = torch.sigmoid(self.lin(torch.cat((input_rep, final_rep), 1)))
         g = att.mul(self.last_rep(final_rep))
@@ -103,34 +105,28 @@ class AttentionPooling(nn.Module):
 class GCNBMPEncoder(nn.Module, core.Configurable):
     def __init__(
         self,
-        input_dim,
-        hidden_dims,
-        num_relation,
-        edge_input_dim=None,
-        short_cut=False,
-        batch_norm=False,
-        activation="sigmoid",
-        concat_hidden=False,
+        input_dim: int,
+        hidden_dims: int,
+        num_relation: int,
+        edge_input_dim: Optional[int] = None,
+        batch_norm: Optional[bool] = False,
+        activation: Optional[str] = "sigmoid",
     ):
         """Instantiate the GCN-BMP encoder.
-        :param input_dim (int): input dimension.
-        :param hidden_dims (list of int): hidden dimensions.
-        :param output_dim (int): output dimension.
-        :param num_relation (int): number of relations.
-        :param edge_input_dim (int, optional): dimension of edge features.
-        :param batch_norm (bool, optional): apply batch normalization on nodes or not.
-        :param activation (str or function, optional): activation function.
+        :param input_dim: input dimension.
+        :param hidden_dims: hidden dimensions.
+        :param num_relation: number of relations.
+        :param edge_input_dim: dimension of edge features.
+        :param batch_norm: apply batch normalization on nodes or not.
+        :param activation: activation function.
         """
         super(GCNBMPEncoder, self).__init__()
 
         if not isinstance(hidden_dims, Sequence):
             hidden_dims = [hidden_dims]
         self.input_dim = input_dim
-        self.output_dim = hidden_dims[-1] * (len(hidden_dims) if concat_hidden else 1)
         self.dims = [input_dim] + list(hidden_dims)
         self.num_relation = num_relation
-        self.short_cut = short_cut
-        self.concat_hidden = concat_hidden
 
         self.layers = nn.ModuleList()
         for i in range(len(self.dims) - 1):
@@ -148,8 +144,8 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
         Require the graph(s) to have the same number of relations as this module.
 
         Parameters:
-            graph (Graph): :math:`n` graph(s)
-            input (Tensor): input node representations
+            graph: :math:`n` graph(s)
+            input: input node representations
 
         Returns:
             dict with ``node_feature`` field:
@@ -159,27 +155,15 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
         layer_input = input
         prev_gcn = input
 
-        for i, layer in enumerate(self.layers):
-            if isinstance(
-                layer, layers.RelationalGraphConv
-            ):  # Achievable with 0==i%2, maybe better perf but less readable
-                hidden = layer(graph, layer_input)
-                if self.short_cut and hidden.shape == layer_input.shape:
-                    hidden = hidden + layer_input
-                hiddens.append(hidden)
-                layer_input = hidden
-            else:
-                hidden = layer(hidden, prev_gcn)
-                if self.short_cut and hidden.shape == layer_input.shape:
-                    hidden = hidden + layer_input
-                hiddens.append(hidden)
-                layer_input = hidden
-                prev_gcn = hiddens[-2]
+        for conv, highway in chunked(self.layers, 2):
+            hidden = conv(graph, layer_input)
+            hiddens.append(hidden)
+            hidden = highway(hidden, prev_gcn)
+            hiddens.append(hidden)
+            layer_input = hidden
+            prev_gcn = hiddens[-2]
 
-        if self.concat_hidden:
-            node_feature = torch.cat(hiddens, dim=-1)
-        else:
-            node_feature = hiddens[-1]
+        node_feature = hiddens[-1]
         return {"node_feature": node_feature}
 
 
@@ -228,10 +212,10 @@ class GCNBMP(Model):
         """
         Run a forward pass of the GCN-BMP model.
         Args:
-            molecules_left (torchdrug.data.graph.PackedGraph): The graph of left drug and node features.
-            molecules_right (torchdrug.data.graph.PackedGraphtorch.FloatTensor): The graph of right drug and node features.
+            molecules_left: The graph of left drug and node features.
+            molecules_right: The graph of right drug and node features.
         Returns:
-            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+            hidden: A column vector of predicted synergy scores.
         """
         features_left = self.graph_convolutions(molecules_left, molecules_left.data_dict["node_feature"])[
             "node_feature"
