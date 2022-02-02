@@ -1,6 +1,7 @@
 """An implementation of the DeepDDI model."""
 
 import torch
+from torch import nn
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -38,22 +39,22 @@ class DeepDDI(Model):
         super().__init__()
         assert hidden_layers_num > 1
         dnn = [
-            torch.nn.Linear(drug_channels * 2, hidden_channels),
-            torch.nn.ReLU(),
-            torch.nn.BatchNorm1d(num_features=hidden_channels, affine=True, momentum=None),
-            torch.nn.ReLU(),
+            nn.Linear(drug_channels * 2, hidden_channels),
+            nn.ReLU(),
+            nn.BatchNorm1d(num_features=hidden_channels, affine=True, momentum=None),
+            nn.ReLU(),
         ]
         for _ in range(hidden_layers_num - 1):
             dnn.extend(
                 [
-                    torch.nn.Linear(hidden_channels, hidden_channels),
-                    torch.nn.ReLU(),
-                    torch.nn.BatchNorm1d(num_features=hidden_channels, affine=True, momentum=None),
-                    torch.nn.ReLU(),
+                    nn.Linear(hidden_channels, hidden_channels),
+                    nn.ReLU(),
+                    nn.BatchNorm1d(num_features=hidden_channels, affine=True, momentum=None),
+                    nn.ReLU(),
                 ]
             )
-        dnn.extend([torch.nn.Linear(hidden_channels, out_channels), torch.nn.Sigmoid()])
-        self.dnn = torch.nn.Sequential(*dnn)
+        dnn.extend([nn.Linear(hidden_channels, out_channels), nn.Sigmoid()])
+        self.dnn = nn.Sequential(*dnn)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features and right drug features."""
