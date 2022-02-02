@@ -2,7 +2,7 @@
 from collections.abc import Sequence
 from typing import Tuple, Optional
 
-from more_itertools import chunked
+from more_itertools import chunked, pairwise
 
 import torch
 import torch.nn as nn
@@ -129,13 +129,13 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
         self.num_relation = num_relation
 
         self.layers = nn.ModuleList()
-        for i in range(len(self.dims) - 1):
+        for left_dim, right_dim in pairwise(self.dims):
             self.layers.append(
                 layers.RelationalGraphConv(
-                    self.dims[i], self.dims[i + 1], num_relation, edge_input_dim, batch_norm, activation
+                    left_dim, right_dim, num_relation, edge_input_dim, batch_norm, activation
                 )
             )
-            self.layers.append(Highway(self.dims[i + 1], self.dims[i]))
+            self.layers.append(Highway(right_dim, left_dim))
 
     def forward(self, graph: torchdrug.data.graph.PackedGraph, input: torch.Tensor) -> dict:
         """
