@@ -69,12 +69,15 @@ class DeepDrug(Model):
             batch.drug_molecules_right,
         )
 
-    def _help_molecules(self, molecules: PackedGraph):
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
         features = self.graph_convolution_first(molecules, molecules.data_dict["node_feature"])
         for layer in self.layers:
             features = layer(molecules, features)
         features = self.readout(molecules, features)
         return features
+
+    def _combine_sides(self, left:torch.FloatTensor, right:torch.FloatTensor) -> torch.FloatTensor:
+        return torch.cat([left, right], dim=1)
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
@@ -85,9 +88,7 @@ class DeepDrug(Model):
 
         :return: A column vector of predicted synergy scores.
         """
-        features_left = self._help_molecules(molecules_left)
-        features_right = self._help_molecules(molecules_right)
-
-        # run the linear layer on concatenated left/right features
-        hidden = torch.cat([features_left, features_right], dim=1)
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
+        hidden = self._combine_sides(features_left, features_right)
         return self.final(hidden)

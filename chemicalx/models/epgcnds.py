@@ -43,7 +43,7 @@ class EPGCNDS(Model):
         super().__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(molecule_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
-        self.mean_readout = MeanReadout()
+        self.readout = MeanReadout()
         self.final = nn.Sequential(nn.Linear(middle_channels, out_channels), nn.Sigmoid())
 
     def unpack(self, batch: DrugPairBatch):
@@ -56,8 +56,11 @@ class EPGCNDS(Model):
     def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
         features = self.graph_convolution_in(molecules, molecules.data_dict["node_feature"])["node_feature"]
         features = self.graph_convolution_out(molecules, features)["node_feature"]
-        features = self.mean_readout(molecules, features)
+        features = self.readout(molecules, features)
         return features
+
+    def _combine_sides(self, left: torch.FloatTensor, right: torch.FloatTensor) -> torch.FloatTensor:
+        return left + right
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """Run a forward pass of the EPGCN-DS model.
@@ -68,6 +71,5 @@ class EPGCNDS(Model):
         """
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)
-        hidden = features_left + features_right
-        hidden = self.final(hidden)
-        return hidden
+        hidden = self._combine_sides(features_left, features_right)
+        return self.final(hidden)
