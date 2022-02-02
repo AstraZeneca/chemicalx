@@ -45,7 +45,7 @@ class Highway(nn.Module):
         :param prev_input_size (int): representation obtained by the previous convolutional layer.
         """
         super(Highway, self).__init__()
-        total_size = input_size+prev_input_size
+        total_size = input_size + prev_input_size
         self.proj = nn.Linear(total_size, input_size)
         self.transform = nn.Linear(total_size, input_size)
         # Not in GCN-BMP paper but present in the original implementation
@@ -100,9 +100,19 @@ class AttentionPooling(nn.Module):
         g = scatter_add(g, graph_index, dim=0)
         return g
 
+
 class GCNBMPEncoder(nn.Module, core.Configurable):
-    def __init__(self, input_dim, hidden_dims, num_relation, edge_input_dim=None, short_cut=False, batch_norm=False,
-                 activation="sigmoid", concat_hidden=False):
+    def __init__(
+        self,
+        input_dim,
+        hidden_dims,
+        num_relation,
+        edge_input_dim=None,
+        short_cut=False,
+        batch_norm=False,
+        activation="sigmoid",
+        concat_hidden=False,
+    ):
         """Instantiate the GCN-BMP encoder.
         :param input_dim (int): input dimension.
         :param hidden_dims (list of int): hidden dimensions.
@@ -125,8 +135,11 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
 
         self.layers = nn.ModuleList()
         for i in range(len(self.dims) - 1):
-            self.layers.append(layers.RelationalGraphConv(self.dims[i], self.dims[i + 1], num_relation, edge_input_dim,
-                                                          batch_norm, activation))
+            self.layers.append(
+                layers.RelationalGraphConv(
+                    self.dims[i], self.dims[i + 1], num_relation, edge_input_dim, batch_norm, activation
+                )
+            )
             self.layers.append(Highway(self.dims[i + 1], self.dims[i]))
 
     def forward(self, graph, input):
@@ -148,13 +161,15 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
         prev_gcn = input
 
         for i, layer in enumerate(self.layers):
-            if isinstance(layer, layers.RelationalGraphConv):# Achievable with 0==i%2, maybe better perf but less readable
+            if isinstance(
+                layer, layers.RelationalGraphConv
+            ):  # Achievable with 0==i%2, maybe better perf but less readable
                 hidden = layer(graph, layer_input)
                 if self.short_cut and hidden.shape == layer_input.shape:
                     hidden = hidden + layer_input
                 hiddens.append(hidden)
                 layer_input = hidden
-            else :
+            else:
                 hidden = layer(hidden, prev_gcn)
                 if self.short_cut and hidden.shape == layer_input.shape:
                     hidden = hidden + layer_input
@@ -166,11 +181,8 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
             node_feature = torch.cat(hiddens, dim=-1)
         else:
             node_feature = hiddens[-1]
-        
-        return {
-            "node_feature": node_feature
-        }
 
+        return {"node_feature": node_feature}
 
 
 class GCNBMP(Model):
@@ -183,7 +195,7 @@ class GCNBMP(Model):
         self,
         *,
         molecule_channels: int = TORCHDRUG_NODE_FEATURES,
-        num_relations: int = 4, # TODO: This default value should be set by a dataset-specific constant
+        num_relations: int = 4,  # TODO: This default value should be set by a dataset-specific constant
         hidden_channels: int = 16,
         hidden_conv_layers: int = 1,
         out_channels: int = 1,
@@ -196,7 +208,9 @@ class GCNBMP(Model):
         """
         super(GCNBMP, self).__init__()
 
-        self.graph_convolutions = GCNBMPEncoder(molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], num_relations)
+        self.graph_convolutions = GCNBMPEncoder(
+            molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], num_relations
+        )
 
         self.attention_readout_left = AttentionPooling(molecule_channels, hidden_channels)
         self.attention_readout_right = AttentionPooling(molecule_channels, hidden_channels)
@@ -210,7 +224,9 @@ class GCNBMP(Model):
             batch.drug_molecules_right,
         )
 
-    def forward(self, molecules_left: torchdrug.data.graph.PackedGraph, molecules_right: torchdrug.data.graph.PackedGraph,) -> torch.FloatTensor: 
+    def forward(
+        self, molecules_left: torchdrug.data.graph.PackedGraph, molecules_right: torchdrug.data.graph.PackedGraph,
+    ) -> torch.FloatTensor:
         """
         Run a forward pass of the GCN-BMP model.
         Args:
@@ -227,8 +243,12 @@ class GCNBMP(Model):
             "node_feature"
         ]
 
-        features_left = self.attention_readout_left(molecules_left.data_dict["node_feature"], features_left, molecules_left.node2graph)
-        features_right = self.attention_readout_right(molecules_right.data_dict["node_feature"], features_right, molecules_right.node2graph)
+        features_left = self.attention_readout_left(
+            molecules_left.data_dict["node_feature"], features_left, molecules_left.node2graph
+        )
+        features_right = self.attention_readout_right(
+            molecules_right.data_dict["node_feature"], features_right, molecules_right.node2graph
+        )
 
         joint_rep = circular_correlation(features_left, features_right)
 
