@@ -75,14 +75,14 @@ class DatasetLoader(ABC):
     ) -> BatchGenerator:
         """Initialize a batch generator.
 
-        Args:
-            batch_size: Number of drug pairs per batch.
-            context_features: Indicator whether the batch should include biological context features.
-            drug_features: Indicator whether the batch should include drug features.
-            drug_molecules: Indicator whether the batch should include drug molecules
-            labels: Indicator whether the batch should include drug pair labels.
-            labeled_triples: A labeled triples object used to generate batches. If none is given, will use
-                all triples from the dataset.
+        :param batch_size: Number of drug pairs per batch.
+        :param context_features: Indicator whether the batch should include biological context features.
+        :param drug_features: Indicator whether the batch should include drug features.
+        :param drug_molecules: Indicator whether the batch should include drug molecules
+        :param labeled_triples:
+            A labeled triples object used to generate batches. If none is given, will use
+            all triples from the dataset.
+        :returns: A batch generator
         """
         return BatchGenerator(
             batch_size=batch_size,
@@ -96,12 +96,7 @@ class DatasetLoader(ABC):
 
     @abstractmethod
     def get_context_features(self) -> ContextFeatureSet:
-        """
-        Get the context feature set.
-
-        Returns:
-            : The ContextFeatureSet of the dataset of interest.
-        """
+        """Get the context feature set."""
 
     @property
     def num_contexts(self) -> int:
@@ -115,12 +110,7 @@ class DatasetLoader(ABC):
 
     @abstractmethod
     def get_drug_features(self):
-        """
-        Get the drug feature set.
-
-        Returns:
-            : The DrugFeatureSet of the dataset of interest.
-        """
+        """Get the drug feature set."""
 
     @property
     def num_drugs(self) -> int:
@@ -134,12 +124,7 @@ class DatasetLoader(ABC):
 
     @abstractmethod
     def get_labeled_triples(self) -> LabeledTriples:
-        """
-        Get the labeled triples file from the storage.
-
-        Returns:
-            : The labeled triples in the dataset.
-        """
+        """Get the labeled triples file from the storage."""
 
     @property
     def num_labeled_triples(self) -> int:
@@ -168,46 +153,36 @@ class RemoteDatasetLoader(DatasetLoader):
     def __init__(self, dataset_name: str):
         """Instantiate the dataset loader.
 
-        Args:
-            dataset_name (str): The name of the dataset.
+        :param dataset_name: The name of the dataset.
         """
         self.base_url = "https://raw.githubusercontent.com/AstraZeneca/chemicalx/main/dataset"
         self.dataset_name = dataset_name
         assert dataset_name in ["drugcombdb", "drugcomb", "twosides", "drugbankddi"]
 
     def generate_path(self, file_name: str) -> str:
-        """
-        Generate a complete url for a dataset file.
+        """Generate a complete url for a dataset file.
 
-        Args:
-            file_name (str): Name of the data file.
-        Returns:
-            data_path (str): The complete url to the dataset.
+        :param file_name: Name of the data file.
+        :returns: The complete url to the dataset.
         """
         data_path = "/".join([self.base_url, self.dataset_name, file_name])
         return data_path
 
     def load_raw_json_data(self, path: str) -> Dict:
-        """
-        Load a raw JSON dataset at the given path.
+        """Load a raw JSON dataset at the given path.
 
-        Args:
-            path (str): The path to the JSON file.
-        Returns:
-            raw_data (dict): A dictionary with the data.
+        :param path: The path to the JSON file.
+        :returns: A dictionary with the data.
         """
         with urllib.request.urlopen(path) as url:
             raw_data = json.loads(url.read().decode())
         return raw_data
 
     def load_raw_csv_data(self, path: str) -> pd.DataFrame:
-        """
-        Load a CSV dataset at the given path.
+        """Load a CSV dataset at the given path.
 
-        Args:
-            path (str): The path to the triples CSV file.
-        Returns:
-            raw_data (pd.DataFrame): A pandas DataFrame with the data.
+        :param path: The path to the triples CSV file.
+        :returns: A pandas DataFrame with the data.
         """
         data_bytes = urllib.request.urlopen(path).read()
         types = {"drug_1": str, "drug_2": str, "context": str, "label": float}
@@ -215,26 +190,16 @@ class RemoteDatasetLoader(DatasetLoader):
         return raw_data
 
     @lru_cache(maxsize=1)
-    def get_context_features(self):
-        """
-        Get the context feature set.
-
-        Returns:
-            : The ContextFeatureSet of the dataset of interest.
-        """
+    def get_context_features(self) -> ContextFeatureSet:
+        """Get the context feature set."""
         path = self.generate_path("context_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {k: torch.FloatTensor(np.array(v).reshape(1, -1)) for k, v in raw_data.items()}
         return ContextFeatureSet(raw_data)
 
     @lru_cache(maxsize=1)
-    def get_drug_features(self):
-        """
-        Get the drug feature set.
-
-        Returns:
-            : The DrugFeatureSet of the dataset of interest.
-        """
+    def get_drug_features(self) -> DrugFeatureSet:
+        """Get the drug feature set."""
         path = self.generate_path("drug_set.json")
         raw_data = self.load_raw_json_data(path)
         raw_data = {
@@ -244,13 +209,8 @@ class RemoteDatasetLoader(DatasetLoader):
         return DrugFeatureSet.from_dict(raw_data)
 
     @lru_cache(maxsize=1)
-    def get_labeled_triples(self):
-        """
-        Get the labeled triples file from the storage.
-
-        Returns:
-            : The labeled triples in the dataset.
-        """
+    def get_labeled_triples(self) -> LabeledTriples:
+        """Get the labeled triples file from the storage."""
         path = self.generate_path("labeled_triples.csv")
         df = self.load_raw_csv_data(path)
         return LabeledTriples(df)

@@ -58,14 +58,11 @@ class EPGCNDS(Model):
         return features
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
-        """
-        Run a forward pass of the EPGCN-DS model.
+        """Run a forward pass of the EPGCN-DS model.
 
-        Args:
-            molecules_left: Batched molecules for the left side drugs.
-            molecules_right: Batched molecules for the right side drugs.
-        Returns:
-            : A column vector of predicted synergy scores.
+        :param molecules_left: Batched molecules for the left side drugs.
+        :param molecules_right: Batched molecules for the right side drugs.
+        :returns: A column vector of predicted synergy scores.
         """
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)
