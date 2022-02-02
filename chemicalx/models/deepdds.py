@@ -40,8 +40,9 @@ __all__ = [
 class DeepDDS(Model):
     """An implementation of the DeepDDS model from [wang2021]_.
 
-    This implementation follows the code implementation where the paper and
+    This implementation follows the code on github where the paper and
     the code diverge.
+    https://github.com/Sinwang404/DeepDDs/tree/master
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/19
 
