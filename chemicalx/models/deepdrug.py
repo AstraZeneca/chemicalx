@@ -76,7 +76,7 @@ class DeepDrug(Model):
         features = self.readout(molecules, features)
         return features
 
-    def _combine_sides(self, left:torch.FloatTensor, right:torch.FloatTensor) -> torch.FloatTensor:
+    def _combine_sides(self, left: torch.FloatTensor, right: torch.FloatTensor) -> torch.FloatTensor:
         return torch.cat([left, right], dim=1)
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
