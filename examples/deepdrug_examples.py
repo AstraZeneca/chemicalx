@@ -14,8 +14,8 @@ def main():
         model=model,
         optimizer_kwargs=dict(lr=0.001),
         batch_size=1024,
-        epochs=100,
-        context_features=True,
+        epochs=20,
+        context_features=False,
         drug_features=True,
         drug_molecules=True,
     )
