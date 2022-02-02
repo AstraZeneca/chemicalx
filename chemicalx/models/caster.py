@@ -18,8 +18,9 @@ class CASTER(Model):
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/17
 
-    .. [huang2020] Huang, Kexin, *et al.* (2020). `CASTER: Predicting Drug Interactions with Chemical Substructure
-       Representation <https://doi.org/10.1609/aaai.v34i01.5412>`_. *AAAI*, 34(1), 702-709.
+    .. [huang2020] Huang, Kexin, *et al.* (2020). `CASTER: Predicting Drug Interactions
+       with Chemical Substructure Representation <https://doi.org/10.1609/aaai.v34i01.5412>`_.
+       *AAAI*, 34(1), 702-709.
     """
 
     def __init__(
