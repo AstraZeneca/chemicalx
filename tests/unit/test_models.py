@@ -170,32 +170,14 @@ class TestModels(unittest.TestCase):
 
     def test_deepdrug(self):
         """Test DeepDrug."""
-        model = DeepDrug(context_channels=288)
+        model = DeepDrug()
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         model.train()
         loss = torch.nn.BCELoss()
         for batch in self.generator:
             optimizer.zero_grad()
-            prediction = model(batch.context_features, batch.drug_molecules_left, batch.drug_molecules_right)
-            output = loss(prediction, batch.labels)
-            output.backward()
-            optimizer.step()
-            assert prediction.shape[0] == batch.labels.shape[0]
-
-        # check if it also works without context features
-        model_0 = DeepDrug(context_channels=0)
-
-        optimizer = torch.optim.Adam(model_0.parameters(), lr=0.001)
-        model_0.train()
-        loss = torch.nn.BCELoss()
-        for batch in self.generator:
-            optimizer.zero_grad()
-            prediction = model_0(
-                context_features=None,
-                molecules_left=batch.drug_molecules_left,
-                molecules_right=batch.drug_molecules_right,
-            )
+            prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)
             output = loss(prediction, batch.labels)
             output.backward()
             optimizer.step()
