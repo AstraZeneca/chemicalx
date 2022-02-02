@@ -77,8 +77,7 @@ class DeepDrug(Model):
         :param left: tuple containing the batch of left molecules and associated features
         :param right: tuple containing the batch of right molecules and associated features
 
-        :return Tuple[torch.FloatTensor, torch.FloatTensor]: tuple with left and right molecule batch features
-        after applying the torch Module
+        :return Tuple[torch.FloatTensor, torch.FloatTensor]: tuple with left and right molecule batch features after applying the torch Module
         """
         return layer(*left), layer(*right)
 
