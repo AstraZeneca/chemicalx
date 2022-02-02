@@ -14,7 +14,7 @@ install_requires = [
     "tabulate",
     "pystow",
     "pytdc",
-    "more-itertools"
+    "more-itertools",
 ]
 
 

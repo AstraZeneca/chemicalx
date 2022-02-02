@@ -1,23 +1,19 @@
 """An implementation of the GCNBMP model."""
 from collections.abc import Sequence
-from typing import Tuple, Optional
-
-from more_itertools import chunked, pairwise
+from typing import List, Optional, Tuple
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.fft import fft, ifft
-
+import torch.nn.functional as F  # noqa:N812
 import torchdrug
-from torchdrug import layers, core
-
+from more_itertools import chunked, pairwise
+from torch.fft import fft, ifft
 from torch_scatter import scatter_add
+from torchdrug import core, layers
 
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
-
 
 __all__ = [
     "GCNBMP",
@@ -26,7 +22,8 @@ __all__ = [
 
 def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) -> torch.FloatTensor:
     """
-    Computes the circular correlation of two vectors a and b via their fast fourier transforms
+    Compute the circular correlation of two vectors a and b via their fast fourier transforms.
+
     In python code, ifft(np.conj(fft(a)) * fft(b)).real
     :param left_x: representation of the left molecule.
     :param right_x: representation of the right molecule.
@@ -48,7 +45,9 @@ class Highway(nn.Module):
     """
 
     def __init__(self, input_size: int, prev_input_size: int):
-        """Instantiate the Highway update layer
+        """
+        Instantiate the Highway update layer.
+
         :param input_size: current representation size.
         :param prev_input_size: size of the representation obtained by the previous convolutional layer.
         """
@@ -61,7 +60,7 @@ class Highway(nn.Module):
 
     def forward(self, input: torch.Tensor, prev_input: torch.Tensor) -> torch.Tensor:
         """
-        Compute the gated update
+        Compute the gated update.
 
         Parameters:
             input: Current node representations.
@@ -86,7 +85,9 @@ class AttentionPooling(nn.Module):
     """
 
     def __init__(self, molecule_channels: int, hidden_channels: int):
-        """Instantiate the Attention pooling layer
+        """
+        Instantiate the Attention pooling layer.
+
         :param molecules_channels: input node features (layer 0 of the backbone).
         :param hidden_channels: final node representation (layer L of the backbone).
         """
@@ -99,8 +100,7 @@ class AttentionPooling(nn.Module):
 
     def forward(self, input_rep: torch.Tensor, final_rep: torch.Tensor, graph_index: torch.Tensor) -> torch.Tensor:
         """
-        Compute an attention-based readout using the input and output layers of the 
-        RGCN encoder for one molecule.
+        Compute an attention-based readout using the input and output layers of the RGCN encoder for one molecule.
 
         Parameters:
             input_rep: input nodes representations
@@ -127,13 +127,15 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
     def __init__(
         self,
         input_dim: int,
-        hidden_dims: int,
+        hidden_dims: List[int],
         num_relation: int,
         edge_input_dim: Optional[int] = None,
         batch_norm: Optional[bool] = False,
         activation: Optional[str] = "sigmoid",
     ):
-        """Instantiate the GCN-BMP encoder.
+        """
+        Instantiate the GCN-BMP encoder.
+
         :param input_dim: input dimension.
         :param hidden_dims: hidden dimensions.
         :param num_relation: number of relations.
@@ -202,7 +204,9 @@ class GCNBMP(Model):
         hidden_conv_layers: int = 1,
         out_channels: int = 1,
     ):
-        """Instantiate the GCN-BMP model.
+        """
+        Instantiate the GCN-BMP model.
+
         :param molecule_channels: The number of node-level features.
         :param hidden_channels: The number of hidden layer neurons in the input layer.
         :param hidden_conv_layers: The number of hidden layers in the encoder.
@@ -230,6 +234,7 @@ class GCNBMP(Model):
     ) -> torch.FloatTensor:
         """
         Run a forward pass of the GCN-BMP model.
+
         Args:
             molecules_left: The graph of left drug and node features.
             molecules_right: The graph of right drug and node features.
