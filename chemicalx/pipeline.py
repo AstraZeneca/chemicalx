@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, List, Mapping, Optional, Sequence, Type, Union
 
+import collections.abc
+
 import pandas as pd
 import torch
 from class_resolver import FunctionResolver, HintOrType
@@ -164,6 +166,8 @@ def pipeline(
     predictions = []
     for batch in test_generator:
         prediction = model(*model.unpack(batch))
+        if isinstance(prediction, collections.abc.Sequence):
+            prediction = prediction[0]
         prediction = prediction.detach().cpu().numpy()
         identifiers = batch.identifiers
         identifiers["prediction"] = prediction
