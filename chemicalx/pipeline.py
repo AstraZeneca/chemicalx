@@ -1,12 +1,11 @@
 """A collection of full training and evaluation pipelines."""
 
+import collections.abc
 import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, List, Mapping, Optional, Sequence, Type, Union
-
-import collections.abc
 
 import pandas as pd
 import torch

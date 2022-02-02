@@ -2,14 +2,55 @@
 from collections import OrderedDict
 from typing import Tuple
 
-from chemicalx.models import Model
-from chemicalx.data import DrugPairBatch
 import torch
 from torch.nn.modules.loss import _Loss
+
+from chemicalx.data import DrugPairBatch
+from chemicalx.models import Model
 
 __all__ = [
     "CASTER",
 ]
+
+
+class CASTERSupervisedLoss(_Loss):
+    def __init__(
+        self, recon_loss_coeff: float = 1e-1, proj_coeff: float = 1e-1, lambda1: float = 1e-2, lambda2: float = 1e-1
+    ):
+        """
+        Custom loss function for the supervised learning stage of the CASTER algorithm.
+
+        :param recon_loss_coeff: coefficient for the reconstruction loss
+        :param proj_coeff: coefficient for the projection loss
+        :param lambda1: regularization coefficient for the projection loss
+        :param lambda2: regularization coefficient for the augmented projection loss
+        """
+        super().__init__(reduction="none")
+        self.recon_loss_coeff = recon_loss_coeff
+        self.proj_coeff = proj_coeff
+        self.lambda1 = lambda1
+        self.lambda2 = lambda2
+        self.loss = torch.nn.BCELoss()
+
+    def forward(self, x: Tuple[torch.FloatTensor, ...], target: torch.Tensor) -> torch.FloatTensor:
+        """
+        Forward pass of the loss calculation for the supervised learning stage of the CASTER algorithm.
+
+        :param x: a tuple of tensors returned by the model forward pass (see CASTER.forward() method)
+        :param target: target labels
+        :return: combined loss value
+        """
+        score, recon, code, dictionary_features_latent, drug_pair_features_latent, drug_pair_features = x
+        batch_size, _ = drug_pair_features.shape
+        loss_prediction = self.loss(score, target.float())
+        loss_reconstruction = self.recon_loss_coeff * self.loss(recon, drug_pair_features)
+        loss_projection = self.proj_coeff * (
+            torch.norm(drug_pair_features_latent - torch.matmul(code, dictionary_features_latent))
+            + self.lambda1 * torch.sum(torch.abs(code)) / batch_size
+            + self.lambda2 * torch.norm(dictionary_features_latent, p="fro") / batch_size
+        )
+        loss = loss_prediction + loss_reconstruction + loss_projection
+        return loss
 
 
 class CASTER(Model):
@@ -18,48 +59,8 @@ class CASTER(Model):
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/17
 
     .. [huang2020] Huang, Kexin, *et al.* (2020). `CASTER: Predicting Drug Interactions with Chemical Substructure
-                    Representation <https://doi.org/10.1609/aaai.v34i01.5412>`_. *AAAI*, 34(1), 702-709.
+       Representation <https://doi.org/10.1609/aaai.v34i01.5412>`_. *AAAI*, 34(1), 702-709.
     """
-
-    class CASTERSupervisedLoss(_Loss):
-        def __init__(
-            self, recon_loss_coeff: float = 1e-1, proj_coeff: float = 1e-1, lambda1: float = 1e-2, lambda2: float = 1e-1
-        ):
-            """
-            Custom loss function for the supervised learning stage of the CASTER algorithm.
-
-            :param recon_loss_coeff: coefficient for the reconstruction loss
-            :param proj_coeff: coefficient for the projection loss
-            :param lambda1: regularization coefficient for the projection loss
-            :param lambda2: regularization coefficient for the augmented projection loss
-            """
-            super(CASTER.CASTERSupervisedLoss, self).__init__(reduction="none")
-            self.recon_loss_coeff = recon_loss_coeff
-            self.proj_coeff = proj_coeff
-            self.lambda1 = lambda1
-            self.lambda2 = lambda2
-
-        def forward(self, input: Tuple[torch.FloatTensor], target: torch.Tensor) -> torch.FloatTensor:
-            """
-            Forward pass of the loss calculation for the supervised learning stage of the CASTER algorithm.
-
-            :param input (Tuple[torch.Tensor]): a tuple of tensors returned by the model forward pass (see CASTER.forward() method)
-            :param target (torch.Tensor): target labels
-            :return: (torch.Tensor): combined loss value
-            """
-            score, recon, code, dictionary_features_latent, drug_pair_features_latent, drug_pair_features = input
-            batch_size, _ = drug_pair_features.shape
-            bce_loss = torch.nn.BCELoss()
-            loss_prediction = bce_loss(score, target.float())
-            loss_reconstruction = self.recon_loss_coeff * bce_loss(recon, drug_pair_features)
-            loss_projection = self.proj_coeff * (
-                torch.norm(drug_pair_features_latent - torch.matmul(code, dictionary_features_latent))
-                + self.lambda1 * torch.sum(torch.abs(code)) / batch_size
-                + self.lambda2 * torch.norm(dictionary_features_latent, p="fro") / batch_size
-            )
-
-            loss = loss_prediction + loss_reconstruction + loss_projection
-            return loss
 
     def __init__(
         self,
@@ -84,7 +85,7 @@ class CASTER(Model):
         :param lambda3: regularisation coefficient in the dictionary encoder module.
         :param magnifying_factor: The magnifying factor coefficient applied to the predictor module input.
         """
-        super(CASTER, self).__init__()
+        super().__init__()
         self.lambda3 = lambda3
         self.magnifying_factor = magnifying_factor
         self.drug_channels = drug_channels
@@ -118,11 +119,11 @@ class CASTER(Model):
         self.predictor = torch.nn.Sequential(predictor_layers_dict)
 
     @classmethod
-    def get_supervised_loss_cls(CASTER):
-        return CASTER.CASTERSupervisedLoss
+    def get_supervised_loss_cls(cls):
+        return CASTERSupervisedLoss
 
     def unpack(self, batch: DrugPairBatch) -> Tuple[torch.FloatTensor]:
-        """Returns the "functional representation" of drug pairs, as defined in the original implementation
+        """Return the "functional representation" of drug pairs, as defined in the original implementation.
 
         :param batch: batch of drug pairs
         :return: each pair is represented as a single vector with x^i = 1 if either x_1^i >= 1 or x_2^i >= 1
@@ -146,10 +147,9 @@ class CASTER(Model):
         return r
 
     def forward(self, drug_pair_features: torch.FloatTensor) -> Tuple[torch.FloatTensor]:
-        """
-        Run a forward pass of the CASTER model
+        """Run a forward pass of the CASTER model.
 
-        :param drug_pair_features (torch.FloatTensor): functional representation of each drug pair (see unpack method)
+        :param drug_pair_features: functional representation of each drug pair (see unpack method)
         :return: (Tuple[torch.FloatTensor): a tuple of tensors including:
                 prediction_scores (torch.FloatTensor): predicted target scores for each drug pair
                 reconstructed (torch.FloatTensor): input drug pair vectors reconstructed by the encoder-decoder chain
