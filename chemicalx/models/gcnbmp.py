@@ -1,5 +1,6 @@
 """An implementation of the GCNBMP model."""
 from collections.abc import Sequence
+from typing import Tuple
 
 import torch
 import torch.nn as nn
@@ -37,10 +38,10 @@ def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) 
 
 
 class Highway(nn.Module):
-    def __init__(self, input_size, prev_input_size):
+    def __init__(self, input_size: int, prev_input_size: int):
         """Instantiate the Highway update layer based on https://arxiv.org/abs/1505.00387
-        :param input_size (int): current representation.
-        :param prev_input_size (int): representation obtained by the previous convolutional layer.
+        :param input_size (int): current representation size.
+        :param prev_input_size (int): size of the representation obtained by the previous convolutional layer.
         """
         super(Highway, self).__init__()
         total_size = input_size + prev_input_size
@@ -49,16 +50,16 @@ class Highway(nn.Module):
         # Not in GCN-BMP paper but present in the original implementation
         self.transform.bias.data.fill_(-2.0)
 
-    def forward(self, input, prev_input):
+    def forward(self, input: torch.Tensor, prev_input: torch.Tensor) -> torch.Tensor:
         """
         Compute the gated update
 
         Parameters:
-            input: Current node representations.
-            prev_input: Previous layer node representation.
+            input (Tensor): Current node representations.
+            prev_input (Tensor): Previous layer node representation.
 
         Returns:
-            gated: the highway-updated 
+            gated (Tensor): the highway-updated inputs
         """
         concat_inputs = torch.cat((input, prev_input), 1)
         proj_result = F.relu(self.proj(concat_inputs))
@@ -68,7 +69,7 @@ class Highway(nn.Module):
 
 
 class AttentionPooling(nn.Module):
-    def __init__(self, molecule_channels, hidden_channels):
+    def __init__(self, molecule_channels: int, hidden_channels: int):
         """Instantiate the Attention pooling layer
         :param molecules_channels (int): input node features (layer 0 of the backbone).
         :param hidden_channels (int): final node representation (layer L of the backbone).
@@ -80,7 +81,7 @@ class AttentionPooling(nn.Module):
         )  # weights here must be shared across all nodes according to the paper
         self.last_rep = nn.Linear(hidden_channels, hidden_channels)
 
-    def forward(self, input_rep, final_rep, graph_index):
+    def forward(self, input_rep: torch.Tensor, final_rep: torch.Tensor, graph_index: torch.Tensor) -> torch.Tensor:
         """
         Compute an attention-based readout using the input and output layers of the 
         RGCN encoder for one molecule.
@@ -140,7 +141,7 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
             )
             self.layers.append(Highway(self.dims[i + 1], self.dims[i]))
 
-    def forward(self, graph, input):
+    def forward(self, graph: torchdrug.data.graph.PackedGraph, input: torch.Tensor) -> dict:
         """
         Compute the node representations and the graph representation(s).
 
@@ -179,7 +180,6 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
             node_feature = torch.cat(hiddens, dim=-1)
         else:
             node_feature = hiddens[-1]
-
         return {"node_feature": node_feature}
 
 
@@ -215,7 +215,7 @@ class GCNBMP(Model):
 
         self.final = torch.nn.Linear(hidden_channels, out_channels)
 
-    def unpack(self, batch: DrugPairBatch):
+    def unpack(self, batch: DrugPairBatch) -> Tuple[torchdrug.data.graph.PackedGraph, torchdrug.data.graph.PackedGraph]:
         """Return the left and right drugs PackedGraphs."""
         return (
             batch.drug_molecules_left,
