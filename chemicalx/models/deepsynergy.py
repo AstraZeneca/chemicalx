@@ -1,7 +1,7 @@
 r"""An implementation of the DeepSynergy model."""
 
 import torch
-import torch.nn.functional as F  # noqa:N812
+from torch import nn
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -12,10 +12,12 @@ __all__ = [
 
 
 class DeepSynergy(Model):
-    r"""The DeepSynergy model from [deepsynergy]_.
+    r"""The DeepSynergy model from [preuer2018]_.
 
-    .. [deepsynergy] `DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning
-       <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/16
+
+    .. [preuer2018] Preuer, K., *et al.* (2018). `DeepSynergy: predicting anti-cancer drug synergy
+       with Deep Learning <https://doi.org/10.1093/bioinformatics/btx806>`_. *Bioinformatics*, 34(9), 1538–1546.
     """
 
     def __init__(
@@ -39,12 +41,18 @@ class DeepSynergy(Model):
         :param out_channels: The number of output channels.
         :param dropout_rate: The rate of dropout before the scoring head is used.
         """
-        super(DeepSynergy, self).__init__()
-        self.encoder = torch.nn.Linear(drug_channels + drug_channels + context_channels, input_hidden_channels)
-        self.hidden_first = torch.nn.Linear(input_hidden_channels, middle_hidden_channels)
-        self.hidden_second = torch.nn.Linear(middle_hidden_channels, final_hidden_channels)
-        self.dropout = torch.nn.Dropout(dropout_rate)
-        self.scoring_head = torch.nn.Linear(final_hidden_channels, out_channels)
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(drug_channels + drug_channels + context_channels, input_hidden_channels),
+            nn.ReLU(),
+            nn.Linear(input_hidden_channels, middle_hidden_channels),
+            nn.ReLU(),
+            nn.Linear(middle_hidden_channels, final_hidden_channels),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(final_hidden_channels, out_channels),
+            nn.Sigmoid(),
+        )
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features, and right drug features."""
@@ -60,24 +68,12 @@ class DeepSynergy(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the DeepSynergy model.
+        """Run a forward pass of the DeepSynergy model.
 
-        Args:
-            context_features (torch.FloatTensor): A matrix of biological context features.
-            drug_features_left (torch.FloatTensor): A matrix of head drug features.
-            drug_features_right (torch.FloatTensor): A matrix of tail drug features.
-        Returns:
-            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
+        :param context_features: A matrix of biological context features.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted synergy scores.
         """
         hidden = torch.cat([context_features, drug_features_left, drug_features_right], dim=1)
-        hidden = self.encoder(hidden)
-        hidden = F.relu(hidden)
-        hidden = self.hidden_first(hidden)
-        hidden = F.relu(hidden)
-        hidden = self.hidden_second(hidden)
-        hidden = F.relu(hidden)
-        hidden = self.dropout(hidden)
-        hidden = self.scoring_head(hidden)
-        hidden = torch.sigmoid(hidden)
-        return hidden
+        return self.layers(hidden)

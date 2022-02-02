@@ -30,19 +30,15 @@ class DrugFeatureSet(UserDict, Mapping[str, Mapping[str, Union[torch.FloatTensor
     def get_feature_matrix(self, drugs: Iterable[str]) -> torch.FloatTensor:
         """Get the drug feature matrix for a list of drugs.
 
-        Args:
-            drugs: A list of drug identifiers.
-        Return:
-            : A matrix of drug features.
+        :param drugs: A list of drug identifiers.
+        :returns: A matrix of drug features.
         """
         return torch.cat([self.data[drug]["features"] for drug in drugs])
 
     def get_molecules(self, drugs: Iterable[str]) -> PackedGraph:
         """Get the molecular structures.
 
-        Args:
-            drugs: A list of drug identifiers.
-        Return:
-            : The molecules batched together for message passing.
+        :param drugs: A list of drug identifiers.
+        :returns: The molecules batched together for message passing.
         """
         return Graph.pack([self.data[drug]["molecule"] for drug in drugs])
