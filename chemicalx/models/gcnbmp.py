@@ -102,7 +102,7 @@ class AttentionPooling(nn.Module):
 
 class GCNBMPEncoder(nn.Module, core.Configurable):
     def __init__(self, input_dim, hidden_dims, num_relation, edge_input_dim=None, short_cut=False, batch_norm=False,
-                 activation="relu", concat_hidden=False):
+                 activation="sigmoid", concat_hidden=False):
         """Instantiate the GCN-BMP encoder.
         :param input_dim (int): input dimension.
         :param hidden_dims (list of int): hidden dimensions.
@@ -183,6 +183,7 @@ class GCNBMP(Model):
         self,
         *,
         molecule_channels: int = TORCHDRUG_NODE_FEATURES,
+        num_relations: int = 4, # TODO: This default value should be set by a dataset-specific constant
         hidden_channels: int = 16,
         hidden_conv_layers: int = 1,
         out_channels: int = 1,
@@ -195,7 +196,7 @@ class GCNBMP(Model):
         """
         super(GCNBMP, self).__init__()
 
-        self.graph_convolutions = GCNBMPEncoder(molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], 4)
+        self.graph_convolutions = GCNBMPEncoder(molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], num_relations)
 
         self.attention_readout_left = AttentionPooling(molecule_channels, hidden_channels)
         self.attention_readout_right = AttentionPooling(molecule_channels, hidden_channels)
