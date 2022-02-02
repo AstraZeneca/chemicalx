@@ -208,8 +208,18 @@ class TestModels(unittest.TestCase):
 
     def test_deepdrug(self):
         """Test DeepDrug."""
-        model = DeepDrug(x=2)
-        assert model.x == 2
+        model = DeepDrug()
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_deepsynergy(self):
         """Test DeepSynergy."""
