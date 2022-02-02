@@ -14,8 +14,8 @@ def main():
     results = pipeline(
         dataset=dataset,
         model=model,
-        batch_size=2,
-        epochs=1,
+        batch_size=128,
+        epochs=10,
         context_features=False,
         drug_features=True,
         drug_molecules=True,

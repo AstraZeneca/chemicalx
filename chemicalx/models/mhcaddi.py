@@ -469,7 +469,6 @@ class MHCADDI(Model):
             rdrug_idx_j1 = rdrug_idx_j1.repeat_interleave(right_drug.num_node)
             out_idx_j2 = torch.cat([out_idx_j2, rdrug_idx_j1])
 
-        a = 1
         return (
             seg_m1,
             atom_type1,
