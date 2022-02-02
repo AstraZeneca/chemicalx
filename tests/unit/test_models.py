@@ -71,8 +71,9 @@ class TestPipeline(unittest.TestCase):
 class MetaModelTestCase(unittest.TestCase):
     """Test model properties."""
 
-    def _iter_classes(self):
-        for name, model_cls in vars(chemicalx.models).items():
+    @staticmethod
+    def _iter_classes():
+        for name, model_cls in sorted(vars(chemicalx.models).items()):
             if not isinstance(model_cls, type) or model_cls is Resolver:
                 continue
             yield name, model_cls
