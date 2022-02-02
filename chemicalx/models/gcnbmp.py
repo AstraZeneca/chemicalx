@@ -210,8 +210,7 @@ class GCNBMP(Model):
             molecule_channels, [hidden_channels for i in range(hidden_conv_layers)], num_relations
         )
 
-        self.attention_readout_left = AttentionPooling(molecule_channels, hidden_channels)
-        self.attention_readout_right = AttentionPooling(molecule_channels, hidden_channels)
+        self.attention_readout = AttentionPooling(molecule_channels, hidden_channels)
 
         self.final = torch.nn.Linear(hidden_channels, out_channels)
 
@@ -241,10 +240,10 @@ class GCNBMP(Model):
             "node_feature"
         ]
 
-        features_left = self.attention_readout_left(
+        features_left = self.attention_readout(
             molecules_left.data_dict["node_feature"], features_left, molecules_left.node2graph
         )
-        features_right = self.attention_readout_right(
+        features_right = self.attention_readout(
             molecules_right.data_dict["node_feature"], features_right, molecules_right.node2graph
         )
 
