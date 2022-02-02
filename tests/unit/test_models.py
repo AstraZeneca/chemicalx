@@ -108,9 +108,15 @@ class MetaModelTestCase(unittest.TestCase):
             with self.subTest(name=model_cls.__name__):
                 doc = model_cls.__doc__
                 self.assertIsInstance(doc, str)
+                first_line = doc.splitlines()[0].strip()
                 self.assertTrue(
-                    doc.splitlines()[0].strip().endswith("]_."),
-                    msg="First line of the documentation should end with a citation reference",
+                    first_line.endswith("]_."),
+                    msg=f"First line of the documentation should end with a citation reference: {first_line}",
+                )
+                self.assertRegex(
+                    first_line[-7:-3],
+                    r"\d{4}",
+                    msg=f"The citation on the first line should end with a 4-digit year: {first_line}",
                 )
                 self.assertIn(
                     ".. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/",
