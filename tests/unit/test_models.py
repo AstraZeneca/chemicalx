@@ -71,11 +71,15 @@ class TestPipeline(unittest.TestCase):
 class MetaModelTestCase(unittest.TestCase):
     """Test model properties."""
 
-    def test_inheritance(self):
-        """Test that all models inherit from the correct class."""
+    def _iter_classes(self):
         for name, model_cls in vars(chemicalx.models).items():
             if not isinstance(model_cls, type) or model_cls is Resolver:
                 continue
+            yield name, model_cls
+
+    def test_inheritance(self):
+        """Test that all models inherit from the correct class."""
+        for name, model_cls in self._iter_classes():
             with self.subTest(name=name):
                 self.assertTrue(
                     issubclass(model_cls, (Model, UnimplementedModel)),
@@ -104,8 +108,10 @@ class MetaModelTestCase(unittest.TestCase):
 
     def test_docs(self):
         """Test that all models link back to an issue on the tracker."""
-        for model_cls in model_resolver:
-            with self.subTest(name=model_cls.__name__):
+        for name, model_cls in self._iter_classes():
+            if model_cls in {Model, UnimplementedModel}:
+                continue
+            with self.subTest(name=name):
                 doc = model_cls.__doc__
                 self.assertIsInstance(doc, str)
                 first_line = doc.splitlines()[0].strip()
