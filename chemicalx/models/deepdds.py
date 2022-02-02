@@ -59,9 +59,16 @@ class DeepDDS(Model):
         """Instantiate the DeepDDS model.
 
         :param context_feature_size:
+            The size of the context feature embedding for cell lines.
+        :param drug_channels:
+            The number of input channels for the GCN
         :param context_output_size:
-        :param in_channels:
+            The size of the context output embedding. This is the size of
+            the vectors that are concatenated before running the final fully
+            connected layers.
         :param dropout:
+            The dropout rate used in the flattening of the drugs after the
+            initial GCN and in the final fully connected layers.
         """
         super(DeepDDS, self).__init__()
         # Cell feature extraction with MLP
