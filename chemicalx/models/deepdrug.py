@@ -1,7 +1,5 @@
 """An implementation of the DeepDrug model."""
 
-from typing import Tuple
-
 import torch
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
@@ -67,23 +65,12 @@ class DeepDrug(Model):
             batch.drug_molecules_right,
         )
 
-    @staticmethod
-    def apply_left_right(
-        layer: torch.nn.Module,
-        left: Tuple[PackedGraph, torch.FloatTensor],
-        right: Tuple[PackedGraph, torch.FloatTensor],
-    ) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
-        """
-        Apply wrapper with the same layer to left and right molecules.
-
-        :param layer: torch Module to be applied
-        :param left: tuple containing the batch of left molecules and associated features
-        :param right: tuple containing the batch of right molecules and associated features
-
-        :return Tuple[torch.FloatTensor, torch.FloatTensor]: tuple with left and right molecule batch features
-            after applying the torch Module
-        """
-        return layer(*left), layer(*right)
+    def _help_molecules(self, molecules: PackedGraph):
+        features = self.graph_convolution_first(molecules, molecules.data_dict["node_feature"])
+        for layer in self.gcn_layer_list:
+            features = layer(molecules, features)
+        features = self.max_readout(molecules, features)
+        return features
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
@@ -94,22 +81,8 @@ class DeepDrug(Model):
 
         :return: A column vector of predicted synergy scores.
         """
-        features_left, features_right = self.apply_left_right(
-            self.graph_convolution_first,
-            (molecules_left, molecules_left.data_dict["node_feature"]),
-            (molecules_right, molecules_right.data_dict["node_feature"]),
-        )
-
-        # run remaining GCN layers
-        for layer_i in self.gcn_layer_list:
-            features_left, features_right = self.apply_left_right(
-                layer_i, (molecules_left, features_left), (molecules_right, features_right)
-            )
-
-        # global max pooling
-        features_left, features_right = self.apply_left_right(
-            self.max_readout, (molecules_left, features_left), (molecules_right, features_right)
-        )
+        features_left = self._help_molecules(molecules_left)
+        features_right = self._help_molecules(molecules_right)
 
         # run the linear layer on concatenated left/right features
         hidden = torch.cat([features_left, features_right], dim=1)
@@ -117,5 +90,4 @@ class DeepDrug(Model):
         hidden = self.dropout(hidden)
         hidden = self.final(hidden)
         hidden = torch.sigmoid(hidden)
-
         return hidden
