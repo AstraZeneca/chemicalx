@@ -1,4 +1,4 @@
-"""Example with EPGCNDS."""
+"""Example with GCNBMP."""
 
 from chemicalx import pipeline
 from chemicalx.data import DrugCombDB
@@ -6,7 +6,7 @@ from chemicalx.models import GCNBMP
 
 
 def main():
-    """Train and evaluate the EPGCNDS model."""
+    """Train and evaluate the GCNBMP model."""
     dataset = DrugCombDB()
     model = GCNBMP(hidden_conv_layers=2)
 
