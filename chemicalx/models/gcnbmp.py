@@ -1,5 +1,4 @@
 """An implementation of the GCNBMP model."""
-import sys
 from collections.abc import Sequence
 
 import torch
@@ -9,7 +8,6 @@ from torch.fft import fft, ifft
 
 import torchdrug
 from torchdrug import layers, core
-from torchdrug.models import RelationalGraphConvolutionalNetwork
 
 from torch_scatter import scatter_add
 
