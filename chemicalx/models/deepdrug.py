@@ -49,7 +49,7 @@ class DeepDrug(Model):
 
         # add remaining GCN layers
         self.gcn_layer_list = torch.nn.ModuleList()
-        for i in range(num_gcn_layers - 1):
+        for _ in range(num_gcn_layers - 1):
             self.gcn_layer_list.append(
                 GraphConv(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
             )
@@ -83,8 +83,7 @@ class DeepDrug(Model):
         features_right = self.graph_convolution_first(molecules_right, molecules_right.data_dict["node_feature"])
 
         # run remaining GCN layers
-        for i in range(self.num_gcn_layers - 1):
-            layer_i = self.gcn_layer_list[i]
+        for layer_i in self.gcn_layer_list:
             features_left = layer_i(molecules_left, features_left)
             features_right = layer_i(molecules_right, features_right)
 
