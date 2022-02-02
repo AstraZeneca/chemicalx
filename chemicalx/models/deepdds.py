@@ -20,6 +20,8 @@ The embedding vector from both inputs are concatenated and fed into the
 fully connected layers for binary classification of the drug combination as
 synergistic or antagonistic.
 """
+from typing import List, Optional
+
 import torch
 from torch.nn.functional import normalize, softmax
 from torchdrug.data import PackedGraph
@@ -52,31 +54,66 @@ class DeepDDS(Model):
         self,
         *,
         context_feature_size: int,
+        context_hidden_dims: Optional[List[int]] = None,
         drug_channels: int = TORCHDRUG_NODE_FEATURES,
-        context_output_size: int = 128,  # Fixme: consider renaming
+        drug_gcn_hidden_dims: Optional[List[int]] = None,
+        drug_mlp_hidden_dims: Optional[List[int]] = None,
+        context_output_size: int = 128,
+        fc_hidden_dims: Optional[List[int]] = None,
         dropout: float = 0.2,  # Rate used in paper
     ):
         """Instantiate the DeepDDS model.
 
         :param context_feature_size:
             The size of the context feature embedding for cell lines.
+        :param context_hidden_dims:
+            The hidden dimensions of the MLP used to extract the context
+            feature embedding. Default: [512, 256]. Note: the last layer
+            will always be of size=context_output_size and appended to the
+            provided list.
         :param drug_channels:
-            The number of input channels for the GCN
+            The number of input channels for the GCN. Default:
+            ``chemicalx.constants.TORCHDRUG_NODE_FEATURES``.
+        :param drug_gcn_hidden_dims:
+            The hidden dimensions of the GCN. Default:
+            [drug_channels, drug_channels * 2, drug_channels * 4].
+        :param drug_mlp_hidden_dims:
+            The hidden dimensions of the MLP used to extract the drug features.
+            Default: [drug_channels * 2]. Note: The input layer will be set
+            automatically to match the last layer of the preceding GCN
+            layer. The last layer will always be of size=drug_output_size and
+            appended to the provided list.
         :param context_output_size:
             The size of the context output embedding. This is the size of
             the vectors that are concatenated before running the final fully
             connected layers.
+        :param fc_hidden_dims:
+            The hidden dimensions of the final fully connected layers.
+            Default: [512, 128]. Note: the last layer will always be of
+            size=1 (the synergy prediction readout) and appended to the
+            provided list.
         :param dropout:
-            The dropout rate used in the flattening of the drugs after the
+            The dropout rate used in the FC layers of the drugs after the
             initial GCN and in the final fully connected layers.
         """
         super(DeepDDS, self).__init__()
+        # Check default parameters:
+        # Defaults follow the code implementation
+        if context_hidden_dims is None:
+            context_hidden_dims = [512, 256]
+        if drug_gcn_hidden_dims is None:
+            drug_gcn_hidden_dims = [drug_channels, drug_channels * 2, drug_channels * 4]
+        if drug_mlp_hidden_dims is None:
+            drug_mlp_hidden_dims = [drug_channels * 2]
+        if fc_hidden_dims is None:
+            fc_hidden_dims = [512, 128]
+
         # Cell feature extraction with MLP
         self.cell_mlp = MLP(
             input_dim=context_feature_size,
             # Paper: [2048, 512, context_output_size]
             # Code: [512, 256, context_output_size]
-            hidden_dims=[512, 256, context_output_size],
+            hidden_dims=[*context_hidden_dims, context_output_size],
         )
 
         # GCN
@@ -86,14 +123,14 @@ class DeepDDS(Model):
             # Paper: [1024, 512, 156],
             # Code: [drug_channels, drug_channels * 2, drug_channels * 4]
             input_dim=drug_channels,
-            hidden_dims=[drug_channels, drug_channels * 2, drug_channels * 4],
+            hidden_dims=drug_gcn_hidden_dims,
             activation="relu",
         )
         self.conv_right = self.conv_left
         # Paper: no FC layers after GCN layers and global max pooling
         self.mlp_left = MLP(
-            input_dim=drug_channels * 4,
-            hidden_dims=[drug_channels * 2, context_output_size],
+            input_dim=drug_gcn_hidden_dims[-1],
+            hidden_dims=[*drug_mlp_hidden_dims, context_output_size],
             dropout=dropout,
             activation="relu",
         )
@@ -104,8 +141,8 @@ class DeepDDS(Model):
             input_dim=context_output_size * 3,
             # Paper: [1024, 512, 128, 1]
             # Code: [512, 128, 2]
-            # Following code except for one readout node instead of two.
-            hidden_dims=[512, 128, 1],
+            # Following code except for one final neuron instead of two.
+            hidden_dims=[*fc_hidden_dims, 1],
             dropout=dropout,
         )
         self.max_readout = MaxReadout()
