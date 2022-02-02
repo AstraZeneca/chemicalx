@@ -12,7 +12,7 @@ def main():
     results = pipeline(
         dataset=dataset,
         model=model,
-        optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
+        optimizer_kwargs=dict(lr=0.01, weight_decay=10**-7),
         batch_size=1024,
         epochs=20,
         context_features=True,

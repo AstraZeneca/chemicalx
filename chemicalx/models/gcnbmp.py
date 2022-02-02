@@ -19,7 +19,6 @@ __all__ = [
     "GCNBMP",
 ]
 
-
 def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) -> torch.FloatTensor:
     """
     Compute the circular correlation of two vectors a and b via their fast fourier transforms.
@@ -122,6 +121,7 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
 
     .. [gcnbmp] `GCN-BMP: Investigating graph representation learning for DDI prediction task
        <https://www.sciencedirect.com/science/article/pii/S1046202320300608>`_
+
     """
 
     def __init__(

@@ -1,6 +1,7 @@
 """An implementation of the EPGCN-DS model."""
 
 import torch
+from torch import nn
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MeanReadout
 from torchdrug.models import GraphConvolutionalNetwork
@@ -15,11 +16,13 @@ __all__ = [
 
 
 class EPGCNDS(Model):
-    r"""The EPGCN-DS model from [epgcnds]_.
+    r"""The EPGCN-DS model from [sun2020]_.
 
-    .. [epgcnds] `Structure-Based Drug-Drug Interaction Detection
-       via Expressive Graph Convolutional Networks and Deep Sets
-       <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/22
+
+    .. [sun2020] Sun, M., *et al.* (2020). `Structure-Based Drug-Drug Interaction Detection via Expressive
+       Graph Convolutional Networks and Deep Sets <https://doi.org/10.1609/aaai.v34i10.7236>`_.
+       *Proceedings of the AAAI Conference on Artificial Intelligence*, 34(10), 13927–13928.
     """
 
     def __init__(
@@ -37,11 +40,11 @@ class EPGCNDS(Model):
         :param middle_channels: The number of hidden layer neurons in the last layer.
         :param out_channels: The number of output channels.
         """
-        super(EPGCNDS, self).__init__()
+        super().__init__()
         self.graph_convolution_in = GraphConvolutionalNetwork(molecule_channels, hidden_channels)
         self.graph_convolution_out = GraphConvolutionalNetwork(hidden_channels, middle_channels)
         self.mean_readout = MeanReadout()
-        self.final = torch.nn.Linear(middle_channels, out_channels)
+        self.final = nn.Sequential(nn.Linear(middle_channels, out_channels), nn.Sigmoid())
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left molecular graph and right molecular graph."""
@@ -50,28 +53,21 @@ class EPGCNDS(Model):
             batch.drug_molecules_right,
         )
 
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
+        features = self.graph_convolution_in(molecules, molecules.data_dict["node_feature"])["node_feature"]
+        features = self.graph_convolution_out(molecules, features)["node_feature"]
+        features = self.mean_readout(molecules, features)
+        return features
+
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
+        """Run a forward pass of the EPGCN-DS model.
+
+        :param molecules_left: Batched molecules for the left side drugs.
+        :param molecules_right: Batched molecules for the right side drugs.
+        :returns: A column vector of predicted synergy scores.
         """
-        Run a forward pass of the EPGCN-DS model.
-
-        Args:
-            molecules_left (torch.FloatTensor): Batched molecules for the left side drugs.
-            molecules_right (torch.FloatTensor): Batched molecules for the right side drugs.
-        Returns:
-            hidden (torch.FloatTensor): A column vector of predicted synergy scores.
-        """
-        features_left = self.graph_convolution_in(molecules_left, molecules_left.data_dict["node_feature"])[
-            "node_feature"
-        ]
-        features_right = self.graph_convolution_in(molecules_right, molecules_right.data_dict["node_feature"])[
-            "node_feature"
-        ]
-
-        features_left = self.graph_convolution_out(molecules_left, features_left)["node_feature"]
-        features_right = self.graph_convolution_out(molecules_right, features_right)["node_feature"]
-
-        features_left = self.mean_readout(molecules_left, features_left)
-        features_right = self.mean_readout(molecules_right, features_right)
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
         hidden = features_left + features_right
-        hidden = torch.sigmoid(self.final(hidden))
+        hidden = self.final(hidden)
         return hidden
