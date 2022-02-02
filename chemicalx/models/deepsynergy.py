@@ -12,10 +12,12 @@ __all__ = [
 
 
 class DeepSynergy(Model):
-    r"""The DeepSynergy model from [deepsynergy]_.
+    r"""The DeepSynergy model from [preuer2018]_.
 
-    .. [deepsynergy] `DeepSynergy: Predicting Anti-Cancer Drug Synergy with Deep Learning
-       <https://academic.oup.com/bioinformatics/article/34/9/1538/4747884>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/16
+
+    .. [preuer2018] Preuer, K., *et al.* (2018). `DeepSynergy: predicting anti-cancer drug synergy
+       with Deep Learning <https://doi.org/10.1093/bioinformatics/btx806>`_. *Bioinformatics*, 34(9), 1538–1546.
     """
 
     def __init__(

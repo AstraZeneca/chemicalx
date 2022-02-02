@@ -71,11 +71,16 @@ class TestPipeline(unittest.TestCase):
 class MetaModelTestCase(unittest.TestCase):
     """Test model properties."""
 
-    def test_inheritance(self):
-        """Test that all models inherit from the correct class."""
-        for name, model_cls in vars(chemicalx.models).items():
+    @staticmethod
+    def _iter_classes():
+        for name, model_cls in sorted(vars(chemicalx.models).items()):
             if not isinstance(model_cls, type) or model_cls is Resolver:
                 continue
+            yield name, model_cls
+
+    def test_inheritance(self):
+        """Test that all models inherit from the correct class."""
+        for name, model_cls in self._iter_classes():
             with self.subTest(name=name):
                 self.assertTrue(
                     issubclass(model_cls, (Model, UnimplementedModel)),
@@ -101,6 +106,29 @@ class MetaModelTestCase(unittest.TestCase):
                     and param.kind in {inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD}
                 }
                 self.assertEqual(0, len(positional), msg=f"Arguments should be kwarg only: {positional}")
+
+    def test_docs(self):
+        """Test that all models link back to an issue on the tracker."""
+        for name, model_cls in self._iter_classes():
+            if model_cls in {Model, UnimplementedModel}:
+                continue
+            with self.subTest(name=name):
+                doc = model_cls.__doc__
+                self.assertIsInstance(doc, str)
+                first_line = doc.splitlines()[0].strip()
+                self.assertTrue(
+                    first_line.endswith("]_."),
+                    msg=f"First line of the documentation should end with a citation reference: {first_line}",
+                )
+                self.assertRegex(
+                    first_line[-7:-3],
+                    r"\d{4}",
+                    msg=f"The citation on the first line should end with a 4-digit year: {first_line}",
+                )
+                self.assertIn(
+                    ".. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/",
+                    model_cls.__doc__,
+                )
 
 
 class TestModels(unittest.TestCase):
