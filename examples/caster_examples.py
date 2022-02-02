@@ -2,6 +2,7 @@
 
 from chemicalx import pipeline
 from chemicalx.data import DrugCombDB
+from chemicalx.loss import CASTERSupervisedLoss
 from chemicalx.models import CASTER
 
 
@@ -9,11 +10,10 @@ def main():
     """Train and evaluate the CASTER model."""
     dataset = DrugCombDB()
     model = CASTER(drug_channels=dataset.drug_channels)
-    loss_cls = CASTER.get_supervised_loss_cls()
     results = pipeline(
         dataset=dataset,
         model=model,
-        loss_cls=loss_cls,
+        loss_cls=CASTERSupervisedLoss,
         batch_size=5120,
         epochs=1,
         context_features=False,
