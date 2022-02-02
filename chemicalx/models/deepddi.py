@@ -74,6 +74,6 @@ class DeepDDI(Model):
         :param drug_features_right: A matrix of tail drug features.
         :returns: A column vector of predicted interaction scores.
         """
-        input_feature = torch.cat([drug_features_left, drug_features_right], 1)
+        input_feature = torch.cat([drug_features_left, drug_features_right], dim=1)
         hidden = self.dnn(input_feature)
         return hidden
