@@ -18,7 +18,7 @@ __all__ = [
 class DeepDrug(Model):
     """An implementation of the DeepDrug model.
 
-    .. based on:: https://www.biorxiv.org/content/biorxiv/early/2020/11/10/2020.11.09.375626.full.pdf
+    .. seealso:: 'DeepDrug: A general graph-based deep learning framework for drug relation prediction' by Cao et al. https://www.biorxiv.org/content/10.1101/2020.11.09.375626v1
     """
 
     def __init__(
