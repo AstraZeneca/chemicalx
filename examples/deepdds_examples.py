@@ -10,13 +10,12 @@ def main():
     dataset = DrugCombDB()
     model = DeepDDS(
         context_feature_size=dataset.context_channels,
-        drug_channels=dataset.drug_channels,
     )
     results = pipeline(
         dataset=dataset,
         model=model,
         batch_size=5120,
-        epochs=2,
+        epochs=10,
         context_features=True,
         drug_features=True,
         drug_molecules=True,

@@ -261,14 +261,13 @@ class TestModels(unittest.TestCase):
         """Test DeepDDS."""
         model = DeepDDS(
             context_feature_size=self.loader.context_channels,
-            drug_channels=self.loader.drug_channels,
         )
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()
         loss = torch.nn.BCELoss()
         for batch in self.generator:
             optimizer.zero_grad()
-            prediction = model(batch.context_features, batch.drug_features_left, batch.drug_features_right)
+            prediction = model(batch.context_features, batch.drug_molecules_left, batch.drug_molecules_right)
             output = loss(prediction, batch.labels)
             output.backward()
             optimizer.step()
