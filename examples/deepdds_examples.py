@@ -10,14 +10,13 @@ def main():
     dataset = DrugCombDB()
     model = DeepDDS(
         context_feature_size=dataset.context_channels,
-        context_output_size=dataset.drug_channels,
-        dropout=0.2,  # Rate used in DeepDDS paper
+        drug_channels=dataset.drug_channels,
     )
     results = pipeline(
         dataset=dataset,
         model=model,
         batch_size=5120,
-        epochs=100,
+        epochs=2,
         context_features=True,
         drug_features=True,
         drug_molecules=True,
