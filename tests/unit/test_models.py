@@ -183,8 +183,18 @@ class TestModels(unittest.TestCase):
 
     def test_gcnbmp(self):
         """Test GCNBMP."""
-        model = GCNBMP(x=2)
-        assert model.x == 2
+        model = GCNBMP()
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.drug_molecules_left, batch.drug_molecules_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_mhcaddi(self):
         """Test MHCADDI."""
