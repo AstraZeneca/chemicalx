@@ -58,7 +58,7 @@ class TestPipeline(unittest.TestCase):
         results = pipeline(
             dataset=self.loader,
             model=model,
-            optimizer_kwargs=dict(lr=0.01, weight_decay=10**-7),
+            optimizer_kwargs=dict(lr=0.01, weight_decay=10 ** -7),
             batch_size=1024,
             epochs=1,
             context_features=True,
@@ -259,8 +259,20 @@ class TestModels(unittest.TestCase):
 
     def test_deepdds(self):
         """Test DeepDDS."""
-        model = DeepDDS(x=2)
-        assert model.x == 2
+        model = DeepDDS(
+            context_feature_size=self.loader.context_channels,
+            drug_channels=self.loader.drug_channels,
+        )
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(batch.context_features, batch.drug_features_left, batch.drug_features_right)
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_matchmaker(self):
         """Test MatchMaker."""
