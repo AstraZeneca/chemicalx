@@ -40,8 +40,15 @@ def circular_correlation(left_x: torch.FloatTensor, right_x: torch.FloatTensor) 
 
 
 class Highway(nn.Module):
+    """
+    The Highway update layer from [highway].
+
+    .. [highway] `Highway Networks
+       <https://arxiv.org/abs/1505.00387>`_
+    """
+
     def __init__(self, input_size: int, prev_input_size: int):
-        """Instantiate the Highway update layer based on https://arxiv.org/abs/1505.00387
+        """Instantiate the Highway update layer
         :param input_size: current representation size.
         :param prev_input_size: size of the representation obtained by the previous convolutional layer.
         """
@@ -71,6 +78,13 @@ class Highway(nn.Module):
 
 
 class AttentionPooling(nn.Module):
+    """
+    The Attention pooling layer from [gcnbmp].
+
+    .. [gcnbmp] `GCN-BMP: Investigating graph representation learning for DDI prediction task
+       <https://www.sciencedirect.com/science/article/pii/S1046202320300608>`_
+    """
+
     def __init__(self, molecule_channels: int, hidden_channels: int):
         """Instantiate the Attention pooling layer
         :param molecules_channels: input node features (layer 0 of the backbone).
@@ -103,6 +117,13 @@ class AttentionPooling(nn.Module):
 
 
 class GCNBMPEncoder(nn.Module, core.Configurable):
+    """
+    The drug encoding backbone from [gcnbmp].
+
+    .. [gcnbmp] `GCN-BMP: Investigating graph representation learning for DDI prediction task
+       <https://www.sciencedirect.com/science/article/pii/S1046202320300608>`_
+    """
+
     def __init__(
         self,
         input_dim: int,
@@ -131,9 +152,7 @@ class GCNBMPEncoder(nn.Module, core.Configurable):
         self.layers = nn.ModuleList()
         for left_dim, right_dim in pairwise(self.dims):
             self.layers.append(
-                layers.RelationalGraphConv(
-                    left_dim, right_dim, num_relation, edge_input_dim, batch_norm, activation
-                )
+                layers.RelationalGraphConv(left_dim, right_dim, num_relation, edge_input_dim, batch_norm, activation)
             )
             self.layers.append(Highway(right_dim, left_dim))
 
