@@ -16,13 +16,13 @@ __all__ = [
 
 
 class EPGCNDS(Model):
-    r"""The EPGCN-DS model from [epgcnds]_.
+    r"""The EPGCN-DS model from [sun2020]_.
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/22
 
-    .. [epgcnds] `Structure-Based Drug-Drug Interaction Detection
-       via Expressive Graph Convolutional Networks and Deep Sets
-       <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
+    .. [sun2020] Sun, M., *et al.* (2020). `Structure-Based Drug-Drug Interaction Detection via Expressive
+       Graph Convolutional Networks and Deep Sets <https://doi.org/10.1609/aaai.v34i10.7236>`_.
+       *Proceedings of the AAAI Conference on Artificial Intelligence*, 34(10), 13927–13928.
     """
 
     def __init__(
