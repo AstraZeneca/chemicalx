@@ -52,8 +52,8 @@ class DeepDDS(Model):
         self,
         *,
         context_feature_size: int,
-        context_output_size: int,
-        in_channels: int = TORCHDRUG_NODE_FEATURES,
+        drug_channels: int = TORCHDRUG_NODE_FEATURES,
+        context_output_size: int = 128,  # Fixme: consider renaming
         dropout: float = 0.2,  # Rate used in paper
     ):
         """Instantiate the DeepDDS model.
@@ -77,16 +77,16 @@ class DeepDDS(Model):
         # Code: Same as paper + two FC layers. With different layer sizes.
         self.conv_left = GraphConvolutionalNetwork(
             # Paper: [1024, 512, 156],
-            # Code: [in_channels, in_channels * 2, in_channels * 4]
-            input_dim=in_channels,
-            hidden_dims=[in_channels, in_channels * 2, in_channels * 4],
+            # Code: [drug_channels, drug_channels * 2, drug_channels * 4]
+            input_dim=drug_channels,
+            hidden_dims=[drug_channels, drug_channels * 2, drug_channels * 4],
             activation="relu",
         )
         self.conv_right = self.conv_left
         # Paper: no FC layers after GCN layers and global max pooling
         self.mlp_left = MLP(
-            input_dim=in_channels * 4,
-            hidden_dims=[in_channels * 2, context_output_size],
+            input_dim=drug_channels * 4,
+            hidden_dims=[drug_channels * 2, context_output_size],
             dropout=dropout,
             activation="relu",
         )
