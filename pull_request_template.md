@@ -10,9 +10,8 @@ Please ensure you have the following:
  
 _Please provide a high-level summary of the changes for the changes and notes for the reviewers_
  
-- [ ] Code passes all tests
 - [ ] Unit tests provided for these changes
-- [ ] Documentation and docstrings added for these changes
+- [ ] Documentation and docstrings added for these changes using the [sphinx style](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 
 ## Changes 
 

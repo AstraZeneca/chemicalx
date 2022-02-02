@@ -11,10 +11,13 @@ __all__ = [
 
 
 class DeepDDI(Model):
-    """An implementation of the DeepDDI model.
+    """An implementation of the DeepDDI model from [ryu2018]_.
 
-    .. [DeepDDI] `Deep learning improves prediction of drug–drug and drug–food interactions
-       <https://www.pnas.org/content/115/18/E4304>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/2
+
+    .. [ryu2018] Ryu, J. Y., *et al.* (2018). `Deep learning improves prediction
+       of drug–drug and drug–food interactions <https://doi.org/10.1073/pnas.1803294115>`_.
+       *Proceedings of the National Academy of Sciences*, 115(18), E4304–E4311.
     """
 
     def __init__(
@@ -32,7 +35,7 @@ class DeepDDI(Model):
         :param hidden_layers_num: The number of hidden layers.
         :param out_channels: The number of output channels.
         """
-        super(DeepDDI, self).__init__()
+        super().__init__()
         assert hidden_layers_num > 1
         dnn = [
             torch.nn.Linear(drug_channels * 2, hidden_channels),
@@ -64,14 +67,11 @@ class DeepDDI(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the DeepDDI model.
+        """Run a forward pass of the DeepDDI model.
 
-        Args:
-            drug_features_left (torch.FloatTensor): A matrix of head drug features.
-            drug_features_right (torch.FloatTensor): A matrix of tail drug features.
-        Returns:
-            hidden (torch.FloatTensor): A column vector of predicted interaction scores.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted interaction scores.
         """
         input_feature = torch.cat([drug_features_left, drug_features_right], 1)
         hidden = self.dnn(input_feature)

@@ -21,9 +21,7 @@ class ContextFeatureSet(UserDict, Mapping[str, torch.FloatTensor]):
     def get_feature_matrix(self, contexts: Iterable[str]) -> torch.FloatTensor:
         """Get the feature matrix for a list of contexts.
 
-        Args:
-            contexts: A list of context identifiers.
-        Return:
-            features: A matrix of context features.
+        :param contexts: A list of context identifiers.
+        :returns: A matrix of context features.
         """
         return torch.cat([self.data[context] for context in contexts])
