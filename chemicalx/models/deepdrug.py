@@ -1,6 +1,7 @@
 """An implementation of the DeepDrug model."""
 
 import torch
+from torch import nn
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
 
@@ -46,17 +47,20 @@ class DeepDrug(Model):
         self.graph_convolution_first = GraphConv(molecule_channels, self.gcn_layer_hidden_size, batch_norm=True)
 
         # add remaining GCN layers
-        self.gcn_layer_list = torch.nn.ModuleList()
-        for _ in range(num_gcn_layers - 1):
-            self.gcn_layer_list.append(
-                GraphConv(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
-            )
+        self.layers = torch.nn.ModuleList(
+            GraphConv(self.gcn_layer_hidden_size, self.gcn_layer_hidden_size, batch_norm=True)
+            for _ in range(num_gcn_layers - 1)
+        )
 
-        self.max_readout = MaxReadout()
+        self.readout = MaxReadout()
         self.middle_channels = 2 * self.gcn_layer_hidden_size
-        self.dropout = torch.nn.Dropout(p=dropout_rate)
-        self.batch_norm = torch.nn.BatchNorm1d(self.middle_channels)
-        self.final = torch.nn.Linear(self.middle_channels, out_channels)
+
+        self.final = nn.Sequential(
+            nn.BatchNorm1d(self.middle_channels),
+            nn.Dropout(p=dropout_rate),
+            nn.Linear(self.middle_channels, out_channels),
+            nn.Sigmoid(),
+        )
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left drug molecules, and right drug molecules."""
@@ -67,9 +71,9 @@ class DeepDrug(Model):
 
     def _help_molecules(self, molecules: PackedGraph):
         features = self.graph_convolution_first(molecules, molecules.data_dict["node_feature"])
-        for layer in self.gcn_layer_list:
+        for layer in self.layers:
             features = layer(molecules, features)
-        features = self.max_readout(molecules, features)
+        features = self.readout(molecules, features)
         return features
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
@@ -86,8 +90,4 @@ class DeepDrug(Model):
 
         # run the linear layer on concatenated left/right features
         hidden = torch.cat([features_left, features_right], dim=1)
-        hidden = self.batch_norm(hidden)
-        hidden = self.dropout(hidden)
-        hidden = self.final(hidden)
-        hidden = torch.sigmoid(hidden)
-        return hidden
+        return self.final(hidden)
