@@ -10,5 +10,5 @@ __all__ = [
 class GCNBMP(UnimplementedModel):
     """An implementation of the GCNBMP model.
 
-    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/21
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/21
     """

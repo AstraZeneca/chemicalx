@@ -10,5 +10,5 @@ __all__ = [
 class MRGNN(UnimplementedModel):
     """An implementation of the MR-GNN model.
 
-    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/12
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/12
     """

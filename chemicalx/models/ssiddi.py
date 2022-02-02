@@ -10,5 +10,5 @@ __all__ = [
 class SSIDDI(UnimplementedModel):
     """An implementation of the SSI-DDI model.
 
-    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/11
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/11
     """

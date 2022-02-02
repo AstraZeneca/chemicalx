@@ -102,6 +102,21 @@ class MetaModelTestCase(unittest.TestCase):
                 }
                 self.assertEqual(0, len(positional), msg=f"Arguments should be kwarg only: {positional}")
 
+    def test_docs(self):
+        """Test that all models link back to an issue on the tracker."""
+        for model_cls in model_resolver:
+            with self.subTest(name=model_cls.__name__):
+                doc = model_cls.__doc__
+                self.assertIsInstance(doc, str)
+                self.assertTrue(
+                    doc.splitlines()[0].strip().endswith("]_."),
+                    msg="First line of the documentation should end with a citation reference",
+                )
+                self.assertIn(
+                    ".. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/",
+                    model_cls.__doc__,
+                )
+
 
 class TestModels(unittest.TestCase):
     """A test case for models."""

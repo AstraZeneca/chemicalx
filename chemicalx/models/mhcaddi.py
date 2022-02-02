@@ -10,5 +10,5 @@ __all__ = [
 class MHCADDI(UnimplementedModel):
     """An implementation of the MHCADDI model.
 
-    .. seealso:: https://github.com/AstraZeneca/chemicalx/issues/13
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/13
     """

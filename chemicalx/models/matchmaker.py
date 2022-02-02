@@ -14,6 +14,8 @@ __all__ = [
 class MatchMaker(Model):
     """An implementation of the MatchMaker model from [matchmaker]_.
 
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/23
+
     .. [matchmaker] `MatchMaker: A Deep Learning Framework for Drug Synergy Prediction
        <https://www.biorxiv.org/content/10.1101/2020.05.24.113241v3.full>`_
     """
