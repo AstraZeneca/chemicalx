@@ -66,15 +66,12 @@ class DeepSynergy(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the DeepSynergy model.
+        """Run a forward pass of the DeepSynergy model.
 
-        Args:
-            context_features: A matrix of biological context features.
-            drug_features_left: A matrix of head drug features.
-            drug_features_right: A matrix of tail drug features.
-        Returns:
-            : A column vector of predicted synergy scores.
+        :param context_features: A matrix of biological context features.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted synergy scores.
         """
         hidden = torch.cat([context_features, drug_features_left, drug_features_right], dim=1)
         return self.layers(hidden)

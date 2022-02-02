@@ -73,15 +73,12 @@ class MatchMaker(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the MatchMaker model.
+        """Run a forward pass of the MatchMaker model.
 
-        Args:
-            context_features: A matrix of biological context features.
-            drug_features_left: A matrix of head drug features.
-            drug_features_right: A matrix of tail drug features.
-        Returns:
-            hidden: A column vector of predicted synergy scores.
+        :param context_features: A matrix of biological context features.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted synergy scores.
         """
         # The left drug
         hidden_left = torch.cat([context_features, drug_features_left], dim=1)
