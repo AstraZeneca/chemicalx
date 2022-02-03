@@ -15,6 +15,8 @@ install_requires = [
     "pystow",
     "pytdc",
     "more-itertools",
+    "accelerate",
+    "packaging",
 ]
 
 

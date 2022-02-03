@@ -15,6 +15,7 @@ from tabulate import tabulate
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from tqdm import trange
+from accelerate import Accelerator
 
 from chemicalx.data import DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
@@ -139,9 +140,16 @@ def pipeline(
         random_state=random_state,
     )
 
-    model = model_resolver.make(model, model_kwargs)
+    accelerator = Accelerator()
+    device = accelerator.device
+
+    model = model_resolver.make(model, model_kwargs).to(device)
 
     optimizer = optimizer_cls(model.parameters(), **(optimizer_kwargs or {}))
+
+    model, optimizer, train_generator, test_generator = accelerator.prepare(
+        model, optimizer, train_generator, test_generator
+    )
 
     model.train()
 
@@ -152,10 +160,13 @@ def pipeline(
     for _epoch in trange(epochs):
         for batch in train_generator:
             optimizer.zero_grad()
-            prediction = model(*model.unpack(batch))
-            loss_value = loss(prediction, batch.labels)
+            device_batch = (
+                x.to(device) for x in model.unpack(batch)
+            )  # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+            prediction = model(*device_batch)
+            loss_value = loss(prediction, batch.labels.to(device))
             losses.append(loss_value.item())
-            loss_value.backward()
+            accelerator.backward(loss_value)
             optimizer.step()
     train_time = time.time() - train_start_time
 
@@ -164,7 +175,10 @@ def pipeline(
     evaluation_start_time = time.time()
     predictions = []
     for batch in test_generator:
-        prediction = model(*model.unpack(batch))
+        device_batch = (
+            x.to(device) for x in model.unpack(batch)
+        )  # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+        prediction = model(*device_batch)
         if isinstance(prediction, collections.abc.Sequence):
             prediction = prediction[0]
         prediction = prediction.detach().cpu().numpy()
