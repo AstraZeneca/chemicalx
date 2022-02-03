@@ -20,10 +20,12 @@ The embedding vector from both inputs are concatenated and fed into the
 fully connected layers for binary classification of the drug combination as
 synergistic or antagonistic.
 """
+
 from typing import List, Optional
 
 import torch
-from torch.nn.functional import normalize, softmax
+from torch import nn
+from torch.nn.functional import normalize
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MLP, MaxReadout
 from torchdrug.models import GraphConvolutionalNetwork
@@ -97,7 +99,7 @@ class DeepDDS(Model):
             The dropout rate used in the FC layers of the drugs after the
             initial GCN and in the final fully connected layers.
         """
-        super(DeepDDS, self).__init__()
+        super().__init__()
         # Check default parameters:
         # Defaults follow the code implementation
         if context_hidden_dims is None:
@@ -120,67 +122,63 @@ class DeepDDS(Model):
         # GCN
         # Paper: GCN with three hidden layers + global max pool
         # Code: Same as paper + two FC layers. With different layer sizes.
-        self.conv_left = GraphConvolutionalNetwork(
+        self.drug_conv = GraphConvolutionalNetwork(
             # Paper: [1024, 512, 156],
             # Code: [drug_channels, drug_channels * 2, drug_channels * 4]
             input_dim=drug_channels,
             hidden_dims=drug_gcn_hidden_dims,
             activation="relu",
         )
-        self.conv_right = self.conv_left
+        self.drug_readout = MaxReadout()
+
         # Paper: no FC layers after GCN layers and global max pooling
-        self.mlp_left = MLP(
+        self.drug_mlp = MLP(
             input_dim=drug_gcn_hidden_dims[-1],
             hidden_dims=[*drug_mlp_hidden_dims, context_output_size],
             dropout=dropout,
             activation="relu",
         )
-        self.mlp_right = self.mlp_left
 
         # Final layers
-        self.mlp_final = MLP(
-            input_dim=context_output_size * 3,
-            # Paper: [1024, 512, 128, 1]
-            # Code: [512, 128, 2]
-            # Following code except for one final neuron instead of two.
-            hidden_dims=[*fc_hidden_dims, 1],
-            dropout=dropout,
+        self.final = nn.Sequential(
+            MLP(
+                input_dim=context_output_size * 3,
+                # Paper: [1024, 512, 128, 1]
+                # Code: [512, 128, 2]
+                # Following code except for one final neuron instead of two.
+                hidden_dims=[*fc_hidden_dims, 1],
+                dropout=dropout,
+            ),
+            nn.Softmax(dim=1),
         )
-        self.max_readout = MaxReadout()
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features and right drug features."""
         return batch.context_features, batch.drug_molecules_left, batch.drug_molecules_right
+
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
+        features = self.drug_conv(molecules, molecules.data_dict["node_feature"])["node_feature"]
+        features = self.drug_readout(molecules, features)
+        return self.drug_mlp(features)
 
     def forward(
         self, context_features: torch.FloatTensor, molecules_left: PackedGraph, molecules_right: PackedGraph
     ) -> torch.FloatTensor:
         """Run a forward pass of the DeeDDS model.
 
-        Args:
-            context_features (torch.FloatTensor): A matrix of cell line features
-            molecules_left (torch.FloatTensor): A matrix of left drug features
-            molecules_right (torch.FloatTensor): A matrix of right drug features
-        Returns:
-            (torch.FloatTensor): A column vector of predicted synergy scores
+        :param context_features: A matrix of cell line features
+        :param molecules_left: A matrix of left drug features
+        :param molecules_right: A matrix of right drug features
+        :returns: A vector of predicted synergy scores
         """
         # Run the MLP forward for the cell line features
-        #
         mlp_out = self.cell_mlp(normalize(context_features, p=2, dim=1))
 
         # Run the GCN forward for the drugs: GCN -> Global Max Pool -> MLP
-        features_left = self.conv_left(molecules_left, molecules_left.data_dict["node_feature"])["node_feature"]
-        features_left = self.max_readout.forward(input=features_left, graph=molecules_left)
-        features_left = self.mlp_left(features_left)
-        features_right = self.conv_right(molecules_right, molecules_right.data_dict["node_feature"])["node_feature"]
-        features_right = self.max_readout.forward(input=features_right, graph=molecules_right)
-        features_right = self.mlp_right(features_right)
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
 
         # Concatenate the output of the MLP and the GNN
         concat_in = torch.cat([mlp_out, features_left, features_right], dim=1)
 
-        # Run the fully connected layers forward
-        out_mlp = self.mlp_final(concat_in)
-
-        # Apply the softmax function to the output
-        return softmax(out_mlp, dim=1)
+        return self.final(concat_in)
