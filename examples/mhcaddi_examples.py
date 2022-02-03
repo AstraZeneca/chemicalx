@@ -3,7 +3,6 @@
 from chemicalx import pipeline
 from chemicalx.data.datasetloader import TwoSides
 from chemicalx.models.mhcaddi import MHCADDI
-from torchdrug.data.molecule import Molecule
 
 
 def main():

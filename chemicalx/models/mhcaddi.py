@@ -1,13 +1,8 @@
 r"""An implementation of the MHCADDI model."""
 
-from functools import update_wrapper
-from turtle import forward
+import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F  # noqa:N812
-from torchdrug.data import PackedGraph
-import numpy as np
-from torchdrug.models import MessagePassingNeuralNetwork
 
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -44,10 +39,7 @@ def segment_multihead_expand(seg_i, n_seg, n_head):
 
 
 class MessagePassing(nn.Module):
-    """
-    A network for creating node representations based on internal message passing
-    between atoms in the molecule.
-    """
+    """A network for creating node representations based on internal message passing."""
 
     def __init__(self, d_node: int, d_edge: int, d_hid: int, dropout=0.1):
         """Instantiate the MessagePassing network.
@@ -70,15 +62,13 @@ class MessagePassing(nn.Module):
         )
 
     def forward(self, node: torch.Tensor, edge: torch.Tensor, seg_i: torch.Tensor, idx_j: torch.Tensor):
-        """
-        Calculate forward pass of message passing network
+        """Calculate forward pass of message passing network.
 
-        seg_i and idx_j are the same length
-
-        :param node: Nxd node feature matrix
-        :param edge: Nxd edge feature matrix
-        :param seg_i: List of node indices from where edges in the molecular graph start
-        :param idx_j: List of node indices from where edges in the molecular graph end
+        :param node: Nxd node feature matrix.
+        :param edge: Nxd edge feature matrix.
+        :param seg_i: List of node indices from where edges in the molecular graph start.
+        :param idx_j: List of node indices from where edges in the molecular graph end.
+        :returns: Message between nodes.
         """
         edge = self.edge_proj(edge)
         msg = self.node_proj(node)
@@ -87,9 +77,7 @@ class MessagePassing(nn.Module):
         return msg
 
     def message_composing(self, msg, edge, idx_j):
-        """
-        Composes message based by elementwise multiplication of edge and node projections.
-        """
+        """Composes message based by elementwise multiplication of edge and node projections."""
         msg = msg.index_select(0, idx_j)
         msg = msg * edge
         return msg
@@ -100,21 +88,15 @@ class MessagePassing(nn.Module):
 
 
 class CoAttention(nn.Module):
-    """
-    The co-attention network for MHCADDI model. It calculates attentional coefficients between the atoms
-    in two different drug molecules, i.e., each atom in drug X is expressed as a linear combination
-    (weighed by the attentional coefficients) of the (projected) atom features in drug Y.
-    """
+    """The co-attention network for MHCADDI model."""
 
     def __init__(self, d_in: int, d_out: int, n_head: int = 1, dropout: float = 0.1):
-        """
-        Instantiate the co-attention network
+        """Instantiate the co-attention network.
 
         :param d_in: The number of atom features
         :param d_out: The number of output features
         :param n_head: The number of attention heads
         :param dropout: Dropout probability
-
         """
         super(CoAttention, self).__init__()
         self.temperature = np.sqrt(d_in)
@@ -206,32 +188,29 @@ class CoAttentionMessagePassingNetwork(nn.Module):
 
         self.n_prop_step = n_prop_step
 
-        if update_method == "res":
-            x_d_node = lambda step_i: 1
-            self.update_fn = lambda x, y, z: x + y + z
-        elif update_method == "den":
-            x_d_node = lambda step_i: 1 + 2 * step_i
-            self.update_fn = lambda x, y, z: torch.cat([x, y, z], -1)
-        else:
-            raise NotImplementedError
-
         self.mps = nn.ModuleList(
             [
-                MessagePassing(d_node=d_hid * x_d_node(step_i), d_edge=d_hid, d_hid=d_hid, dropout=dropout)
+                MessagePassing(d_node=d_hid * self.x_d_node(step_i), d_edge=d_hid, d_hid=d_hid, dropout=dropout)
                 for step_i in range(n_prop_step)
             ]
         )
 
         self.coats = nn.ModuleList(
             [
-                CoAttention(d_in=d_hid * x_d_node(step_i), d_out=d_hid, n_head=n_head, dropout=dropout)
+                CoAttention(d_in=d_hid * self.x_d_node(step_i), d_out=d_hid, n_head=n_head, dropout=dropout)
                 for step_i in range(n_prop_step)
             ]
         )
 
-        self.lns = nn.ModuleList([nn.LayerNorm(d_hid * x_d_node(step_i)) for step_i in range(n_prop_step)])
+        self.lns = nn.ModuleList([nn.LayerNorm(d_hid * self.x_d_node(step_i)) for step_i in range(n_prop_step)])
 
-        self.pre_readout_proj = nn.Sequential(nn.Linear(d_hid * x_d_node(n_prop_step), d_readout, nn.LeakyReLU()))
+        self.pre_readout_proj = nn.Sequential(nn.Linear(d_hid * self.x_d_node(n_prop_step), d_readout, nn.LeakyReLU()))
+
+    def x_d_node(self, x):
+        return 1
+
+    def update_fn(self, x, y, z):
+        return x + y + z
 
     def forward(
         self,
@@ -288,23 +267,38 @@ class MHCADDI(Model):
 
     def __init__(
         self,
-        d_atom_feat,
-        n_atom_type,
-        n_bond_type,
-        d_node: int = 32,
-        d_edge: int = 32,
-        d_hid: int = 32,
-        d_readout: int = 32,
-        n_prop_step: int = 3,
-        n_side_effect=None,
-        n_lbls=12,
+        *,
+        d_atom_feat: int = 16,
+        n_atom_type: int = 16,
+        n_bond_type: int = 16,
+        d_node: int = 16,
+        d_edge: int = 16,
+        d_hid: int = 16,
+        d_readout: int = 16,
+        n_prop_step: int = 1,
+        n_lbls=1,
         n_head=1,
-        dropout=0.1,
+        dropout=0.5,
         update_method="res",
         score_fn="trans",
     ):
-        super(MHCADDI, self).__init__()
+        """Instantiate the MHCADDI network.
 
+        :param d_atom_feat: Number of atom features.
+        :param n_atom_type: Number of atom types.
+        :param n_bond_type: Number of bonds.
+        :param d_node: Node feature number.
+        :param d_edge: Edge feature number.
+        :param d_hid: Number of hidden layers.
+        :param d_readout: Readout dimensions.
+        :param n_prop_step: GCN depth.
+        :param n_lbls: Number of labels.
+        :param n_head: Number of scoring head.
+        :param dropout: Dropout rate.
+        :param update_method: Update function.
+        :param score_fn: Scoring function.
+        """
+        super(MHCADDI, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
 
         self.atom_proj = nn.Linear(d_node + d_atom_feat, d_node)
@@ -312,11 +306,6 @@ class MHCADDI(Model):
         self.bond_emb = nn.Embedding(n_bond_type, d_edge, padding_idx=0)
         nn.init.xavier_normal_(self.atom_emb.weight)
         nn.init.xavier_normal_(self.bond_emb.weight)
-
-        self.side_effect_emb = None
-        if n_side_effect is not None:
-            self.side_effect_emb = nn.Embedding(n_side_effect, d_hid)
-            nn.init.xavier_normal_(self.side_effect_emb.weight)
 
         self.encoder = CoAttentionMessagePassingNetwork(
             d_hid=d_hid,
@@ -339,6 +328,7 @@ class MHCADDI(Model):
 
     @property
     def score_fn(self):
+        """Do."""
         return self.__score_fn
 
     def forward(
@@ -359,10 +349,8 @@ class MHCADDI(Model):
         inn_idx_j2,
         out_seg_i2,
         out_idx_j2,
-        se_idx=None,
-        drug_se_seg=None,
     ) -> torch.FloatTensor:
-
+        """Do."""
         atom1 = self.dropout(self.atom_comp(atom_feat1, atom_type1))
         atom2 = self.dropout(self.atom_comp(atom_feat2, atom_type2))
 
@@ -386,34 +374,23 @@ class MHCADDI(Model):
             out_idx_j2,
         )
 
-        if self.side_effect_emb is not None:
-            d1_vec = d1_vec.index_select(0, drug_se_seg)
-            d2_vec = d2_vec.index_select(0, drug_se_seg)
-
-            se_vec = self.dropout(self.side_effect_emb(se_idx))
-
-            fwd_score = self.cal_translation_score(head=self.head_proj(d1_vec), tail=self.tail_proj(d2_vec), rel=se_vec)
-            bwd_score = self.cal_translation_score(head=self.head_proj(d2_vec), tail=self.tail_proj(d1_vec), rel=se_vec)
-            score = fwd_score + bwd_score
-
-            return (score,)
-        else:
-            pred1 = self.lbl_predict(d1_vec)
-            pred2 = self.lbl_predict(d2_vec)
-
-            return pred1, pred2, attn1, attn2
+        pred1 = self.lbl_predict(d1_vec)
+        pred2 = self.lbl_predict(d2_vec)
+        return torch.sigmoid((pred1 + pred2) / 2)
 
     def atom_comp(self, atom_feat, atom_idx):
+        """Document."""
         atom_emb = self.atom_emb(atom_idx)
 
         node = self.atom_proj(torch.cat([atom_emb, atom_feat], -1))
         return node
 
     def cal_translation_score(self, head, tail, rel):
+        """Document."""
         return torch.norm(head + rel - tail, dim=1)
 
     def generate_segmentation(self, graph_sizes_left, graph_sizes_right):
-
+        """Document."""
         interactions = graph_sizes_left * graph_sizes_right
 
         graph_sizes_index_left = torch.repeat_interleave(graph_sizes_left, interactions)
@@ -425,27 +402,23 @@ class MHCADDI(Model):
 
         shift_sums_left = torch.repeat_interleave(left_shifted_graph_size_cum_sum, interactions)
         shift_interactions = torch.repeat_interleave(shifted_combo, interactions)
-
-        cum_sum = torch.cumsum(interactions, 0)
         segmentation = (shift_sums_left + torch.fmod(main_index, graph_sizes_index_left)).view(-1, 1)
-        segmentation, _ = torch.sort(segmentation ,dim=0)
-        out_index = torch.div(main_index-shift_interactions, graph_sizes_index_left, rounding_mode="floor" )
+        segmentation, _ = torch.sort(segmentation, dim=0)
+        out_index = torch.div(main_index - shift_interactions, graph_sizes_index_left, rounding_mode="floor")
         return segmentation.squeeze(), out_index.squeeze()
 
     def unpack(self, batch: DrugPairBatch):
-        """
-        Adjust drug pair batch to model design
-        """
+        """Adjust drug pair batch to model design.
 
-        # Left Drugs
-
+        :param batch: Molecular data in a drug pair batch.
+        :returns: Tuple of data.
+        """
         atom_type1 = batch.drug_molecules_left.atom_type
         bond_type1 = batch.drug_molecules_left.bond_type
         atom_feat1 = batch.drug_molecules_left.node_feature
         inn_seg_i1 = batch.drug_molecules_left.edge_list[:, 0]
         inn_idx_j1 = batch.drug_molecules_left.edge_list[:, 1]
 
-        # Right Drugs
         atom_type2 = batch.drug_molecules_right.atom_type
         atom_feat2 = batch.drug_molecules_right.node_feature
         bond_type2 = batch.drug_molecules_right.bond_type
@@ -454,8 +427,12 @@ class MHCADDI(Model):
 
         seg_m1 = batch.drug_molecules_left.node2graph
         seg_m2 = batch.drug_molecules_right.node2graph
-        out_seg_i1, out_idx_j1  = self.generate_segmentation(batch.drug_molecules_left.num_nodes,  batch.drug_molecules_right.num_nodes)
-        out_seg_i2, out_idx_j2  = self.generate_segmentation( batch.drug_molecules_right.num_nodes,  batch.drug_molecules_left.num_nodes)
+        out_seg_i1, out_idx_j1 = self.generate_segmentation(
+            batch.drug_molecules_left.num_nodes, batch.drug_molecules_right.num_nodes
+        )
+        out_seg_i2, out_idx_j2 = self.generate_segmentation(
+            batch.drug_molecules_right.num_nodes, batch.drug_molecules_left.num_nodes
+        )
         return (
             seg_m1,
             atom_type1,

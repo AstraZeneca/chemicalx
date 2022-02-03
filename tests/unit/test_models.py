@@ -188,8 +188,18 @@ class TestModels(unittest.TestCase):
 
     def test_mhcaddi(self):
         """Test MHCADDI."""
-        model = MHCADDI(x=2)
-        assert model.x == 2
+        model = MHCADDI(d_atom_feat=69, n_atom_type=100, n_bond_type=12)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
+        model.train()
+        loss = torch.nn.BCELoss()
+        for batch in self.generator:
+            optimizer.zero_grad()
+            prediction = model(*model.unpack(batch))
+            output = loss(prediction, batch.labels)
+            output.backward()
+            optimizer.step()
+            assert prediction.shape[0] == batch.labels.shape[0]
 
     def test_mrgnn(self):
         """Test MRGNN."""
