@@ -260,7 +260,7 @@ class TestModels(unittest.TestCase):
     def test_deepdds(self):
         """Test DeepDDS."""
         model = DeepDDS(
-            context_feature_size=self.loader.context_channels,
+            context_channels=self.loader.context_channels,
         )
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()

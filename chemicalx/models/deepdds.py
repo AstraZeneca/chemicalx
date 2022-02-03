@@ -56,7 +56,7 @@ class DeepDDS(Model):
     def __init__(
         self,
         *,
-        context_feature_size: int,
+        context_channels: int,
         context_hidden_dims: Optional[List[int]] = None,
         drug_channels: int = TORCHDRUG_NODE_FEATURES,
         drug_gcn_hidden_dims: Optional[List[int]] = None,
@@ -67,7 +67,7 @@ class DeepDDS(Model):
     ):
         """Instantiate the DeepDDS model.
 
-        :param context_feature_size:
+        :param context_channels:
             The size of the context feature embedding for cell lines.
         :param context_hidden_dims:
             The hidden dimensions of the MLP used to extract the context
@@ -113,7 +113,7 @@ class DeepDDS(Model):
 
         # Cell feature extraction with MLP
         self.cell_mlp = MLP(
-            input_dim=context_feature_size,
+            input_dim=context_channels,
             # Paper: [2048, 512, context_output_size]
             # Code: [512, 256, context_output_size]
             hidden_dims=[*context_hidden_dims, context_output_size],

@@ -9,7 +9,7 @@ def main():
     """Train and evaluate the DeepDDs model."""
     dataset = DrugCombDB()
     model = DeepDDS(
-        context_feature_size=dataset.context_channels,
+        context_channels=dataset.context_channels,
     )
     results = pipeline(
         dataset=dataset,
