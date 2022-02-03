@@ -11,9 +11,10 @@ __all__ = [
 
 
 class CASTERSupervisedLoss(_Loss):
-    """An implementation of the custom loss function for the supervised learning stage of the CASTER algorithm
-    from [huang2020]_. The loss function combines three separate loss functions on different model outputs:
-    class prediction loss, input reconstruction loss, and dictionary projection loss.
+    """An implementation of the custom loss function for the supervised learning stage of the CASTER algorithm.
+
+    The algorithm is described in [huang2020]_. The loss function combines three separate loss functions on
+    different model outputs: class prediction loss, input reconstruction loss, and dictionary projection loss.
 
     .. [huang2020] Huang, K., *et al.* (2020). `CASTER: Predicting drug interactions
        with chemical substructure representation <https://doi.org/10.1609/aaai.v34i01.5412>`_.

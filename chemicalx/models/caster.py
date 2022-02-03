@@ -1,6 +1,5 @@
 """An implementation of the CASTER model."""
 
-from collections import OrderedDict
 from typing import Tuple
 
 import torch
