@@ -16,6 +16,7 @@ __all__ = [
     "MHCADDI",
 ]
 
+
 def segment_max(logit, n_seg, seg_i, idx_j):
     max_seg_numel = idx_j.max().item() + 1
     seg_max = logit.new_full((n_seg, max_seg_numel), -np.inf)
@@ -277,7 +278,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
 
 
 class MHCADDI(Model):
-   """An implementation of the MHCADDI model from [deac2019]_.
+    """An implementation of the MHCADDI model from [deac2019]_.
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/13
 
@@ -411,20 +412,38 @@ class MHCADDI(Model):
     def cal_translation_score(self, head, tail, rel):
         return torch.norm(head + rel - tail, dim=1)
 
+    def generate_segmentation(self, graph_sizes_left, graph_sizes_right):
+
+        interactions = graph_sizes_left * graph_sizes_right
+
+        graph_sizes_index_left = torch.repeat_interleave(graph_sizes_left, interactions)
+
+        main_index = torch.arange(0, interactions.sum())
+
+        left_shifted_graph_size_cum_sum = torch.cumsum(graph_sizes_left, 0) - graph_sizes_left
+        shifted_combo = torch.cumsum(interactions, 0) - interactions
+
+        shift_sums_left = torch.repeat_interleave(left_shifted_graph_size_cum_sum, interactions)
+        shift_interactions = torch.repeat_interleave(shifted_combo, interactions)
+
+        cum_sum = torch.cumsum(interactions, 0)
+        segmentation = (shift_sums_left + torch.fmod(main_index, graph_sizes_index_left)).view(-1, 1)
+        segmentation, _ = torch.sort(segmentation ,dim=0)
+        out_index = torch.div(main_index-shift_interactions, graph_sizes_index_left, rounding_mode="floor" )
+        return segmentation.squeeze(), out_index.squeeze()
+
     def unpack(self, batch: DrugPairBatch):
         """
         Adjust drug pair batch to model design
         """
 
         # Left Drugs
+
         atom_type1 = batch.drug_molecules_left.atom_type
         bond_type1 = batch.drug_molecules_left.bond_type
-        atom_feat1 = batch.drug_molecules_left.node_feature  # TODO: Drug features or atom features?
+        atom_feat1 = batch.drug_molecules_left.node_feature
         inn_seg_i1 = batch.drug_molecules_left.edge_list[:, 0]
         inn_idx_j1 = batch.drug_molecules_left.edge_list[:, 1]
-        seg_m1 = torch.tensor([], dtype=torch.int64)
-        out_seg_i1 = torch.tensor([], dtype=torch.int64)
-        out_idx_j1 = torch.tensor([], dtype=torch.int64)
 
         # Right Drugs
         atom_type2 = batch.drug_molecules_right.atom_type
@@ -433,43 +452,10 @@ class MHCADDI(Model):
         inn_seg_i2 = batch.drug_molecules_right.edge_list[:, 0]
         inn_idx_j2 = batch.drug_molecules_right.edge_list[:, 1]
 
-        seg_m2 = torch.tensor([], dtype=torch.int64)
-        out_seg_i2 = torch.tensor([], dtype=torch.int64)
-        out_idx_j2 = torch.tensor([], dtype=torch.int64)
-
-        ldrug_prev_max_ix = 0
-        rdrug_prev_max_ix = 0
-        for i_pair in range(batch.drug_molecules_left.batch_size):
-
-            left_drug = batch.drug_molecules_left[i_pair]
-            right_drug = batch.drug_molecules_right[i_pair]
-
-            seg = torch.tensor([i_pair], dtype=torch.int64)
-            seg_m1 = torch.cat([seg_m1, seg.repeat_interleave(left_drug.num_node)])
-            seg_m2 = torch.cat([seg_m2, seg.repeat_interleave(right_drug.num_node)])
-
-            # caclulate out_seg_i1
-            ldrug_out_seg = torch.tensor(range(ldrug_prev_max_ix, ldrug_prev_max_ix + left_drug.num_node))
-            ldrug_prev_max_ix = ldrug_out_seg.max() + 1
-            ldrug_out_seg = ldrug_out_seg.repeat_interleave(right_drug.num_node)
-            out_seg_i1 = torch.cat([out_seg_i1, ldrug_out_seg])
-
-            # caclulate out_seg_i2
-            rdrug_out_seg = torch.tensor(range(rdrug_prev_max_ix, rdrug_prev_max_ix + right_drug.num_node))
-            rdrug_prev_max_ix = rdrug_out_seg.max() + 1
-            rdrug_out_seg = rdrug_out_seg.repeat_interleave(left_drug.num_node)
-            out_seg_i2 = torch.cat([out_seg_i2, rdrug_out_seg])
-
-            # calculate out_idx_j1
-            ldrug_idx_j1 = torch.tensor(range(right_drug.num_node))
-            ldrug_idx_j1 = ldrug_idx_j1.repeat_interleave(left_drug.num_node)
-            out_idx_j1 = torch.cat([out_idx_j1, ldrug_idx_j1])
-
-            # calculate out_idx_j2
-            rdrug_idx_j1 = torch.tensor(range(left_drug.num_node))
-            rdrug_idx_j1 = rdrug_idx_j1.repeat_interleave(right_drug.num_node)
-            out_idx_j2 = torch.cat([out_idx_j2, rdrug_idx_j1])
-
+        seg_m1 = batch.drug_molecules_left.node2graph
+        seg_m2 = batch.drug_molecules_right.node2graph
+        out_seg_i1, out_idx_j1  = self.generate_segmentation(batch.drug_molecules_left.num_nodes,  batch.drug_molecules_right.num_nodes)
+        out_seg_i2, out_idx_j2  = self.generate_segmentation( batch.drug_molecules_right.num_nodes,  batch.drug_molecules_left.num_nodes)
         return (
             seg_m1,
             atom_type1,
