@@ -11,11 +11,20 @@ __all__ = [
 
 
 class CASTERSupervisedLoss(_Loss):
+    """An implementation of the custom loss function for the supervised learning stage of the CASTER algorithm
+    from [huang2020]_. The loss function combines three separate loss functions on different model outputs:
+    class prediction loss, input reconstruction loss, and dictionary projection loss.
+
+    .. [huang2020] Huang, K., *et al.* (2020). `CASTER: Predicting drug interactions
+       with chemical substructure representation <https://doi.org/10.1609/aaai.v34i01.5412>`_.
+       *AAAI 2020 - 34th AAAI Conference on Artificial Intelligence*, 702–709.
+    """
+
     def __init__(
         self, recon_loss_coeff: float = 1e-1, proj_coeff: float = 1e-1, lambda1: float = 1e-2, lambda2: float = 1e-1
     ):
         """
-        Custom loss function for the supervised learning stage of the CASTER algorithm.
+        Initialize the custom loss function for the supervised learning stage of the CASTER algorithm.
 
         :param recon_loss_coeff: coefficient for the reconstruction loss
         :param proj_coeff: coefficient for the projection loss
@@ -30,8 +39,7 @@ class CASTERSupervisedLoss(_Loss):
         self.loss = torch.nn.BCELoss()
 
     def forward(self, x: Tuple[torch.FloatTensor, ...], target: torch.Tensor) -> torch.FloatTensor:
-        """
-        Forward pass of the loss calculation for the supervised learning stage of the CASTER algorithm.
+        """Perform a forward pass of the loss calculation for the supervised learning stage of the CASTER algorithm.
 
         :param x: a tuple of tensors returned by the model forward pass (see CASTER.forward() method)
         :param target: target labels

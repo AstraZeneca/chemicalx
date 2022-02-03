@@ -26,7 +26,7 @@ class CASTER(Model):
     def __init__(
         self,
         *,
-        drug_channels: int = 1722,
+        drug_channels: int,
         encoder_hidden_channels: int = 500,
         encoder_output_channels: int = 50,
         decoder_hidden_channels: int = 500,
@@ -38,6 +38,7 @@ class CASTER(Model):
         """Instantiate the CASTER model.
 
         :param drug_channels: The number of drug features (recognised frequent substructures).
+            The original implementation recognised 1722 basis substructures in the BIOSNAP experiment.
         :param encoder_hidden_channels: The number of hidden layer neurons in the encoder module.
         :param encoder_output_channels: The number of output layer neurons in the encoder module.
         :param decoder_hidden_channels: The number of hidden layer neurons in the decoder module.
@@ -66,18 +67,20 @@ class CASTER(Model):
         )
 
         # predictor: eight layer NN
-        predictor_layers_dict = OrderedDict()
-        predictor_layers_dict["input_linear"] = torch.nn.Linear(self.drug_channels, hidden_channels)
-        predictor_layers_dict["input_relu"] = torch.nn.ReLU(True)
+        predictor_layers = []
+        predictor_layers.append(torch.nn.Linear(self.drug_channels, hidden_channels))
+        predictor_layers.append(torch.nn.ReLU(True))
         for i in range(1, 6):
-            # in the original paper, the output of the last hidden layer before the output was fixed at 64 channels
-            linear_out_channels = hidden_channels if i < 5 else 64
-            predictor_layers_dict["hidden_batch_norm_" + str(i)] = torch.nn.BatchNorm1d(hidden_channels)
-            predictor_layers_dict["hidden_linear_" + str(i)] = torch.nn.Linear(hidden_channels, linear_out_channels)
-            predictor_layers_dict["hidden_relu_" + str(i)] = torch.nn.ReLU(True)
-        predictor_layers_dict["output_linear"] = torch.nn.Linear(64, out_channels)
-        predictor_layers_dict["output_sigmoid"] = torch.nn.Sigmoid()
-        self.predictor = torch.nn.Sequential(predictor_layers_dict)
+            predictor_layers.append(torch.nn.BatchNorm1d(hidden_channels))
+            if i < 5:
+                predictor_layers.append(torch.nn.Linear(hidden_channels, hidden_channels))
+            else:
+                # in the original paper, the output of the last hidden layer before the output was fixed at 64 channels
+                predictor_layers.append(torch.nn.Linear(hidden_channels, 64))
+            predictor_layers.append(torch.nn.ReLU(True))
+        predictor_layers.append(torch.nn.Linear(64, out_channels))
+        predictor_layers.append(torch.nn.Sigmoid())
+        self.predictor = torch.nn.Sequential(*predictor_layers)
 
     def unpack(self, batch: DrugPairBatch) -> Tuple[torch.FloatTensor]:
         """Return the "functional representation" of drug pairs, as defined in the original implementation.
@@ -91,16 +94,18 @@ class CASTER(Model):
     def dictionary_encoder(
         self, drug_pair_features_latent: torch.FloatTensor, dictionary_features_latent: torch.FloatTensor
     ) -> torch.FloatTensor:
-        """Dictionary encoder submodule forward pass.
+        """Perform a forward pass of the dictionary encoder submodule.
 
-        :param drug_pair_features_latent: encoder output for the input drug_pair_features (batch_size x encoder_output_channels)
-        :param dictionary_features_latent: projection of the drug_pair_features using the dictionary basis (encoder_output_channels x drug_channels)
+        :param drug_pair_features_latent: encoder output for the input drug_pair_features
+            (batch_size x encoder_output_channels)
+        :param dictionary_features_latent: projection of the drug_pair_features using the dictionary basis
+            (encoder_output_channels x drug_channels)
         :return: sparse code X_o: (batch_size x drug_channels)
         """
-        DTD = torch.matmul(dictionary_features_latent, dictionary_features_latent.transpose(2, 1))
-        DTD_inv = torch.inverse(DTD + self.lambda3 * (torch.eye(self.drug_channels)))
-        DTD_inv_DT = torch.matmul(DTD_inv, dictionary_features_latent)
-        r = drug_pair_features_latent[:, None, :].matmul(DTD_inv_DT.transpose(2, 1)).squeeze(1)
+        dict_feat_squared = torch.matmul(dictionary_features_latent, dictionary_features_latent.transpose(2, 1))
+        dict_feat_squared_inv = torch.inverse(dict_feat_squared + self.lambda3 * (torch.eye(self.drug_channels)))
+        dict_feat_closed_form = torch.matmul(dict_feat_squared_inv, dictionary_features_latent)
+        r = drug_pair_features_latent[:, None, :].matmul(dict_feat_closed_form.transpose(2, 1)).squeeze(1)
         return r
 
     def forward(self, drug_pair_features: torch.FloatTensor) -> Tuple[torch.FloatTensor]:
@@ -108,12 +113,12 @@ class CASTER(Model):
 
         :param drug_pair_features: functional representation of each drug pair (see unpack method)
         :return: (Tuple[torch.FloatTensor): a tuple of tensors including:
-                prediction_scores (torch.FloatTensor): predicted target scores for each drug pair
-                reconstructed (torch.FloatTensor): input drug pair vectors reconstructed by the encoder-decoder chain
-                dictionary_encoded (torch.FloatTensor): drug pair features encoded by the dictionary encoder submodule
-                dictionary_features_latent (torch.FloatTensor): projection of the encoded drug pair features using the dictionary basis
-                drug_pair_features_latent (torch.FloatTensor): encoder output for the input drug_pair_features
-                drug_pair_features (torch.FloatTensor): a copy of the input unpacked drug_pair_features (needed for loss calculation)
+                prediction_scores: predicted target scores for each drug pair
+                reconstructed: input drug pair vectors reconstructed by the encoder-decoder chain
+                dictionary_encoded: drug pair features encoded by the dictionary encoder submodule
+                dictionary_features_latent: projection of the encoded drug pair features using the dictionary basis
+                drug_pair_features_latent: encoder output for the input drug_pair_features
+                drug_pair_features: a copy of the input unpacked drug_pair_features (needed for loss calculation)
         """
         drug_pair_features_latent = self.encoder(drug_pair_features)
         dictionary_features_latent = self.encoder(torch.eye(self.drug_channels))

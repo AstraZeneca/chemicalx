@@ -10,6 +10,7 @@ from class_resolver import Resolver
 import chemicalx.models
 from chemicalx import pipeline
 from chemicalx.data import DatasetLoader, DrugComb, DrugCombDB
+from chemicalx.loss import CASTERSupervisedLoss
 from chemicalx.models import (
     CASTER,
     EPGCNDS,
@@ -156,8 +157,7 @@ class TestModels(unittest.TestCase):
         model = CASTER(drug_channels=256)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()
-        loss_cls = CASTER.get_supervised_loss_cls()
-        loss = loss_cls()
+        loss = CASTERSupervisedLoss()
         for batch in self.generator:
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
