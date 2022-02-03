@@ -107,7 +107,7 @@ class CASTER(Model):
         r = drug_pair_features_latent[:, None, :].matmul(dict_feat_closed_form.transpose(2, 1)).squeeze(1)
         return r
 
-    def forward(self, drug_pair_features: torch.FloatTensor) -> Tuple[torch.FloatTensor]:
+    def forward(self, drug_pair_features: torch.FloatTensor) -> Tuple[torch.FloatTensor, ...]:
         """Run a forward pass of the CASTER model.
 
         :param drug_pair_features: functional representation of each drug pair (see unpack method)
