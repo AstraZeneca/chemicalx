@@ -16,11 +16,13 @@ __all__ = [
 
 
 class EPGCNDS(Model):
-    r"""The EPGCN-DS model from [epgcnds]_.
+    r"""The EPGCN-DS model from [sun2020]_.
 
-    .. [epgcnds] `Structure-Based Drug-Drug Interaction Detection
-       via Expressive Graph Convolutional Networks and Deep Sets
-       <https://ojs.aaai.org/index.php/AAAI/article/view/7236>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/22
+
+    .. [sun2020] Sun, M., *et al.* (2020). `Structure-Based Drug-Drug Interaction Detection via Expressive
+       Graph Convolutional Networks and Deep Sets <https://doi.org/10.1609/aaai.v34i10.7236>`_.
+       *Proceedings of the AAAI Conference on Artificial Intelligence*, 34(10), 13927–13928.
     """
 
     def __init__(
@@ -58,14 +60,11 @@ class EPGCNDS(Model):
         return features
 
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
-        """
-        Run a forward pass of the EPGCN-DS model.
+        """Run a forward pass of the EPGCN-DS model.
 
-        Args:
-            molecules_left: Batched molecules for the left side drugs.
-            molecules_right: Batched molecules for the right side drugs.
-        Returns:
-            : A column vector of predicted synergy scores.
+        :param molecules_left: Batched molecules for the left side drugs.
+        :param molecules_right: Batched molecules for the right side drugs.
+        :returns: A column vector of predicted synergy scores.
         """
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)

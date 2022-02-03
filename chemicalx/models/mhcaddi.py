@@ -16,7 +16,6 @@ __all__ = [
     "MHCADDI",
 ]
 
-
 def segment_max(logit, n_seg, seg_i, idx_j):
     max_seg_numel = idx_j.max().item() + 1
     seg_max = logit.new_full((n_seg, max_seg_numel), -np.inf)
@@ -278,10 +277,12 @@ class CoAttentionMessagePassingNetwork(nn.Module):
 
 
 class MHCADDI(Model):
-    r"""The Multi-Head Co-Attentive Drug-Drug Interaction (MHCADDI) model from [MHCADDI]_.
+   """An implementation of the MHCADDI model from [deac2019]_.
 
-    .. [MHCADDI] `Drug-Drug Adverse Effect Prediction with Graph Co-Attention
-       <https://arxiv.org/pdf/1905.00534.pdf>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/13
+
+    .. [deac2019] Deac, A., *et al.* (2019). `Drug-Drug Adverse Effect Prediction with
+       Graph Co-Attention <http://arxiv.org/abs/1905.00534>`_. *arXiv*, 1905.00534.
     """
 
     def __init__(

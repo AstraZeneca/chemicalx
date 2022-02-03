@@ -12,10 +12,13 @@ __all__ = [
 
 
 class MatchMaker(Model):
-    """An implementation of the MatchMaker model from [matchmaker]_.
+    """An implementation of the MatchMaker model from [kuru2021]_.
 
-    .. [matchmaker] `MatchMaker: A Deep Learning Framework for Drug Synergy Prediction
-       <https://www.biorxiv.org/content/10.1101/2020.05.24.113241v3.full>`_
+    .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/23
+
+    .. [kuru2021] Kuru, H. I., *et al.* (2021). `MatchMaker: A Deep Learning Framework
+       for Drug Synergy Prediction <https://doi.org/10.1109/TCBB.2021.3086702>`_.
+       *IEEE/ACM Transactions on Computational Biology and Bioinformatics*, 1–1.
     """
 
     def __init__(
@@ -73,15 +76,12 @@ class MatchMaker(Model):
         drug_features_left: torch.FloatTensor,
         drug_features_right: torch.FloatTensor,
     ) -> torch.FloatTensor:
-        """
-        Run a forward pass of the MatchMaker model.
+        """Run a forward pass of the MatchMaker model.
 
-        Args:
-            context_features: A matrix of biological context features.
-            drug_features_left: A matrix of head drug features.
-            drug_features_right: A matrix of tail drug features.
-        Returns:
-            hidden: A column vector of predicted synergy scores.
+        :param context_features: A matrix of biological context features.
+        :param drug_features_left: A matrix of head drug features.
+        :param drug_features_right: A matrix of tail drug features.
+        :returns: A column vector of predicted synergy scores.
         """
         # The left drug
         hidden_left = torch.cat([context_features, drug_features_left], dim=1)

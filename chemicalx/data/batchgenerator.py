@@ -33,14 +33,13 @@ class BatchGenerator(Iterator[DrugPairBatch]):
     ):
         """Initialize a batch generator.
 
-        Args:
-            batch_size: Number of drug pairs per batch.
-            context_features: Indicator whether the batch should include biological context features.
-            drug_features: Indicator whether the batch should include drug features.
-            drug_molecules: Indicator whether the batch should include drug molecules
-            context_feature_set: A context feature set for feature generation.
-            drug_feature_set: A drug feature set for feature generation.
-            labeled_triples: A labeled triples object used to generate batches.
+        :param batch_size: Number of drug pairs per batch.
+        :param context_features: Indicator whether the batch should include biological context features.
+        :param drug_features: Indicator whether the batch should include drug features.
+        :param drug_molecules: Indicator whether the batch should include drug molecules
+        :param context_feature_set: A context feature set for feature generation.
+        :param drug_feature_set: A drug feature set for feature generation.
+        :param labeled_triples: A labeled triples object used to generate batches.
         """
         self.batch_size = batch_size
         self.context_features = context_features
@@ -53,10 +52,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
     def _get_context_features(self, context_identifiers: Iterable[str]) -> Optional[torch.FloatTensor]:
         """Get the context features as a matrix.
 
-        Args:
-            context_identifiers (pd.Series): The context identifiers of interest.
-        Returns:
-            context_features (torch.FloatTensor): The matrix of biological context features.
+        :param context_identifiers: The context identifiers of interest.
+        :returns: The matrix of biological context features.
         """
         if not self.context_features or self.context_feature_set is None:
             return None
@@ -65,10 +62,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
     def _get_drug_features(self, drug_identifiers: Iterable[str]) -> Optional[torch.FloatTensor]:
         """Get the global drug features as a matrix.
 
-        Args:
-            drug_identifiers: The drug identifiers of interest.
-        Returns:
-            drug_features: The matrix of drug features.
+        :param drug_identifiers: The drug identifiers of interest.
+        :returns: The matrix of drug features.
         """
         if not self.drug_features or self.drug_feature_set is None:
             return None
@@ -77,10 +72,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
     def _get_drug_molecules(self, drug_identifiers: Iterable[str]) -> Optional[PackedGraph]:
         """Get the molecular structure of drugs.
 
-        Args:
-            drug_identifiers: The drug identifiers of interest.
-        Returns:
-            molecules: The molecules diagonally batched together for message passing.
+        :param drug_identifiers: The drug identifiers of interest.
+        :returns: The molecules diagonally batched together for message passing.
         """
         if not self.drug_molecules or self.drug_feature_set is None:
             return None
@@ -90,10 +83,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
     def _transform_labels(cls, labels: Sequence[float]) -> torch.FloatTensor:
         """Transform the labels from a chunk of the labeled triples frame.
 
-        Args:
-            labels: The drug pair binary labels.
-        Returns:
-            labels : The label target vector as a column vector.
+        :param labels: The drug pair binary labels.
+        :returns: The label target vector as a column vector.
         """
         return torch.FloatTensor(np.array(labels).reshape(-1, 1))
 
@@ -101,10 +92,8 @@ class BatchGenerator(Iterator[DrugPairBatch]):
         """
         Generate a batch of drug features, molecules, context features and labels for a set of pairs.
 
-        Args:
-            batch_frame (pd.DataFrame): The labeled pairs of interest.
-        Returns:
-            batch (DrugPairBatch): A batch of tensors for the pairs.
+        :param batch_frame: The labeled pairs of interest.
+        :Returns: A batch of tensors for the pairs.
         """
         drug_features_left = self._get_drug_features(batch_frame["drug_1"])
         drug_molecules_left = self._get_drug_molecules(batch_frame["drug_1"])

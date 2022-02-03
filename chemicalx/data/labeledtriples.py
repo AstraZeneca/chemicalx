@@ -32,85 +32,43 @@ class LabeledTriples:
         """
         Add the triples in two LabeledTriples objects together - syntactic sugar for '+'.
 
-        Args:
-            value: Another LabeledTriples object for the addition.
-        Returns:
-            : A LabeledTriples object after the addition.
+        :param value: Another LabeledTriples object for the addition.
+        :returns: A LabeledTriples object after the addition.
         """
         return LabeledTriples(pd.concat([self.data, value.data]))
 
     def get_drug_count(self) -> int:
-        """
-        Get the number of drugs in the labeled triples dataset.
-
-        Returns
-            int: The number of unique compounds in the labeled triples dataset.
-        """
+        """Get the number of drugs in the labeled triples dataset."""
         return pd.unique(self.data[["drug_1", "drug_2"]].values.ravel("K")).shape[0]
 
     def get_context_count(self) -> int:
-        """
-        Get the number of unique contexts in the labeled triples dataset.
-
-        Returns
-            int: The number of unique contexts in the labeled triples dataset.
-        """
+        """Get the number of unique contexts in the labeled triples dataset."""
         return self.data["context"].nunique()
 
     def get_combination_count(self) -> int:
-        """
-        Get the number of unique drug pairs in the labeled triples dataset.
-
-        Returns
-            int: The number of unique pairs in the labeled triples dataset.
-        """
+        """Get the number of unique drug pairs in the labeled triples dataset."""
         combination_count = self.data[["drug_1", "drug_2"]].drop_duplicates().shape[0]
         return combination_count
 
     def get_labeled_triple_count(self) -> int:
-        """
-        Get the number of triples in the labeled triples dataset.
-
-        Returns
-            int: The number of triples in the labeled triples dataset.
-        """
+        """Get the number of triples in the labeled triples dataset."""
         triple_count = self.data.shape[0]
         return triple_count
 
     def get_positive_count(self) -> int:
-        """
-        Get the number of positive triples in the dataset.
-
-        Returns
-            int: The number of positive triples.
-        """
+        """Get the number of positive triples in the dataset."""
         return int(self.data["label"].sum())
 
     def get_negative_count(self) -> int:
-        """
-        Get the number of negative triples in the dataset.
-
-        Returns
-            int: The number of negative triples.
-        """
+        """Get the number of negative triples in the dataset."""
         return self.get_labeled_triple_count() - self.get_positive_count()
 
     def get_positive_rate(self) -> float:
-        """
-        Get the ratio of positive triples in the dataset.
-
-        Returns
-            float: The ratio of positive triples.
-        """
+        """Get the ratio of positive triples in the dataset."""
         return self.data["label"].mean()
 
     def get_negative_rate(self) -> float:
-        """
-        Get the ratio of positive triples in the dataset.
-
-        Returns
-            float: The ratio of negative triples.
-        """
+        """Get the ratio of positive triples in the dataset."""
         return 1.0 - self.data["label"].mean()
 
     def train_test_split(
@@ -119,12 +77,9 @@ class LabeledTriples:
         """
         Split the LabeledTriples object for training and testing.
 
-        Args:
-            train_size: The ratio of training triples. Default is 0.8 if None is passed.
-            random_state: The random seed. Default is 42. Set to none for no fixed seed.
-        Returns
-            train_labeled_triples (LabeledTriples): The training triples.
-            test_labeled_triples (LabeledTriples): The testing triples.
+        :param train_size: The ratio of training triples. Default is 0.8 if None is passed.
+        :param random_state: The random seed. Default is 42. Set to none for no fixed seed.
+        :returns: A pair of training triples and testing triples
         """
         train_data, test_data = train_test_split(self.data, train_size=train_size or 0.8, random_state=random_state)
         return LabeledTriples(train_data), LabeledTriples(test_data)
