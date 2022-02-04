@@ -16,6 +16,7 @@ __all__ = [
 
 
 def segment_max(logit: torch.FloatTensor, n_seg: torch.LongTensor, seg_i: torch.LongTensor, idx_j: torch.LongTensor):
+    """Segmentation maximal index finder."""
     max_seg_numel = idx_j.max().item() + 1
     seg_max = logit.new_full((n_seg, max_seg_numel), -np.inf)
     seg_max = seg_max.index_put_((seg_i, idx_j), logit).max(dim=1)[0]
@@ -23,6 +24,7 @@ def segment_max(logit: torch.FloatTensor, n_seg: torch.LongTensor, seg_i: torch.
 
 
 def segment_sum(logit: torch.FloatTensor, n_seg: torch.LongTensor, seg_i: torch.LongTensor):
+    """Segmentation sum calculation."""
     norm = logit.new_zeros(n_seg).index_add(0, seg_i, logit)
     return norm[seg_i]
 
@@ -34,6 +36,7 @@ def segment_softmax(
     idx_j: torch.LongTensor,
     temperature: torch.FloatTensor,
 ):
+    """Segmentation softmax calculation."""
     logit_max = segment_max(logit, n_seg, seg_i, idx_j).detach()
     logit = torch.exp((logit - logit_max) / temperature)
     logit_norm = segment_sum(logit, n_seg, seg_i)
@@ -42,6 +45,7 @@ def segment_softmax(
 
 
 def segment_multihead_expand(seg_i: torch.LongTensor, n_seg: torch.LongTensor, n_head: int):
+    """Segmentation multihead expansion."""
     i_head_shift = n_seg * seg_i.new_tensor(torch.arange(n_head))
     seg_i = (seg_i.view(-1, 1) + i_head_shift.view(1, -1)).view(-1)
     return seg_i
@@ -86,12 +90,13 @@ class MessagePassing(nn.Module):
         return msg
 
     def message_composing(self, msg, edge, idx_j):
-        """Composes message based by elementwise multiplication of edge and node projections."""
+        """Compose message based by elementwise multiplication of edge and node projections."""
         msg = msg.index_select(0, idx_j)
         msg = msg * edge
         return msg
 
     def message_aggregation(self, node, msg, seg_i):
+        """Aggregate the messages."""
         msg = torch.zeros_like(node).index_add(0, seg_i, msg)
         return msg
 
@@ -124,7 +129,7 @@ class CoAttention(nn.Module):
         self.out_proj = nn.Sequential(nn.Linear(d_in * n_head, d_out), nn.LeakyReLU(), nn.Dropout(p=dropout))
 
     def forward(self, node1, seg_i1, idx_j1, node2, seg_i2, idx_j2):
-
+        """Forward pass with the segmentation indices and node features."""
         d_h = node1.size(1)
 
         n_seg1 = node1.size(0)
@@ -184,6 +189,8 @@ class CoAttention(nn.Module):
 
 
 class CoAttentionMessagePassingNetwork(nn.Module):
+    """Coattention messge passing layer."""
+
     def __init__(
         self,
         d_hid: int,
@@ -192,6 +199,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         n_head: int = 1,
         dropout: float = 0.1,
     ):
+        """Initialize a co-attention message passing network."""
         super(CoAttentionMessagePassingNetwork, self).__init__()
 
         self.n_prop_step = n_prop_step
@@ -215,9 +223,11 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         self.pre_readout_proj = nn.Sequential(nn.Linear(d_hid * self.x_d_node(n_prop_step), d_readout, nn.LeakyReLU()))
 
     def x_d_node(self, x):
+        """Return unity constant."""
         return 1
 
     def update_fn(self, x, y, z):
+        """Update the representations."""
         return x + y + z
 
     def forward(
@@ -237,6 +247,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         out_seg_i2,
         out_idx_j2,
     ):
+        """Make a forward pass with the data."""
         for step_i in range(self.n_prop_step):
 
             inner_msg1 = self.mps[step_i](node1, edge1, inn_seg_i1, inn_idx_j1)
@@ -255,6 +266,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         return g1_vec, g2_vec, attn1, attn2
 
     def readout(self, node, seg_g):
+        """Aggregate node features."""
         sz_b = seg_g.max() + 1
 
         node = self.pre_readout_proj(node)
