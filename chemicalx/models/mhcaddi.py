@@ -2,6 +2,7 @@ r"""An implementation of the MHCADDI model."""
 
 import functools
 import operator
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -383,6 +384,7 @@ class MHCADDI(Model):
         """Computes atom projection, a linear transformation of a learned atom embedding and the atom features
         :param atom_feat: Atom input features
         :param atom_idx: Index of atom type
+        :returns: Node index.
         """
         atom_emb = self.atom_emb(atom_idx)
 
@@ -405,7 +407,7 @@ class MHCADDI(Model):
 
         :param graph_sizes_left: List of graph sizes in the left drug batch.
         :param graph_sizes_right: List of graph sizes in the right drug batch.
-        :returns: Edge indicies
+        :returns: Edge indices
         """
         interactions = graph_sizes_left * graph_sizes_right
 
