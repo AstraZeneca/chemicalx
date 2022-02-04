@@ -334,7 +334,8 @@ class MHCADDI(Model):
         out_seg_i2,
         out_idx_j2,
     ) -> torch.FloatTensor:
-        """
+        """Forward pass with the data.
+
         :param seg_m1: Mapping from node id to graph id for the left drugs.
         :param atom_type1: Atom types of the atoms in the left drug molecules.
         :param atom_feat1: Features of the atoms in the left drug molecules.
@@ -381,7 +382,8 @@ class MHCADDI(Model):
         return torch.sigmoid((pred1 + pred2) / 2)
 
     def atom_comp(self, atom_feat, atom_idx):
-        """Computes atom projection, a linear transformation of a learned atom embedding and the atom features
+        """Compute atom projection, a linear transformation of a learned atom embedding and the atom features.
+
         :param atom_feat: Atom input features
         :param atom_idx: Index of atom type
         :returns: Node index.
@@ -392,7 +394,8 @@ class MHCADDI(Model):
         return node
 
     def generate_outer_segmentation(self, graph_sizes_left, graph_sizes_right):
-        """Calculates all pairwise edges between the atoms in a set of drug pairs.
+        """Calculate all pairwise edges between the atoms in a set of drug pairs.
+
         Example: Given two sets of drug sizes:
 
         graph_sizes_left = torch.tensor([1, 2])
