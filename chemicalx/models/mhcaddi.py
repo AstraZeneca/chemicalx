@@ -1,5 +1,7 @@
 r"""An implementation of the MHCADDI model."""
 
+import functools
+import operator
 import numpy as np
 import torch
 import torch.nn as nn
@@ -64,8 +66,8 @@ class MessagePassing(nn.Module):
     def forward(self, node: torch.Tensor, edge: torch.Tensor, seg_i: torch.Tensor, idx_j: torch.Tensor):
         """Calculate forward pass of message passing network.
 
-        :param node: Nxd node feature matrix.
-        :param edge: Nxd edge feature matrix.
+        :param node: N x d node feature matrix.
+        :param edge: N x d edge feature matrix.
         :param seg_i: List of node indices from where edges in the molecular graph start.
         :param idx_j: List of node indices from where edges in the molecular graph end.
         :returns: Message between nodes.
@@ -125,7 +127,7 @@ class CoAttention(nn.Module):
         node1_ctr = self.key_proj(node1).index_select(0, seg_i1)
         node2_ctr = self.key_proj(node2).index_select(0, seg_i2)
 
-        # Copy neighbor for attention value
+        # Copy neighbour for attention value
         node1_nbr = self.val_proj(node2).index_select(0, seg_i2)  # idx_j1 == seg_i2
         node2_nbr = self.val_proj(node1).index_select(0, seg_i1)  # idx_j2 == seg_i1
 
@@ -182,7 +184,6 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         n_prop_step: int,
         n_head: int = 1,
         dropout: float = 0.1,
-        update_method: str = "res",
     ):
         super(CoAttentionMessagePassingNetwork, self).__init__()
 
@@ -279,8 +280,6 @@ class MHCADDI(Model):
         n_lbls=1,
         n_head=1,
         dropout=0.5,
-        update_method="res",
-        score_fn="trans",
     ):
         """Instantiate the MHCADDI network.
 
@@ -295,8 +294,6 @@ class MHCADDI(Model):
         :param n_lbls: Number of labels.
         :param n_head: Number of scoring head.
         :param dropout: Dropout rate.
-        :param update_method: Update function.
-        :param score_fn: Scoring function.
         """
         super(MHCADDI, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
@@ -312,24 +309,10 @@ class MHCADDI(Model):
             d_readout=d_readout,
             n_head=n_head,
             n_prop_step=n_prop_step,
-            update_method=update_method,
             dropout=dropout,
         )
 
-        self.head_proj = nn.Linear(d_hid, d_hid, bias=False)
-        self.tail_proj = nn.Linear(d_hid, d_hid, bias=False)
-
-        nn.init.xavier_normal_(self.head_proj.weight)
-        nn.init.xavier_normal_(self.tail_proj.weight)
-
-        self.lbl_predict = nn.Linear(d_readout, n_lbls)
-
-        self.__score_fn = score_fn
-
-    @property
-    def score_fn(self):
-        """Do."""
-        return self.__score_fn
+        self.lbl_predict = nn.Linear(d_readout * 2, n_lbls)
 
     def forward(
         self,
@@ -350,7 +333,25 @@ class MHCADDI(Model):
         out_seg_i2,
         out_idx_j2,
     ) -> torch.FloatTensor:
-        """Do."""
+        """
+        :param seg_m1: Mapping from node id to graph id for the left drugs.
+        :param atom_type1: Atom types of the atoms in the left drug molecules.
+        :param atom_feat1: Features of the atoms in the left drug molecules.
+        :param bond_type1: Bond types in the left drug molecules.
+        :param inn_seg_i1: Heads of edges connecting atoms within the left drug molecules.
+        :param inn_idx_j1: Tails of edges connecting atoms within the left drug molecules.
+        :param out_seg_i1: Heads of edges connecting atoms between left and right drug molecules
+        :param out_idx_j1: Tails of edges connecting atoms between left and right drug molecules.
+        :param seg_m2:  Mapping from node id to graph id for the right drugs.
+        :param atom_type2: Atom types of the atoms in the right drug molecules.
+        :param atom_feat2: Features of the atoms in the right drug molecules..
+        :param bond_type2: Bond types in the right drug molecules.
+        :param inn_seg_i2: Heads of edges connecting atoms within the right drug molecules.
+        :param inn_idx_j2: Tails of edges connecting atoms within the right drug molecules.
+        :param out_seg_i2: Heads of edges connecting atoms between right and left drug molecules
+        :param out_idx_j2: Heads of edges connecting atoms between right and left drug molecules
+        :returns: A column vector of predicted scores.
+        """
         atom1 = self.dropout(self.atom_comp(atom_feat1, atom_type1))
         atom2 = self.dropout(self.atom_comp(atom_feat2, atom_type2))
 
@@ -374,38 +375,59 @@ class MHCADDI(Model):
             out_idx_j2,
         )
 
-        pred1 = self.lbl_predict(d1_vec)
-        pred2 = self.lbl_predict(d2_vec)
+        pred1 = self.lbl_predict(torch.cat([d1_vec, d2_vec], dim=1))
+        pred2 = self.lbl_predict(torch.cat([d2_vec, d1_vec], dim=1))
         return torch.sigmoid((pred1 + pred2) / 2)
 
     def atom_comp(self, atom_feat, atom_idx):
-        """Document."""
+        """Computes atom projection, a linear transformation of a learned atom embedding and the atom features
+        :param atom_feat: Atom input features
+        :param atom_idx: Index of atom type
+        """
         atom_emb = self.atom_emb(atom_idx)
 
         node = self.atom_proj(torch.cat([atom_emb, atom_feat], -1))
         return node
 
-    def cal_translation_score(self, head, tail, rel):
-        """Document."""
-        return torch.norm(head + rel - tail, dim=1)
+    def generate_outer_segmentation(self, graph_sizes_left, graph_sizes_right):
+        """Calculates all pairwise edges between the atoms in a set of drug pairs.
+        Example: Given two sets of drug sizes:
 
-    def generate_segmentation(self, graph_sizes_left, graph_sizes_right):
-        """Document."""
+        graph_sizes_left = torch.tensor([1, 2])
+        graph_sizes_right = torch.tensor([3, 4])
+
+        Here the drug pairs have sizes (1,3) and (2,4)
+
+        This results in:
+
+        out_seg_i = tensor([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])
+        out_idx_j = tensor([0, 1, 2, 3, 4, 5, 6, 3, 4, 5, 6])
+
+        :param graph_sizes_left: List of graph sizes in the left drug batch.
+        :param graph_sizes_right: List of graph sizes in the right drug batch.
+        :returns: Edge indicies
+        """
         interactions = graph_sizes_left * graph_sizes_right
 
-        graph_sizes_index_left = torch.repeat_interleave(graph_sizes_left, interactions)
-
-        main_index = torch.arange(0, interactions.sum())
-
         left_shifted_graph_size_cum_sum = torch.cumsum(graph_sizes_left, 0) - graph_sizes_left
-        shifted_combo = torch.cumsum(interactions, 0) - interactions
-
         shift_sums_left = torch.repeat_interleave(left_shifted_graph_size_cum_sum, interactions)
-        shift_interactions = torch.repeat_interleave(shifted_combo, interactions)
-        segmentation = (shift_sums_left + torch.fmod(main_index, graph_sizes_index_left)).view(-1, 1)
-        segmentation, _ = torch.sort(segmentation, dim=0)
-        out_index = torch.div(main_index - shift_interactions, graph_sizes_index_left, rounding_mode="floor")
-        return segmentation.squeeze(), out_index.squeeze()
+        out_seg_i = [
+            np.repeat(np.array(range(0, left_graph_size)), right_graph_size)
+            for left_graph_size, right_graph_size in zip(graph_sizes_left, graph_sizes_right)
+        ]
+        out_seg_i = functools.reduce(operator.iconcat, out_seg_i, [])
+        out_seg_i = torch.tensor(out_seg_i) + shift_sums_left
+
+        right_shifted_graph_size_cum_sum = torch.cumsum(graph_sizes_right, 0) - graph_sizes_right
+        shift_sums_right = torch.repeat_interleave(right_shifted_graph_size_cum_sum, interactions)
+        out_idx_j = [
+            list(range(0, right_graph_size)) * left_graph_size
+            for left_graph_size, right_graph_size in zip(graph_sizes_left, graph_sizes_right)
+        ]
+        out_idx_j = functools.reduce(operator.iconcat, out_idx_j, [])
+        out_idx_j = torch.tensor(out_idx_j) + shift_sums_right
+
+        return out_seg_i, out_idx_j
 
     def unpack(self, batch: DrugPairBatch):
         """Adjust drug pair batch to model design.
@@ -427,10 +449,11 @@ class MHCADDI(Model):
 
         seg_m1 = batch.drug_molecules_left.node2graph
         seg_m2 = batch.drug_molecules_right.node2graph
-        out_seg_i1, out_idx_j1 = self.generate_segmentation(
+
+        out_seg_i1, out_idx_j1 = self.generate_outer_segmentation(
             batch.drug_molecules_left.num_nodes, batch.drug_molecules_right.num_nodes
         )
-        out_seg_i2, out_idx_j2 = self.generate_segmentation(
+        out_seg_i2, out_idx_j2 = self.generate_outer_segmentation(
             batch.drug_molecules_right.num_nodes, batch.drug_molecules_left.num_nodes
         )
         return (
