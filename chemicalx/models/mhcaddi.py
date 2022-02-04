@@ -15,19 +15,25 @@ __all__ = [
 ]
 
 
-def segment_max(logit, n_seg, seg_i, idx_j):
+def segment_max(logit: torch.FloatTensor, n_seg: torch.LongTensor, seg_i: torch.LongTensor, idx_j: torch.LongTensor):
     max_seg_numel = idx_j.max().item() + 1
     seg_max = logit.new_full((n_seg, max_seg_numel), -np.inf)
     seg_max = seg_max.index_put_((seg_i, idx_j), logit).max(dim=1)[0]
     return seg_max[seg_i]
 
 
-def segment_sum(logit, n_seg, seg_i):
+def segment_sum(logit: torch.FloatTensor, n_seg: torch.LongTensor, seg_i: torch.LongTensor):
     norm = logit.new_zeros(n_seg).index_add(0, seg_i, logit)
     return norm[seg_i]
 
 
-def segment_softmax(logit, n_seg, seg_i, idx_j, temperature):
+def segment_softmax(
+    logit: torch.FloatTensor,
+    n_seg: torch.LongTensor,
+    seg_i: torch.LongTensor,
+    idx_j: torch.LongTensor,
+    temperature: torch.FloatTensor,
+):
     logit_max = segment_max(logit, n_seg, seg_i, idx_j).detach()
     logit = torch.exp((logit - logit_max) / temperature)
     logit_norm = segment_sum(logit, n_seg, seg_i)
@@ -35,7 +41,7 @@ def segment_softmax(logit, n_seg, seg_i, idx_j, temperature):
     return prob
 
 
-def segment_multihead_expand(seg_i, n_seg, n_head):
+def segment_multihead_expand(seg_i: torch.LongTensor, n_seg: torch.LongTensor, n_head: int):
     i_head_shift = n_seg * seg_i.new_tensor(torch.arange(n_head))
     seg_i = (seg_i.view(-1, 1) + i_head_shift.view(1, -1)).view(-1)
     return seg_i
@@ -393,7 +399,7 @@ class MHCADDI(Model):
         node = self.atom_proj(torch.cat([atom_emb, atom_feat], -1))
         return node
 
-    def generate_outer_segmentation(self, graph_sizes_left, graph_sizes_right):
+    def generate_outer_segmentation(self, graph_sizes_left: torch.LongTensor, graph_sizes_right: torch.LongTensor):
         """Calculate all pairwise edges between the atoms in a set of drug pairs.
 
         Example: Given two sets of drug sizes:
@@ -440,6 +446,9 @@ class MHCADDI(Model):
         :param batch: Molecular data in a drug pair batch.
         :returns: Tuple of data.
         """
+        assert batch.drug_molecules_left is not None
+        assert batch.drug_molecules_right is not None
+
         atom_type1 = batch.drug_molecules_left.atom_type
         bond_type1 = batch.drug_molecules_left.bond_type
         atom_feat1 = batch.drug_molecules_left.node_feature
@@ -478,4 +487,4 @@ class MHCADDI(Model):
             inn_idx_j2,
             out_seg_i2,
             out_idx_j2,
-        )
+        )  # type: ignore
