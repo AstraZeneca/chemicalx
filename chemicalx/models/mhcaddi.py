@@ -81,21 +81,27 @@ class MessagePassing(nn.Module):
         :param hidden_channels: Dimension of hidden layer
         :param dropout: Dropout probability
         """
-        super(MessagePassing, self).__init__()
-
-        dropout = nn.Dropout(p=dropout)
-
-        self.node_projection = nn.Sequential(nn.Linear(node_channels, hidden_channels, bias=False), dropout)
+        super().__init__()
+        self.node_projection = nn.Sequential(
+            nn.Linear(node_channels, hidden_channels, bias=False),
+            nn.Dropout(dropout),
+        )
         self.edge_projection = nn.Sequential(
             nn.Linear(edge_channels, hidden_channels),
             nn.LeakyReLU(),
-            dropout,
+            nn.Dropout(dropout),
             nn.Linear(hidden_channels, hidden_channels),
             nn.LeakyReLU(),
-            dropout,
+            nn.Dropout(dropout),
         )
 
-    def forward(self, nodes: torch.Tensor, edges: torch.Tensor, segmentation_index: torch.Tensor, index: torch.Tensor):
+    def forward(
+        self,
+        nodes: torch.FloatTensor,
+        edges: torch.FloatTensor,
+        segmentation_index: torch.LongTensor,
+        index: torch.LongTensor,
+    ) -> torch.FloatTensor:
         """Calculate forward pass of message passing network.
 
         :param nodes: Node feature matrix.
@@ -110,7 +116,9 @@ class MessagePassing(nn.Module):
         messages = self.message_aggregation(nodes, messages, segmentation_index)
         return messages
 
-    def message_composing(self, messages: torch.Tensor, edges: torch.Tensor, index: torch.Tensor):
+    def message_composing(
+        self, messages: torch.FloatTensor, edges: torch.FloatTensor, index: torch.LongTensor
+    ) -> torch.FloatTensor:
         """Compose message based by elementwise multiplication of edge and node projections.
 
         :param messages: Message matrix.
@@ -122,7 +130,9 @@ class MessagePassing(nn.Module):
         messages = messages * edges
         return messages
 
-    def message_aggregation(self, nodes: torch.Tensor, messages: torch.Tensor, segmentation_index: torch.Tensor):
+    def message_aggregation(
+        self, nodes: torch.FloatTensor, messages: torch.FloatTensor, segmentation_index: torch.LongTensor
+    ) -> torch.FloatTensor:
         """Aggregate the messages.
 
         :param nodes: Node feature matrix.
@@ -144,7 +154,7 @@ class CoAttention(nn.Module):
         :param output_channels: The number of output features.
         :param dropout: Dropout probability.
         """
-        super(CoAttention, self).__init__()
+        super().__init__()
         self.temperature = np.sqrt(input_channels)
 
         self.key_projection = nn.Linear(input_channels, input_channels, bias=False)
@@ -153,21 +163,21 @@ class CoAttention(nn.Module):
         nn.init.xavier_normal_(self.key_projection.weight)
         nn.init.xavier_normal_(self.value_projection.weight)
 
-        self.attention_dropout = nn.Dropout(p=dropout)
+        self.attention_dropout = nn.Dropout(dropout)
         self.softmax = nn.Softmax(dim=1)
 
         self.out_projection = nn.Sequential(
-            nn.Linear(input_channels, output_channels), nn.LeakyReLU(), nn.Dropout(p=dropout)
+            nn.Linear(input_channels, output_channels), nn.LeakyReLU(), nn.Dropout(dropout)
         )
 
     def forward(
         self,
-        node_left: torch.Tensor,
-        segmentation_index_left: torch.Tensor,
-        index_left: torch.Tensor,
-        node_right: torch.Tensor,
-        segmentation_index_right: torch.Tensor,
-        index_right: torch.Tensor,
+        node_left: torch.FloatTensor,
+        segmentation_index_left: torch.LongTensor,
+        index_left: torch.LongTensor,
+        node_right: torch.FloatTensor,
+        segmentation_index_right: torch.LongTensor,
+        index_right: torch.LongTensor,
     ):
         """Forward pass with the segmentation indices and node features.
 
@@ -219,7 +229,7 @@ class CoAttention(nn.Module):
 
 
 class CoAttentionMessagePassingNetwork(nn.Module):
-    """Coattention messge passing layer."""
+    """Coattention message passing layer."""
 
     def __init__(
         self,
@@ -233,7 +243,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         :param readout_channels: Readout channel number.
         :param dropout: Rate of dropout.
         """
-        super(CoAttentionMessagePassingNetwork, self).__init__()
+        super().__init__()
 
         self.message_passing = MessagePassing(
             node_channels=hidden_channels,
@@ -250,6 +260,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
 
         self.linear = nn.LayerNorm(hidden_channels)
 
+        # FIXME why is nn.LeakyReLU used inside init of Linear()
         self.prediction_readout_projection = nn.Linear(hidden_channels, readout_channels, nn.LeakyReLU())
 
     def update_fn(self, atom_features: torch.Tensor, inner_message: torch.Tensor, outer_message: torch.Tensor):
@@ -365,8 +376,8 @@ class MHCADDI(Model):
         :param output_channels: Number of labels.
         :param dropout: Dropout rate.
         """
-        super(MHCADDI, self).__init__()
-        self.dropout = nn.Dropout(p=dropout)
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
 
         self.atom_projection = nn.Linear(node_channels + atom_feature_channels, node_channels)
         self.atom_embedding = nn.Embedding(atom_type_channels, node_channels, padding_idx=0)
@@ -449,7 +460,8 @@ class MHCADDI(Model):
 
         prediction_left = self.head_layer(torch.cat([drug_left, drug_right], dim=1))
         prediction_right = self.head_layer(torch.cat([drug_right, drug_left], dim=1))
-        return torch.sigmoid((prediction_left + prediction_right) / 2)
+        prediction_mean = (prediction_left + prediction_right) / 2
+        return torch.sigmoid(prediction_mean)
 
     def atom_comp(self, atom_features: torch.Tensor, atom_index: torch.Tensor):
         """Compute atom projection, a linear transformation of a learned atom embedding and the atom features.
