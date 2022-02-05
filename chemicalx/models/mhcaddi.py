@@ -135,7 +135,8 @@ class CoAttention(nn.Module):
         :param index_right: Right side indices.
         :returns: Left and right side messages and edge indices.
         """
-        node_hidden_channels = node_left.size(1)
+        node_left_hidden_channels = node_left.size(1)
+        node_right_hidden_channels = node_right.size(1)
 
         segmentation_number_left = node_left.size(0)
         segmentation_number_right = node_right.size(0)
@@ -148,29 +149,29 @@ class CoAttention(nn.Module):
 
         translation = (node_left_center * node_right_center).sum(1)
 
+        # TODO factor out a helper function that can be applied to both sides to reduce code
         node_left_edge = self.attention_dropout(
             segment_softmax(
                 translation, segmentation_number_left, segmentation_index_left, index_left, self.temperature
             )
         )
+        node_left_edge = node_left_edge.view(-1, 1)
+        message_left = node_left.new_zeros((segmentation_number_left, node_left_hidden_channels)).index_add(
+            0, segmentation_index_left, node_left_edge * node_left_neighbor
+        )
+        message_graph_left = self.out_projection(message_left)
+
         node_right_edge = self.attention_dropout(
             segment_softmax(
                 translation, segmentation_number_right, segmentation_index_right, index_right, self.temperature
             )
         )
-
-        node_left_edge = node_left_edge.view(-1, 1)
         node_right_edge = node_right_edge.view(-1, 1)
-
-        message_left = node_left.new_zeros((segmentation_number_left, node_hidden_channels)).index_add(
-            0, segmentation_index_left, node_left_edge * node_left_neighbor
-        )
-        message_right = node_left.new_zeros((segmentation_number_right, node_hidden_channels)).index_add(
+        message_right = node_left.new_zeros((segmentation_number_right, node_right_hidden_channels)).index_add(
             0, segmentation_index_right, node_right_edge * node_right_neighbor
         )
-
-        message_graph_left = self.out_projection(message_left)
         message_graph_right = self.out_projection(message_right)
+
         return message_graph_left, message_graph_right
 
 
@@ -198,7 +199,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
             dropout=dropout,
         )
 
-        self.coattention = CoAttention(
+        self.co_attention = CoAttention(
             input_channels=hidden_channels,
             output_channels=hidden_channels,
             dropout=dropout,
@@ -233,15 +234,15 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         """Make a forward pass with the data.
 
         :param segmentation_molecule_left: Mapping from node id to graph id for the left drugs.
-        :param atom_left: Atom features on the left hand side.
-        :param bond_left: Bond features on the left hand side.
+        :param atom_left: Atom features on the left-hand side.
+        :param bond_left: Bond features on the left-hand side.
         :param inner_segmentation_index_left: Heads of edges connecting atoms within the left drug molecules.
         :param inner_index_left: Tails of edges connecting atoms within the left drug molecules.
         :param outer_segmentation_index_left: Heads of edges connecting atoms between left and right drug molecules
         :param outer_index_left: Tails of edges connecting atoms between left and right drug molecules.
         :param segmentation_molecule_right:  Mapping from node id to graph id for the right drugs.
-        :param atom_right: Atom features on the right hand side.
-        :param bond_right: Bond features on the right hand side.
+        :param atom_right: Atom features on the right-hand side.
+        :param bond_right: Bond features on the right-hand side.
         :param inner_segmentation_index_right: Heads of edges connecting atoms within the right drug molecules.
         :param inner_index_right: Tails of edges connecting atoms within the right drug molecules.
         :param outer_segmentation_index_right: Heads of edges connecting atoms between right and left drug molecules
@@ -253,7 +254,8 @@ class CoAttentionMessagePassingNetwork(nn.Module):
             atom_right, bond_right, inner_segmentation_index_right, inner_index_right
         )
 
-        outer_message_left, outer_message_right = self.coattention(
+        # TODO can this come before the calculation of inner messages? If so, it should
+        outer_message_left, outer_message_right = self.co_attention(
             atom_left,
             outer_segmentation_index_left,
             outer_index_left,
@@ -262,10 +264,11 @@ class CoAttentionMessagePassingNetwork(nn.Module):
             outer_index_right,
         )
 
+        # TODO make helper function that can de-duplicate code
         atom_left = self.linear(self.update_fn(atom_left, inner_message_left, outer_message_left))
-        atom_right = self.linear(self.update_fn(atom_right, inner_message_right, outer_message_right))
-
         graph_left = self.readout(atom_left, segmentation_molecule_left)
+
+        atom_right = self.linear(self.update_fn(atom_right, inner_message_right, outer_message_right))
         graph_right = self.readout(atom_right, segmentation_molecule_right)
 
         return graph_left, graph_right
@@ -374,6 +377,7 @@ class MHCADDI(Model):
         :param graph_sizes_right: Graph size vector on the right.
         :returns: A column vector of predicted scores.
         """
+        # TODO factor out duplicate code that can be applied independently to left and right sides
         outer_segmentation_index_left, outer_index_left = self.generate_outer_segmentation(
             graph_sizes_left, graph_sizes_right
         )
