@@ -188,7 +188,7 @@ class TestModels(unittest.TestCase):
 
     def test_mhcaddi(self):
         """Test MHCADDI."""
-        model = MHCADDI(d_atom_feat=69, n_atom_type=100, n_bond_type=12)
+        model = MHCADDI(atom_feature_channels=69, atom_type_channels=100, bond_type_channels=12)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
         model.train()

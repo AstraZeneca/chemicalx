@@ -8,12 +8,12 @@ from chemicalx.models.mhcaddi import MHCADDI
 def main():
     """Train and evaluate the DeepSynergy model."""
     dataset = TwoSides()
-    model = MHCADDI(d_atom_feat=69, n_atom_type=100, n_bond_type=12)
+    model = MHCADDI(atom_feature_channels=69, atom_type_channels=100, bond_type_channels=12)
 
     results = pipeline(
         dataset=dataset,
         model=model,
-        batch_size=128,
+        batch_size=2048,
         epochs=10,
         context_features=False,
         drug_features=True,
