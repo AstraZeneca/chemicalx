@@ -25,7 +25,6 @@ from typing import List, Optional
 
 import torch
 from torch import nn
-from torch.nn.functional import normalize
 from torchdrug.data import PackedGraph
 from torchdrug.layers import MLP, MaxReadout
 from torchdrug.models import GraphConvolutionalNetwork
@@ -33,6 +32,7 @@ from torchdrug.models import GraphConvolutionalNetwork
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
+from chemicalx.nn import Normalize
 
 __all__ = [
     "DeepDDS",
@@ -112,11 +112,14 @@ class DeepDDS(Model):
             fc_hidden_dims = [512, 128]
 
         # Cell feature extraction with MLP
-        self.cell_mlp = MLP(
-            input_dim=context_channels,
-            # Paper: [2048, 512, context_output_size]
-            # Code: [512, 256, context_output_size]
-            hidden_dims=[*context_hidden_dims, context_output_size],
+        self.cell_pre = nn.Sequential(
+            Normalize(p=2, dim=1),
+            MLP(
+                input_dim=context_channels,
+                # Paper: [2048, 512, context_output_size]
+                # Code: [512, 256, context_output_size]
+                hidden_dims=[*context_hidden_dims, context_output_size],
+            ),
         )
 
         # GCN
@@ -157,9 +160,15 @@ class DeepDDS(Model):
         return batch.context_features, batch.drug_molecules_left, batch.drug_molecules_right
 
     def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
+        # Run the GCN forward for the drugs: GCN -> Global Max Pool -> MLP
         features = self.drug_conv(molecules, molecules.data_dict["node_feature"])["node_feature"]
         features = self.drug_readout(molecules, features)
         return self.drug_mlp(features)
+
+    def _combine_sides(
+        self, context: torch.FloatTensor, left: torch.FloatTensor, right: torch.FloatTensor
+    ) -> torch.FloatTensor:
+        return torch.cat([context, left, right], dim=1)
 
     def forward(
         self, context_features: torch.FloatTensor, molecules_left: PackedGraph, molecules_right: PackedGraph
@@ -171,14 +180,12 @@ class DeepDDS(Model):
         :param molecules_right: A matrix of right drug features
         :returns: A vector of predicted synergy scores
         """
-        # Run the MLP forward for the cell line features
-        mlp_out = self.cell_mlp(normalize(context_features, p=2, dim=1))
+        context_features = self.cell_pre(context_features)
 
-        # Run the GCN forward for the drugs: GCN -> Global Max Pool -> MLP
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)
 
         # Concatenate the output of the MLP and the GNN
-        concat_in = torch.cat([mlp_out, features_left, features_right], dim=1)
+        concat_in = self._combine_sides(context_features, features_left, features_right)
 
         return self.final(concat_in)
