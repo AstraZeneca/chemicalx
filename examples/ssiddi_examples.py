@@ -1,6 +1,8 @@
+"""Example with SSI-DDI."""
+
 from chemicalx import pipeline
 from chemicalx.data import DrugCombDB
-from ssiddi import SSIDDI
+from chemicalx.models import SSIDDI
 
 
 def main():
