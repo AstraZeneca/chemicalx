@@ -66,7 +66,7 @@ def segment_softmax(
     logit_max = segment_max(logit, number_of_segments, segmentation_index, index).detach()
     logit = torch.exp((logit - logit_max) / temperature)
     logit_norm = segment_sum(logit, number_of_segments, segmentation_index)
-    prob = logit / (logit_norm + 1e-8)
+    prob = logit / (logit_norm + torch.finfo(logit_norm.dtype).eps)
     return prob
 
 
