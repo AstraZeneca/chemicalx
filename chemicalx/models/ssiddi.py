@@ -135,7 +135,7 @@ class SSIDDI(Model):
         self.net_norms = ModuleList()
 
         channels = molecule_channels
-        for _, (hidden_channel, head_number) in enumerate(zip(hidden_channels, head_number)):
+        for hidden_channel, head_number in zip(hidden_channels, head_number):
             self.blocks.append(SSIDDIBlock(head_number, channels, hidden_channel))
             self.net_norms.append(LayerNorm(hidden_channel))
             channels = hidden_channel
