@@ -145,6 +145,7 @@ def pipeline(
     model.train()
 
     loss = loss_cls(**(loss_kwargs or {}))
+
     losses = []
     train_start_time = time.time()
     for _epoch in trange(epochs):
