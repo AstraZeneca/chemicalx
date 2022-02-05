@@ -2,6 +2,7 @@
 
 import torch
 from torch.nn import LayerNorm
+import torch.nn.functional
 from torch.nn.modules.container import ModuleList
 from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphAttentionConv, MeanReadout
