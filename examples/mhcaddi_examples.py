@@ -1,4 +1,4 @@
-"""Example with DeepSynergy."""
+"""Example with MHCADDI."""
 
 from chemicalx import pipeline
 from chemicalx.data.datasetloader import TwoSides
@@ -6,7 +6,7 @@ from chemicalx.models.mhcaddi import MHCADDI
 
 
 def main():
-    """Train and evaluate the DeepSynergy model."""
+    """Train and evaluate the MHCADDI model."""
     dataset = TwoSides()
     model = MHCADDI(atom_feature_channels=69, atom_type_channels=100, bond_type_channels=12)
 

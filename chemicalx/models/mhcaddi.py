@@ -116,6 +116,27 @@ class CoAttention(nn.Module):
             nn.Linear(input_channels, output_channels), nn.LeakyReLU(), nn.Dropout(dropout)
         )
 
+    def _calculate_message(
+        self,
+        translation: torch.Tensor,
+        segmentation_number: torch.Tensor,
+        segmentation_index: torch.Tensor,
+        index: torch.Tensor,
+        node: torch.Tensor,
+        node_hidden_channels: torch.Tensor,
+        node_neighbor: torch.Tensor,
+    ):
+        """Calculate the outer message."""
+        node_edge = self.attention_dropout(
+            segment_softmax(translation, segmentation_number, segmentation_index, index, self.temperature)
+        )
+        node_edge = node_edge.view(-1, 1)
+        message = node.new_zeros((segmentation_number, node_hidden_channels)).index_add(
+            0, segmentation_index, node_edge * node_neighbor
+        )
+        message_graph = self.out_projection(message)
+        return message_graph
+
     def forward(
         self,
         node_left: torch.FloatTensor,
@@ -149,28 +170,24 @@ class CoAttention(nn.Module):
 
         translation = (node_left_center * node_right_center).sum(1)
 
-        # TODO factor out a helper function that can be applied to both sides to reduce code
-        node_left_edge = self.attention_dropout(
-            segment_softmax(
-                translation, segmentation_number_left, segmentation_index_left, index_left, self.temperature
-            )
+        message_graph_left = self._calculate_message(
+            translation,
+            segmentation_number_left,
+            segmentation_index_left,
+            index_left,
+            node_left,
+            node_left_hidden_channels,
+            node_left_neighbor,
         )
-        node_left_edge = node_left_edge.view(-1, 1)
-        message_left = node_left.new_zeros((segmentation_number_left, node_left_hidden_channels)).index_add(
-            0, segmentation_index_left, node_left_edge * node_left_neighbor
+        message_graph_right = self._calculate_message(
+            translation,
+            segmentation_number_right,
+            segmentation_index_right,
+            index_right,
+            node_right,
+            node_right_hidden_channels,
+            node_right_neighbor,
         )
-        message_graph_left = self.out_projection(message_left)
-
-        node_right_edge = self.attention_dropout(
-            segment_softmax(
-                translation, segmentation_number_right, segmentation_index_right, index_right, self.temperature
-            )
-        )
-        node_right_edge = node_right_edge.view(-1, 1)
-        message_right = node_left.new_zeros((segmentation_number_right, node_right_hidden_channels)).index_add(
-            0, segmentation_index_right, node_right_edge * node_right_neighbor
-        )
-        message_graph_right = self.out_projection(message_right)
 
         return message_graph_left, message_graph_right
 
@@ -206,13 +223,22 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         )
 
         self.linear = nn.LayerNorm(hidden_channels)
+        self.leaky_relu = nn.LeakyReLU()
 
-        # FIXME why is nn.LeakyReLU used inside init of Linear()
-        self.prediction_readout_projection = nn.Linear(hidden_channels, readout_channels, nn.LeakyReLU())
+        self.prediction_readout_projection = nn.Linear(hidden_channels, readout_channels)
 
-    def update_fn(self, atom_features: torch.Tensor, inner_message: torch.Tensor, outer_message: torch.Tensor):
-        """Update the representations."""
-        return atom_features + inner_message + outer_message
+    def _get_graph_features(
+        self,
+        atom_features: torch.Tensor,
+        inner_message: torch.Tensor,
+        outer_message: torch.Tensor,
+        segmentation_molecule: torch.Tensor,
+    ):
+        """Get the graph representations."""
+        message = atom_features + inner_message + outer_message
+        message = self.linear(message)
+        graph_features = self.readout(message, segmentation_molecule)
+        return graph_features
 
     def forward(
         self,
@@ -249,12 +275,6 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         :param outer_index_right: Heads of edges connecting atoms between right and left drug molecules
         :returns: Graph level representations.
         """
-        inner_message_left = self.message_passing(atom_left, bond_left, inner_segmentation_index_left, inner_index_left)
-        inner_message_right = self.message_passing(
-            atom_right, bond_right, inner_segmentation_index_right, inner_index_right
-        )
-
-        # TODO can this come before the calculation of inner messages? If so, it should
         outer_message_left, outer_message_right = self.co_attention(
             atom_left,
             outer_segmentation_index_left,
@@ -264,13 +284,16 @@ class CoAttentionMessagePassingNetwork(nn.Module):
             outer_index_right,
         )
 
-        # TODO make helper function that can de-duplicate code
-        atom_left = self.linear(self.update_fn(atom_left, inner_message_left, outer_message_left))
-        graph_left = self.readout(atom_left, segmentation_molecule_left)
-
-        atom_right = self.linear(self.update_fn(atom_right, inner_message_right, outer_message_right))
-        graph_right = self.readout(atom_right, segmentation_molecule_right)
-
+        inner_message_left = self.message_passing(atom_left, bond_left, inner_segmentation_index_left, inner_index_left)
+        inner_message_right = self.message_passing(
+            atom_right, bond_right, inner_segmentation_index_right, inner_index_right
+        )
+        graph_left = self._get_graph_features(
+            atom_left, inner_message_left, outer_message_left, segmentation_molecule_left
+        )
+        graph_right = self._get_graph_features(
+            atom_right, inner_message_right, outer_message_right, segmentation_molecule_right
+        )
         return graph_left, graph_right
 
     def readout(self, atom_features: torch.Tensor, segmentation_molecule: torch.Tensor):
@@ -282,7 +305,7 @@ class CoAttentionMessagePassingNetwork(nn.Module):
         """
         segmentation_max = segmentation_molecule.max() + 1
 
-        atom_features = self.prediction_readout_projection(atom_features)
+        atom_features = self.leaky_relu(self.prediction_readout_projection(atom_features))
         hidden_channels = atom_features.size(1)
 
         readout_vectors = atom_features.new_zeros((segmentation_max, hidden_channels)).index_add(
@@ -342,6 +365,22 @@ class MHCADDI(Model):
 
         self.head_layer = nn.Linear(readout_channels * 2, output_channels)
 
+    def _get_indices_features(
+        self,
+        graph_sizes_prime: torch.LongTensor,
+        graph_sizes_non_prime: torch.LongTensor,
+        atom_features: torch.FloatTensor,
+        atom_type: torch.FloatTensor,
+        bond_type: torch.FloatTensor,
+    ):
+        outer_segmentation_index, outer_index = self.generate_outer_segmentation(
+            graph_sizes_prime, graph_sizes_non_prime
+        )
+
+        atom = self.dropout(self.atom_comp(atom_features, atom_type))
+        bond = self.dropout(self.bond_embedding(bond_type))
+        return outer_segmentation_index, outer_index, atom, bond
+
     def forward(
         self,
         segmentation_molecule_left: torch.Tensor,
@@ -377,19 +416,12 @@ class MHCADDI(Model):
         :param graph_sizes_right: Graph size vector on the right.
         :returns: A column vector of predicted scores.
         """
-        # TODO factor out duplicate code that can be applied independently to left and right sides
-        outer_segmentation_index_left, outer_index_left = self.generate_outer_segmentation(
-            graph_sizes_left, graph_sizes_right
+        outer_segmentation_index_left, outer_index_left, atom_left, bond_left = self._get_indices_features(
+            graph_sizes_left, graph_sizes_right, atom_features_left, atom_type_left, bond_type_left
         )
-        outer_segmentation_index_right, outer_index_right = self.generate_outer_segmentation(
-            graph_sizes_right, graph_sizes_left
+        outer_segmentation_index_right, outer_index_right, atom_right, bond_right = self._get_indices_features(
+            graph_sizes_right, graph_sizes_left, atom_features_right, atom_type_right, bond_type_right
         )
-
-        atom_left = self.dropout(self.atom_comp(atom_features_left, atom_type_left))
-        atom_right = self.dropout(self.atom_comp(atom_features_right, atom_type_right))
-
-        bond_left = self.dropout(self.bond_embedding(bond_type_left))
-        bond_right = self.dropout(self.bond_embedding(bond_type_right))
 
         drug_left, drug_right = self.encoder(
             segmentation_molecule_left,
