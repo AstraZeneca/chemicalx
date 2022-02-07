@@ -16,7 +16,7 @@ __all__ = [
 
 
 class EmbeddingLayer(torch.nn.Module):
-    """Attentional embedding layer."""
+    """Attention layer."""
 
     def __init__(self, feature_number: int):
         """Initialize the relational embedding layer.
@@ -24,12 +24,14 @@ class EmbeddingLayer(torch.nn.Module):
         :param feature_number: Number of features.
         """
         super().__init__()
-        self.feature_number = feature_number
-        self.embedding = torch.nn.Embedding(1, feature_number * feature_number)
-        torch.nn.init.xavier_uniform_(self.embedding.weight)
+        self.weights = torch.nn.Parameter(torch.zeros(feature_number, feature_number))
+        torch.nn.init.xavier_uniform_(self.weights)
 
     def forward(
-        self, left_representations: torch.Tensor, right_representations: torch.Tensor, alpha_scores: torch.Tensor
+        self,
+        left_representations: torch.FloatTensor,
+        right_representations: torch.FloatTensor,
+        alpha_scores: torch.FloatTensor,
     ):
         """
         Make a forward pass with the drug representations.
@@ -39,12 +41,12 @@ class EmbeddingLayer(torch.nn.Module):
         :param alpha_scores: Attention scores.
         :returns: Positive label scores vector.
         """
-        attention = torch.nn.functional.normalize(self.embedding(torch.tensor(0)), dim=-1)
+        attention = torch.nn.functional.normalize(self.weights, dim=-1)
         left_representations = torch.nn.functional.normalize(left_representations, dim=-1)
         right_representations = torch.nn.functional.normalize(right_representations, dim=-1)
-        attention = attention.view(-1, self.feature_number, self.feature_number)
+        attention = attention.view(-1, self.weights.shape[0], self.weights.shape[1])
         scores = alpha_scores * (left_representations @ attention @ right_representations.transpose(-2, -1))
-        scores = scores.sum(dim=(-2, -1))
+        scores = scores.sum(dim=(-2, -1)).view(-1, 1)
         return scores
 
 
@@ -61,6 +63,7 @@ class DrugDrugAttentionLayer(torch.nn.Module):
         self.weight_key = torch.nn.Parameter(torch.zeros(feature_number, feature_number // 2))
         self.bias = torch.nn.Parameter(torch.zeros(feature_number // 2))
         self.attention = torch.nn.Parameter(torch.zeros(feature_number // 2))
+        self.tanh = torch.nn.Tanh()
 
         torch.nn.init.xavier_uniform_(self.weight_query)
         torch.nn.init.xavier_uniform_(self.weight_key)
@@ -77,7 +80,7 @@ class DrugDrugAttentionLayer(torch.nn.Module):
         keys = left_representations @ self.weight_key
         queries = right_representations @ self.weight_query
         e_activations = queries.unsqueeze(-3) + keys.unsqueeze(-2) + self.bias
-        attentions = torch.tanh(e_activations) @ self.attention
+        attentions = self.tanh(e_activations) @ self.attention
         return attentions
 
 
@@ -176,4 +179,4 @@ class SSIDDI(Model):
         representation_right = torch.stack(representation_right, dim=-2)
         attentions = self.co_attention(representation_left, representation_right)
         scores = torch.sigmoid(self.relational_embedding(representation_left, representation_right, attentions))
-        return scores.view(-1, 1)
+        return scores
