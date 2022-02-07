@@ -80,16 +80,17 @@ def to_device(objects, device):
         A list of objects that have been transferred to the passed device
     """
     # is iterating here causing performance slow down? implement .to(device) within model.unpack() instead?
+    device_objects = []
     for o in objects:
         if hasattr(o, "to"):
-            o.to(device)
+            device_objects.append(o.to(device))
         elif hasattr(o, "cuda"):
             if device.type == "gpu":
-                o.cuda(device)  # will this enable multi-gpu? or place it on a single gpu?
+                device_objects.append(o.cuda(device))  # will this enable multi-gpu? or place it on a single gpu?
             elif device.type == "cpu":
-                o.cpu()
+                device_objects.append(o.cpu())
 
-    return objects
+    return device_objects
 
 
 def pipeline(
