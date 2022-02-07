@@ -9,13 +9,13 @@ from typing import Any, List, Mapping, Optional, Sequence, Type, Union
 
 import pandas as pd
 import torch
+from accelerate import Accelerator
 from class_resolver import FunctionResolver, HintOrType
 from sklearn.metrics import mean_absolute_error, mean_squared_error, roc_auc_score
 from tabulate import tabulate
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
 from tqdm import trange
-from accelerate import Accelerator
 
 from chemicalx.data import DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
@@ -70,7 +70,7 @@ class Result:
 
 
 def to_device(objects, device):
-    """Place objects on a certain device (e.g cpu or gpu)
+    """Place objects on a certain device (e.g cpu or gpu).
 
     :param objects:
         The objects to be place on the given device
@@ -79,8 +79,7 @@ def to_device(objects, device):
     :returns:
         A list of objects that have been transferred to the passed device
     """
-
-    # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+    # is iterating here causing performance slow down? implement .to(device) within model.unpack() instead?
     for o in objects:
         if hasattr(o, "to"):
             o.to(device)
