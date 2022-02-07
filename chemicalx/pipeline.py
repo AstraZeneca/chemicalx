@@ -1,5 +1,6 @@
 """A collection of full training and evaluation pipelines."""
 
+import collections.abc
 import json
 import time
 from dataclasses import dataclass
@@ -164,6 +165,8 @@ def pipeline(
     predictions = []
     for batch in test_generator:
         prediction = model(*model.unpack(batch))
+        if isinstance(prediction, collections.abc.Sequence):
+            prediction = prediction[0]
         prediction = prediction.detach().cpu().numpy()
         identifiers = batch.identifiers
         identifiers["prediction"] = prediction

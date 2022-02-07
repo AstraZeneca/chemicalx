@@ -1,6 +1,7 @@
 """An implementation of the SSI-DDI model."""
 
 import torch
+import torch.nn.functional
 from torch.nn import LayerNorm
 from torch.nn.modules.container import ModuleList
 from torchdrug.data import PackedGraph
@@ -138,7 +139,7 @@ class SSIDDI(Model):
         self.net_norms = ModuleList()
 
         channels = molecule_channels
-        for _, (hidden_channel, head_number) in enumerate(zip(hidden_channels, head_number)):
+        for hidden_channel, head_number in zip(hidden_channels, head_number):
             self.blocks.append(SSIDDIBlock(head_number, channels, hidden_channel))
             self.net_norms.append(LayerNorm(hidden_channel))
             channels = hidden_channel
@@ -153,6 +154,15 @@ class SSIDDI(Model):
             batch.drug_molecules_right,
         )
 
+    def _forward_molecules(self, molecules: PackedGraph):
+        molecules.node_feature = self.initial_norm(molecules.node_feature)
+        representation = []
+        for block, net_norm in zip(self.blocks, self.net_norms):
+            molecules, pooled_hidden_left = block(molecules)
+            representation.append(pooled_hidden_left)
+            molecules.node_feature = torch.nn.functional.elu(net_norm(molecules.node_feature))
+        return torch.stack(representation, dim=-2)
+
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """Run a forward pass of the SSI-DDI model.
 
@@ -160,23 +170,8 @@ class SSIDDI(Model):
         :param molecules_right: Batched molecules for the right side drugs.
         :returns: A column vector of predicted synergy scores.
         """
-        molecules_left.node_feature = self.initial_norm(molecules_left.node_feature)
-        molecules_right.node_feature = self.initial_norm(molecules_right.node_feature)
-
-        representation_left, representation_right = [], []
-
-        for i, block in enumerate(self.blocks):
-            molecules_left, pooled_hidden_left = block(molecules_left)
-            molecules_left, pooled_hidden_right = block(molecules_right)
-
-            representation_left.append(pooled_hidden_left)
-            representation_right.append(pooled_hidden_right)
-
-            molecules_left.node_feature = torch.nn.functional.elu(self.net_norms[i](molecules_left.node_feature))
-            molecules_right.node_feature = torch.nn.functional.elu(self.net_norms[i](molecules_right.node_feature))
-
-        representation_left = torch.stack(representation_left, dim=-2)
-        representation_right = torch.stack(representation_right, dim=-2)
-        attentions = self.co_attention(representation_left, representation_right)
-        scores = torch.sigmoid(self.relational_embedding(representation_left, representation_right, attentions))
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
+        attentions = self.co_attention(features_left, features_right)
+        scores = torch.sigmoid(self.relational_embedding(features_left, features_right, attentions))
         return scores
