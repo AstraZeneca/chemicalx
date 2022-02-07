@@ -26,10 +26,11 @@ class CASTER(Model):
         self,
         *,
         drug_channels: int,
-        encoder_hidden_channels: int = 500,
-        encoder_output_channels: int = 50,
-        decoder_hidden_channels: int = 500,
-        hidden_channels: int = 1024,
+        encoder_hidden_channels: int = 32,
+        encoder_output_channels: int = 32,
+        decoder_hidden_channels: int = 32,
+        hidden_channels: int = 32,
+        out_hidden_channels: int = 32,
         out_channels: int = 1,
         lambda3: float = 1e-5,
         magnifying_factor: int = 100,
@@ -42,6 +43,7 @@ class CASTER(Model):
         :param encoder_output_channels: The number of output layer neurons in the encoder module.
         :param decoder_hidden_channels: The number of hidden layer neurons in the decoder module.
         :param hidden_channels: The number of hidden layer neurons in the predictor module.
+        :param out_hidden_channels: The last hidden layer channels before output.
         :param out_channels: The number of output channels.
         :param lambda3: regularisation coefficient in the dictionary encoder module.
         :param magnifying_factor: The magnifying factor coefficient applied to the predictor module input.
@@ -74,10 +76,9 @@ class CASTER(Model):
             if i < 5:
                 predictor_layers.append(torch.nn.Linear(hidden_channels, hidden_channels))
             else:
-                # in the original paper, the output of the last hidden layer before the output was fixed at 64 channels
-                predictor_layers.append(torch.nn.Linear(hidden_channels, 64))
+                predictor_layers.append(torch.nn.Linear(hidden_channels, out_hidden_channels))
             predictor_layers.append(torch.nn.ReLU(True))
-        predictor_layers.append(torch.nn.Linear(64, out_channels))
+        predictor_layers.append(torch.nn.Linear(out_hidden_channels, out_channels))
         predictor_layers.append(torch.nn.Sigmoid())
         self.predictor = torch.nn.Sequential(*predictor_layers)
 
