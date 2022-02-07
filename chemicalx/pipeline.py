@@ -69,6 +69,30 @@ class Result:
         )
 
 
+def to_device(objects, device):
+    """Place objects on a certain device (e.g cpu or gpu)
+
+    :param objects:
+        The objects to be place on the given device
+    :param device:
+        The device to place the objects on
+    :returns:
+        A list of objects that have been transferred to the passed device
+    """
+
+    # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+    for o in objects:
+        if hasattr(o, "to"):
+            o.to(device)
+        elif hasattr(o, "cuda"):
+            if device.type == "gpu":
+                o.cuda(device)  # will this enable multi-gpu? or place it on a single gpu?
+            elif device.type == "cpu":
+                o.cpu()
+
+    return objects
+
+
 def pipeline(
     *,
     dataset: HintOrType[DatasetLoader],
@@ -160,9 +184,8 @@ def pipeline(
     for _epoch in trange(epochs):
         for batch in train_generator:
             optimizer.zero_grad()
-            device_batch = (
-                x.to(device) for x in model.unpack(batch)
-            )  # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+
+            device_batch = to_device(model.unpack(batch), device)
             prediction = model(*device_batch)
             loss_value = loss(prediction, batch.labels.to(device))
             losses.append(loss_value.item())
@@ -175,9 +198,8 @@ def pipeline(
     evaluation_start_time = time.time()
     predictions = []
     for batch in test_generator:
-        device_batch = (
-            x.to(device) for x in model.unpack(batch)
-        )  # is iterating here causing slow down? implement .to(device) within model.unpack() instead?
+        device_batch = to_device(model.unpack(batch), device)
+
         prediction = model(*device_batch)
         if isinstance(prediction, collections.abc.Sequence):
             prediction = prediction[0]
