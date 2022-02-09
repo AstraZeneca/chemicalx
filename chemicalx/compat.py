@@ -6,6 +6,7 @@ from torch.types import Device
 
 __all__ = [
     "PackedGraph",
+    "Graph",
 ]
 
 
@@ -34,3 +35,9 @@ class PackedGraph(torchdrug.data.PackedGraph):
                 raise NotImplementedError
         else:
             raise TypeError
+
+
+class Graph(torchdrug.data.Graph):
+    """A compatibility layer that makes appropriate packed graphs."""
+
+    packed_type = PackedGraph

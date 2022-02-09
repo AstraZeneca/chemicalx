@@ -4,9 +4,9 @@ from collections import UserDict
 from typing import Dict, Iterable, Mapping, Union
 
 import torch
-from torchdrug.data import Graph, Molecule
+from torchdrug.data import Molecule
 
-from chemicalx.compat import PackedGraph
+from chemicalx.compat import Graph, PackedGraph
 
 __all__ = [
     "DrugFeatureSet",
@@ -43,5 +43,4 @@ class DrugFeatureSet(UserDict, Mapping[str, Mapping[str, Union[torch.FloatTensor
         :param drugs: A list of drug identifiers.
         :returns: The molecules batched together for message passing.
         """
-        # TODO hack this
         return Graph.pack([self.data[drug]["molecule"] for drug in drugs])
