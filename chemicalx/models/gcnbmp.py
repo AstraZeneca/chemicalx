@@ -10,8 +10,8 @@ from torch.fft import fft, ifft
 from torch.nn import functional as F  # noqa:N812
 from torch_scatter import scatter_add
 from torchdrug import core, layers
-from torchdrug.data import PackedGraph
 
+from chemicalx.compat import PackedGraph
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model

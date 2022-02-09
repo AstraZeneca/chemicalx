@@ -6,8 +6,8 @@ from typing import Iterable, Iterator, Optional, Sequence
 import numpy as np
 import pandas as pd
 import torch
-from torchdrug.data import PackedGraph
 
+from .compat import PackedGraph
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
 from .drugpairbatch import DrugPairBatch

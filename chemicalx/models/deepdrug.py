@@ -2,9 +2,9 @@
 
 import torch
 from torch import nn
-from torchdrug.data import PackedGraph
 from torchdrug.layers import GraphConv, MaxReadout
 
+from chemicalx.compat import PackedGraph
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
