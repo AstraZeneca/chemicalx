@@ -77,7 +77,7 @@ def pipeline(
     optimizer_kwargs: Optional[Mapping[str, Any]] = None,
     loss_cls: Type[_Loss] = torch.nn.BCELoss,
     loss_kwargs: Optional[Mapping[str, Any]] = None,
-    batch_size: int = 5120,
+    batch_size: int = 512,
     epochs: int,
     context_features: bool,
     drug_features: bool,
