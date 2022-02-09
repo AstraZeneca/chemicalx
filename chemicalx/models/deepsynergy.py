@@ -12,7 +12,7 @@ __all__ = [
 
 
 class DeepSynergy(Model):
-    r"""The DeepSynergy model from [preuer2018]_.
+    r"""An implementation of the DeepSynergy model from [preuer2018]_.
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/16
 
