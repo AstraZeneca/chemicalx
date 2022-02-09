@@ -16,7 +16,7 @@ __all__ = [
 
 
 class EPGCNDS(Model):
-    r"""The EPGCN-DS model from [sun2020]_.
+    r"""An implementation of the EPGCN-DS model from [sun2020]_.
 
     .. seealso:: This model was suggested in https://github.com/AstraZeneca/chemicalx/issues/22
 
