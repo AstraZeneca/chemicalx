@@ -1,6 +1,6 @@
 """An implementation of the GCNBMP model."""
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, cast
 
 import torch
 import torchdrug
@@ -196,8 +196,8 @@ class GCNBMP(Model):
     def unpack(self, batch: DrugPairBatch) -> Tuple[PackedGraph, PackedGraph]:
         """Return the left and right drugs PackedGraphs."""
         return (
-            batch.drug_molecules_left,
-            batch.drug_molecules_right,
+            cast(PackedGraph, batch.drug_molecules_left),
+            cast(PackedGraph, batch.drug_molecules_right),
         )
 
     def encoder_pass(self, molecules: PackedGraph) -> torch.FloatTensor:
