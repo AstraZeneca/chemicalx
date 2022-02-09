@@ -366,20 +366,16 @@ class MHCADDI(Model):
 
         self.head_layer = nn.Linear(readout_channels * 2, output_channels)
 
-    def _get_indices_features(
+    def _get_molecule_features(
         self,
-        graph_sizes_prime: torch.LongTensor,
-        graph_sizes_non_prime: torch.LongTensor,
-        atom_features: torch.FloatTensor,
-        atom_type: torch.FloatTensor,
-        bond_type: torch.FloatTensor,
+        drug_molecules_primary: PackedGraph,
+        drug_molecules_secondary: PackedGraph,
     ):
         outer_segmentation_index, outer_index = self.generate_outer_segmentation(
-            graph_sizes_prime, graph_sizes_non_prime
+            drug_molecules_primary.num_nodes, drug_molecules_secondary.num_nodes
         )
-
-        atom = self.dropout(self.atom_comp(atom_features, atom_type))
-        bond = self.dropout(self.bond_embedding(bond_type))
+        atom = self.dropout(self.atom_comp(drug_molecules_primary.node_feature, drug_molecules_primary.atom_type))
+        bond = self.dropout(self.bond_embedding(drug_molecules_primary.bond_type))
         return outer_segmentation_index, outer_index, atom, bond
 
     def unpack(self, batch: DrugPairBatch):
@@ -399,50 +395,26 @@ class MHCADDI(Model):
         drug_molecules_right: PackedGraph,
     ) -> torch.FloatTensor:
         """Forward pass with the data."""
-        segmentation_molecule_left = drug_molecules_left.node2graph
-        atom_type_left = drug_molecules_left.atom_type
-        atom_features_left = drug_molecules_left.node_feature
-        bond_type_left = drug_molecules_left.bond_type
-        inner_segmentation_index_left = drug_molecules_left.edge_list[:, 0]
-        inner_index_left = drug_molecules_left.edge_list[:, 1]
-        graph_sizes_left = drug_molecules_left.num_nodes
-
-        segmentation_molecule_right = drug_molecules_right.node2graph
-        atom_type_right = drug_molecules_right.atom_type
-        atom_features_right = drug_molecules_right.node_feature
-        bond_type_right = drug_molecules_right.bond_type
-        inner_segmentation_index_right = drug_molecules_right.edge_list[:, 0]
-        inner_index_right = drug_molecules_right.edge_list[:, 1]
-        graph_sizes_right = drug_molecules_right.num_nodes
-
-        outer_segmentation_index_left, outer_index_left, atom_left, bond_left = self._get_indices_features(
-            graph_sizes_left,
-            graph_sizes_right,
-            atom_features_left,
-            atom_type_left,
-            bond_type_left,
+        outer_segmentation_index_left, outer_index_left, atom_left, bond_left = self._get_molecule_features(
+            drug_molecules_left, drug_molecules_right
         )
-        outer_segmentation_index_right, outer_index_right, atom_right, bond_right = self._get_indices_features(
-            graph_sizes_right,
-            graph_sizes_left,
-            atom_features_right,
-            atom_type_right,
-            bond_type_right,
+        outer_segmentation_index_right, outer_index_right, atom_right, bond_right = self._get_molecule_features(
+            drug_molecules_right, drug_molecules_left
         )
 
         drug_left, drug_right = self.encoder(
-            segmentation_molecule_left,
+            drug_molecules_left.node2graph,
             atom_left,
             bond_left,
-            inner_segmentation_index_left,
-            inner_index_left,
+            drug_molecules_left.edge_list[:, 0],
+            drug_molecules_left.edge_list[:, 1],
             outer_segmentation_index_left,
             outer_index_left,
-            segmentation_molecule_right,
+            drug_molecules_right.node2graph,
             atom_right,
             bond_right,
-            inner_segmentation_index_right,
-            inner_index_right,
+            drug_molecules_right.edge_list[:, 0],
+            drug_molecules_right.edge_list[:, 1],
             outer_segmentation_index_right,
             outer_index_right,
         )
