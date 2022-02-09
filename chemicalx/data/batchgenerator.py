@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 import torch
 
-from .compat import PackedGraph
 from .contextfeatureset import ContextFeatureSet
 from .drugfeatureset import DrugFeatureSet
 from .drugpairbatch import DrugPairBatch
 from .labeledtriples import LabeledTriples
+from ..compat import PackedGraph
 
 __all__ = [
     "BatchGenerator",
