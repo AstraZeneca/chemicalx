@@ -44,7 +44,6 @@ class MRGNN(Model):
         :param out_channels: The number of output channels.
         """
         super().__init__()
-        print()
         self.graph_convolutions = torch.nn.ModuleList()
         self.graph_convolutions.append(GraphConvolutionalNetwork(molecule_channels, hidden_channels))
         for _ in range(1, layer_count):
@@ -52,8 +51,14 @@ class MRGNN(Model):
         self.border_rnn = torch.nn.LSTM(hidden_channels, hidden_channels, 1)
         self.middle_rnn = torch.nn.LSTM(2 * hidden_channels, 2 * hidden_channels, 1)
         self.readout = MeanReadout()
-        self.bottleneck = torch.nn.Sequential(torch.nn.Linear(6 * hidden_channels, middle_channels), torch.nn.ReLU())
-        self.final = torch.nn.Sequential(torch.nn.Linear(middle_channels, out_channels), torch.nn.Sigmoid())
+        self.final = torch.nn.Sequential(
+            # First two are the "bottleneck"
+            torch.nn.Linear(6 * hidden_channels, middle_channels),
+            torch.nn.ReLU(),
+            # Second to are the "final"
+            torch.nn.Linear(middle_channels, out_channels),
+            torch.nn.Sigmoid(),
+        )
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left molecular graph and right molecular graph."""
@@ -64,7 +69,7 @@ class MRGNN(Model):
 
     def _forward_molecules(
         self,
-        index: int,
+        conv: GraphConvolutionalNetwork,
         molecules: PackedGraph,
         gcn_hidden: torch.FloatTensor,
         states: Any,
@@ -77,7 +82,7 @@ class MRGNN(Model):
         :param states: The hidden and cell states of the previous recurrent block.
         :returns: New graph convolutional and recurrent output, states and graph level features.
         """
-        gcn_hidden = self.graph_convolutions[index](molecules, gcn_hidden)["node_feature"]
+        gcn_hidden = conv(molecules, gcn_hidden)["node_feature"]
         rnn_out, (hidden_state, cell_state) = self.border_rnn(gcn_hidden[None, :, :], states)
         rnn_out = rnn_out.squeeze()
         graph_level = self.readout(molecules, gcn_hidden)
@@ -93,13 +98,12 @@ class MRGNN(Model):
         gcn_hidden_left = molecules_left.data_dict["node_feature"]
         gcn_hidden_right = molecules_right.data_dict["node_feature"]
         left_states, right_states, shared_states = None, None, None
-        for index, _ in enumerate(self.graph_convolutions):
-
+        for conv in self.graph_convolutions:
             gcn_hidden_left, rnn_out_left, left_states, graph_level_left = self._forward_molecules(
-                index, molecules_left, gcn_hidden_left, left_states
+                conv, molecules_left, gcn_hidden_left, left_states
             )
             gcn_hidden_right, rnn_out_right, right_states, graph_level_right = self._forward_molecules(
-                index, molecules_right, gcn_hidden_right, right_states
+                conv, molecules_right, gcn_hidden_right, right_states
             )
 
             shared_graph_level = torch.cat([graph_level_left, graph_level_right], dim=1)
@@ -109,6 +113,5 @@ class MRGNN(Model):
         rnn_pooled_right = self.readout(molecules_right, rnn_out_right)
         shared_out = shared_out.squeeze()
         out = torch.cat([shared_graph_level, shared_out, rnn_pooled_left, rnn_pooled_right], dim=1)
-        out = self.bottleneck(out)
         out = self.final(out)
         return out
