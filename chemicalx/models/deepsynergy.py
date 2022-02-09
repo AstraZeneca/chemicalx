@@ -42,7 +42,7 @@ class DeepSynergy(Model):
         :param dropout_rate: The rate of dropout before the scoring head is used.
         """
         super().__init__()
-        self.layers = nn.Sequential(
+        self.final = nn.Sequential(
             nn.Linear(drug_channels + drug_channels + context_channels, input_hidden_channels),
             nn.ReLU(),
             nn.Linear(input_hidden_channels, middle_hidden_channels),
@@ -76,4 +76,4 @@ class DeepSynergy(Model):
         :returns: A column vector of predicted synergy scores.
         """
         hidden = torch.cat([context_features, drug_features_left, drug_features_right], dim=1)
-        return self.layers(hidden)
+        return self.final(hidden)

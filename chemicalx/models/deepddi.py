@@ -38,14 +38,14 @@ class DeepDDI(Model):
         """
         super().__init__()
         assert hidden_layers_num > 1
-        dnn = [
+        layers = [
             nn.Linear(drug_channels * 2, hidden_channels),
             nn.ReLU(),
             nn.BatchNorm1d(num_features=hidden_channels, affine=True, momentum=None),
             nn.ReLU(),
         ]
         for _ in range(hidden_layers_num - 1):
-            dnn.extend(
+            layers.extend(
                 [
                     nn.Linear(hidden_channels, hidden_channels),
                     nn.ReLU(),
@@ -53,8 +53,8 @@ class DeepDDI(Model):
                     nn.ReLU(),
                 ]
             )
-        dnn.extend([nn.Linear(hidden_channels, out_channels), nn.Sigmoid()])
-        self.dnn = nn.Sequential(*dnn)
+        layers.extend([nn.Linear(hidden_channels, out_channels), nn.Sigmoid()])
+        self.final = nn.Sequential(*layers)
 
     def unpack(self, batch: DrugPairBatch):
         """Return the context features, left drug features and right drug features."""
@@ -62,6 +62,9 @@ class DeepDDI(Model):
             batch.drug_features_left,
             batch.drug_features_right,
         )
+
+    def _combine_sides(self, left: torch.FloatTensor, right: torch.FloatTensor) -> torch.FloatTensor:
+        return torch.cat([left, right], dim=1)
 
     def forward(
         self,
@@ -74,6 +77,5 @@ class DeepDDI(Model):
         :param drug_features_right: A matrix of tail drug features.
         :returns: A column vector of predicted interaction scores.
         """
-        input_feature = torch.cat([drug_features_left, drug_features_right], dim=1)
-        hidden = self.dnn(input_feature)
-        return hidden
+        hidden = self._combine_sides(drug_features_left, drug_features_right)
+        return self.final(hidden)
