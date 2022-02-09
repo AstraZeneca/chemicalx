@@ -76,7 +76,7 @@ class MRGNN(Model):
     ) -> torch.FloatTensor:
         """Do a forward pass with a pack of molecules and a GCN layer.
 
-        :param index: The graph convolutational layer index.
+        :param conv: The graph convolutational layer.
         :param molecules: The molecules used for message passing and information propagation.
         :param gcn_hidden: The states of the previous graph convolutional layers.
         :param states: The hidden and cell states of the previous recurrent block.

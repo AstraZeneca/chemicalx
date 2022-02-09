@@ -416,10 +416,18 @@ class MHCADDI(Model):
         graph_sizes_right = drug_molecules_right.num_nodes
 
         outer_segmentation_index_left, outer_index_left, atom_left, bond_left = self._get_indices_features(
-            graph_sizes_left, graph_sizes_right, atom_features_left, atom_type_left, bond_type_left,
+            graph_sizes_left,
+            graph_sizes_right,
+            atom_features_left,
+            atom_type_left,
+            bond_type_left,
         )
         outer_segmentation_index_right, outer_index_right, atom_right, bond_right = self._get_indices_features(
-            graph_sizes_right, graph_sizes_left, atom_features_right, atom_type_right, bond_type_right,
+            graph_sizes_right,
+            graph_sizes_left,
+            atom_features_right,
+            atom_type_right,
+            bond_type_right,
         )
 
         drug_left, drug_right = self.encoder(

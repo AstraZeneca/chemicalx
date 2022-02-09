@@ -203,7 +203,7 @@ class GCNBMP(Model):
             batch.drug_molecules_right,
         )
 
-    def encoder_pass(self, molecules: PackedGraph) -> torch.FloatTensor:
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
         """
         Run a forward pass of the encoder layers.
 
@@ -225,7 +225,7 @@ class GCNBMP(Model):
         :param molecules_right: The graph of right drug and node features.
         :returns: A column vector of predicted synergy scores.
         """
-        features_left = self.encoder_pass(molecules_left)
-        features_right = self.encoder_pass(molecules_right)
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
         hidden = self._combine_sides(features_left, features_right)
         return self.final(hidden)
