@@ -1,6 +1,12 @@
 """Utilities for chemicalx."""
+
+import logging
+
 import numpy as np
 import torch
+from torch.types import Device
+
+logger = logging.getLogger(__name__)
 
 
 def segment_max(
@@ -56,3 +62,22 @@ def segment_softmax(
     logit_norm = segment_sum(logit, number_of_segments, segmentation_index)
     prob = logit / (logit_norm + torch.finfo(logit_norm.dtype).eps)
     return prob
+
+
+def resolve_device(device: Device = None) -> torch.device:
+    """Resolve a :class:`torch.device` given a desired device name.
+
+    :param device: A pre-instantiated :class:`torch.device`, a string to infer
+        the device from, or none to try using GPU is possible.
+    :return: A device object.
+
+    Implementation borrowed from :func:`pykeen.utils.resolve_device`.
+    """
+    if device is None or device == "gpu":
+        device = "cuda"
+    if isinstance(device, str):
+        device = torch.device(device)
+    if not torch.cuda.is_available() and device.type == "cuda":
+        device = torch.device("cpu")
+        logger.warning("No cuda devices were available. CPU will be used.")
+    return device
