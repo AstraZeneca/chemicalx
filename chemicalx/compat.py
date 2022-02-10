@@ -1,4 +1,4 @@
-"""A compatibility layer for chemcialx."""
+"""A compatibility layer for chemicalx."""
 
 import torch
 import torchdrug.data
