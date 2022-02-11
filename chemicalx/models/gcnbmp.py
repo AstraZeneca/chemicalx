@@ -1,6 +1,6 @@
 """An implementation of the GCNBMP model."""
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, cast
 
 import torch
 import torchdrug
@@ -10,8 +10,8 @@ from torch.fft import fft, ifft
 from torch.nn import functional as F  # noqa:N812
 from torch_scatter import scatter_add
 from torchdrug import core, layers
-from torchdrug.data import PackedGraph
 
+from chemicalx.compat import PackedGraph
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -199,8 +199,8 @@ class GCNBMP(Model):
     def unpack(self, batch: DrugPairBatch) -> Tuple[PackedGraph, PackedGraph]:
         """Return the left and right drugs PackedGraphs."""
         return (
-            batch.drug_molecules_left,
-            batch.drug_molecules_right,
+            cast(PackedGraph, batch.drug_molecules_left),
+            cast(PackedGraph, batch.drug_molecules_right),
         )
 
     def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:

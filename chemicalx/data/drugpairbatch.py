@@ -5,7 +5,8 @@ from typing import Optional
 
 import pandas as pd
 import torch
-from torchdrug.data import PackedGraph
+
+from chemicalx.compat import PackedGraph
 
 __all__ = [
     "DrugPairBatch",
