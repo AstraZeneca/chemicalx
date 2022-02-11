@@ -70,6 +70,9 @@ class MatchMaker(Model):
             batch.drug_features_right,
         )
 
+    def _combine_sides(self, left: torch.FloatTensor, right: torch.FloatTensor) -> torch.FloatTensor:
+        return torch.cat([left, right], dim=1)
+
     def forward(
         self,
         context_features: torch.FloatTensor,
@@ -91,8 +94,5 @@ class MatchMaker(Model):
         hidden_right = torch.cat([context_features, drug_features_right], dim=1)
         hidden_right = self.drug_context_layer(hidden_right)
 
-        # Merged
-        hidden_merged = torch.cat([hidden_left, hidden_right], dim=1)
-        hidden_merged = self.final(hidden_merged)
-
-        return hidden_merged
+        hidden = self._combine_sides(hidden_left, hidden_right)
+        return self.final(hidden)

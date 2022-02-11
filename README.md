@@ -26,6 +26,23 @@
 
 --------------------------------------------------------------------------------
 
+**Citing**
+
+
+If you find *ChemicalX* and the new datasets useful in your research, please consider adding the following citation:
+
+```bibtex
+@article{chemicalx,
+  arxivId = {2202.05240},
+  author = {Rozemberczki, Benedek and Hoyt, Charles Tapley and Gogleva, Anna and Grabowski, Piotr and Karis, Klas and Lamov, Andrej and Nikolov, Andriy and Nilsson, Sebastian and Ughetto, Michael and Wang, Yu and Derr, Tyler and Gyori, Benjamin M},
+  month = {feb},
+  title = {{ChemicalX: A Deep Learning Library for Drug Pair Scoring}},
+  url = {http://arxiv.org/abs/2202.05240},
+  year = {2022}
+}
+```
+--------------------------------------------------------------------------------
+
 **Drug Pair Scoring Explained**
 
 Our framework solves the [drug pair scoring task](https://arxiv.org/abs/2111.02916) of computational chemistry. In this task a machine learning model has to predict the outcome of administering two drugs together in a biological or chemical context. Deep learning models which solve this task have an architecture with two distinctive parts:
@@ -79,19 +96,6 @@ results.save("~/test_results/")
 We provide in-depth case study like tutorials in the [Documentation](https://chemicalx.readthedocs.io/en/latest/), each covers an aspect of ChemicalX’s functionality.
 
 --------------------------------------------------------------------------------
-
-**Citing**
-
-
-If you find *ChemicalX* and the new datasets useful in your research, please consider adding the following citation:
-
-```bibtex
-@inproceedings{chemicalx,
-               author = {Benedek Rozemberczki and Charles Tapley Hoyt and Benjamin Gyori},
-               title = {{ChemicalX: A Deep Learning Library fo Drug Pair Scoring}},
-               year = {2022},
-}
-```
 
 **Methods Included**
 

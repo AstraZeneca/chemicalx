@@ -1,6 +1,6 @@
 """An implementation of the GCNBMP model."""
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, cast
 
 import torch
 import torchdrug
@@ -10,8 +10,8 @@ from torch.fft import fft, ifft
 from torch.nn import functional as F  # noqa:N812
 from torch_scatter import scatter_add
 from torchdrug import core, layers
-from torchdrug.data import PackedGraph
 
+from chemicalx.compat import PackedGraph
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -191,16 +191,19 @@ class GCNBMP(Model):
 
         self.attention_readout = AttentionPooling(molecule_channels, hidden_channels)
 
-        self.final = nn.Linear(hidden_channels, out_channels)
+        self.final = nn.Sequential(
+            nn.Linear(hidden_channels, out_channels),
+            nn.Sigmoid(),
+        )
 
     def unpack(self, batch: DrugPairBatch) -> Tuple[PackedGraph, PackedGraph]:
         """Return the left and right drugs PackedGraphs."""
         return (
-            batch.drug_molecules_left,
-            batch.drug_molecules_right,
+            cast(PackedGraph, batch.drug_molecules_left),
+            cast(PackedGraph, batch.drug_molecules_right),
         )
 
-    def encoder_pass(self, molecules: PackedGraph) -> torch.FloatTensor:
+    def _forward_molecules(self, molecules: PackedGraph) -> torch.FloatTensor:
         """
         Run a forward pass of the encoder layers.
 
@@ -211,6 +214,9 @@ class GCNBMP(Model):
         features = self.attention_readout(molecules.data_dict["node_feature"], features, molecules.node2graph)
         return features
 
+    def _combine_sides(self, left: torch.FloatTensor, right: torch.FloatTensor) -> torch.FloatTensor:
+        return circular_correlation(left, right)
+
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """
         Run a forward pass of the GCN-BMP model.
@@ -219,8 +225,7 @@ class GCNBMP(Model):
         :param molecules_right: The graph of right drug and node features.
         :returns: A column vector of predicted synergy scores.
         """
-        features_left = self.encoder_pass(molecules_left)
-        features_right = self.encoder_pass(molecules_right)
-        joint_rep = circular_correlation(features_left, features_right)
-        interaction_estimators = torch.sigmoid(self.final(joint_rep))
-        return interaction_estimators
+        features_left = self._forward_molecules(molecules_left)
+        features_right = self._forward_molecules(molecules_right)
+        hidden = self._combine_sides(features_left, features_right)
+        return self.final(hidden)

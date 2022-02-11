@@ -26,10 +26,10 @@ from typing import List, Optional
 import torch
 from torch import nn
 from torch.nn.functional import normalize
-from torchdrug.data import PackedGraph
 from torchdrug.layers import MLP, MaxReadout
 from torchdrug.models import GraphConvolutionalNetwork
 
+from chemicalx.compat import PackedGraph
 from chemicalx.constants import TORCHDRUG_NODE_FEATURES
 from chemicalx.data import DrugPairBatch
 from chemicalx.models import Model
@@ -61,9 +61,9 @@ class DeepDDS(Model):
         drug_channels: int = TORCHDRUG_NODE_FEATURES,
         drug_gcn_hidden_dims: Optional[List[int]] = None,
         drug_mlp_hidden_dims: Optional[List[int]] = None,
-        context_output_size: int = 128,
+        context_output_size: int = 32,
         fc_hidden_dims: Optional[List[int]] = None,
-        dropout: float = 0.2,  # Rate used in paper
+        dropout: float = 0.5,  # Different from rate used in paper
     ):
         """Instantiate the DeepDDS model.
 
@@ -71,7 +71,7 @@ class DeepDDS(Model):
             The size of the context feature embedding for cell lines.
         :param context_hidden_dims:
             The hidden dimensions of the MLP used to extract the context
-            feature embedding. Default: [512, 256]. Note: the last layer
+            feature embedding. Default: [32, 32]. Note: the last layer
             will always be of size=context_output_size and appended to the
             provided list.
         :param drug_channels:
@@ -92,7 +92,7 @@ class DeepDDS(Model):
             connected layers.
         :param fc_hidden_dims:
             The hidden dimensions of the final fully connected layers.
-            Default: [512, 128]. Note: the last layer will always be of
+            Default: [32, 32]. Note: the last layer will always be of
             size=1 (the synergy prediction readout) and appended to the
             provided list.
         :param dropout:
@@ -101,21 +101,22 @@ class DeepDDS(Model):
         """
         super().__init__()
         # Check default parameters:
-        # Defaults follow the code implementation
+        # Defaults are different from the original implementation.
         if context_hidden_dims is None:
-            context_hidden_dims = [512, 256]
+            context_hidden_dims = [32, 32]
         if drug_gcn_hidden_dims is None:
             drug_gcn_hidden_dims = [drug_channels, drug_channels * 2, drug_channels * 4]
         if drug_mlp_hidden_dims is None:
             drug_mlp_hidden_dims = [drug_channels * 2]
         if fc_hidden_dims is None:
-            fc_hidden_dims = [512, 128]
+            fc_hidden_dims = [32, 32]
 
         # Cell feature extraction with MLP
         self.cell_mlp = MLP(
             input_dim=context_channels,
             # Paper: [2048, 512, context_output_size]
             # Code: [512, 256, context_output_size]
+            # Our code: [32, 32, context_output_size]
             hidden_dims=[*context_hidden_dims, context_output_size],
         )
 
@@ -143,13 +144,10 @@ class DeepDDS(Model):
         self.final = nn.Sequential(
             MLP(
                 input_dim=context_output_size * 3,
-                # Paper: [1024, 512, 128, 1]
-                # Code: [512, 128, 2]
-                # Following code except for one final neuron instead of two.
                 hidden_dims=[*fc_hidden_dims, 1],
                 dropout=dropout,
             ),
-            nn.Softmax(dim=1),
+            torch.nn.Sigmoid(),
         )
 
     def unpack(self, batch: DrugPairBatch):

@@ -15,10 +15,12 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, roc_auc_sco
 from tabulate import tabulate
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
+from torch.types import Device
 from tqdm import trange
 
 from chemicalx.data import DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
+from chemicalx.utils import resolve_device
 from chemicalx.version import __version__
 
 __all__ = [
@@ -102,7 +104,7 @@ def pipeline(
     optimizer_kwargs: Optional[Mapping[str, Any]] = None,
     loss_cls: Type[_Loss] = torch.nn.BCELoss,
     loss_kwargs: Optional[Mapping[str, Any]] = None,
-    batch_size: int = 5120,
+    batch_size: int = 512,
     epochs: int,
     context_features: bool,
     drug_features: bool,
@@ -167,7 +169,8 @@ def pipeline(
     accelerator = Accelerator()
     device = accelerator.device
 
-    model = model_resolver.make(model, model_kwargs).to(device)
+    model = model_resolver.make(model, model_kwargs)
+    model = model.to(device)
 
     optimizer = optimizer_cls(model.parameters(), **(optimizer_kwargs or {}))
 
@@ -183,6 +186,7 @@ def pipeline(
     train_start_time = time.time()
     for _epoch in trange(epochs):
         for batch in train_generator:
+            batch = batch.to(device)
             optimizer.zero_grad()
 
             device_batch = to_device(model.unpack(batch), device)
@@ -198,9 +202,8 @@ def pipeline(
     evaluation_start_time = time.time()
     predictions = []
     for batch in test_generator:
-        device_batch = to_device(model.unpack(batch), device)
-
-        prediction = model(*device_batch)
+        batch = batch.to(device)
+        prediction = model(*model.unpack(batch))
         if isinstance(prediction, collections.abc.Sequence):
             prediction = prediction[0]
         prediction = prediction.detach().cpu().numpy()

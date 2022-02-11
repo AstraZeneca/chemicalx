@@ -4,7 +4,9 @@ from collections import UserDict
 from typing import Dict, Iterable, Mapping, Union
 
 import torch
-from torchdrug.data import Graph, Molecule, PackedGraph
+from torchdrug.data import Molecule
+
+from chemicalx.compat import Graph, PackedGraph
 
 __all__ = [
     "DrugFeatureSet",
