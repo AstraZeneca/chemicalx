@@ -23,21 +23,27 @@ To help us integrate your changes, please follow our standard process:
     - Document your code as you go.
     - Add unit and integration tests for your code.
 6. Run tests.
-    - Run unit tests: `pytest --cov chemicalx/tests/unit`
-    - Run integration tests: `pytest --cov chemicalx/tests/integration`
-    - Make sure that your contributions have test coverage.
-7. Update the documentation with your changes.
+    - Run unit tests: `tox -e py`
+    - Make sure that your contributions have (near) complete test coverage.
+7. Ensure that you comply with the formatting requirements:
+    - Check code quality: `tox -e flake8`
+    - Check typing: `tox -e mypy`
+9. Update the documentation with your changes.
     - Documentation is located in docs/.
     - Add new classes or modules to API documents.
     - Add new/changed functionality to the tutorials or quickstart.
     - Add code snippets (these are tested when docs are built so make them small and quick to run).
-8. When finished, push your branch and make a Pull Request (PR).
+10. Ensure the documentation quality.
+    - Lint the documentation: `tox -e doc8`
+    - Check the documentation coverage `tox -e docstr-coverage`
+    - Check the documentation build: `tox -e docs`
+11. When finished, push your branch and make a Pull Request (PR).
     - `git push origin <your branch name>` to push the branch
     - Go to https://github.com/AstraZeneca/chemicalx/pulls and use our PR template located at: ./pull_request_template.md.
       to open a PR from <your branch name>.
     - Describe changes and clearly highlight any major or breaking changes.
     - If any errors occur on the test builds, please fix them.
     - You are responsible for getting your PR merged so please chase down your reviewers.
-9. Adjust your PR based on any feedback
+12. Adjust your PR based on any feedback
     - We use the [DO, TRY, CONSIDER](https://jackiebo.medium.com/do-try-consider-how-we-give-product-feedback-at-asana-db9bc754cc4a) framework to give constructive feedback.
-10. After approval, you are responsible for completing your PR .
+13. After approval, you are responsible for completing your PR .

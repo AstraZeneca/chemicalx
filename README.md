@@ -167,7 +167,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 **Running tests**
 
 ```
-$ python setup.py test
+$ tox -e py
 ```
 --------------------------------------------------------------------------------
 
