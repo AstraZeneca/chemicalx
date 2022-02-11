@@ -14,10 +14,12 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, roc_auc_sco
 from tabulate import tabulate
 from torch.nn.modules.loss import _Loss
 from torch.optim.optimizer import Optimizer
+from torch.types import Device
 from tqdm import trange
 
 from chemicalx.data import DatasetLoader, dataset_resolver
 from chemicalx.models import Model, model_resolver
+from chemicalx.utils import resolve_device
 from chemicalx.version import __version__
 
 __all__ = [
@@ -85,6 +87,7 @@ def pipeline(
     train_size: Optional[float] = None,
     random_state: Optional[int] = None,
     metrics: Optional[Sequence[str]] = None,
+    device: Device = None,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -126,9 +129,13 @@ def pipeline(
         The random seed for splitting the triples. Default is 42. Set to none for no fixed seed.
     :param metrics:
         The list of metrics to use.
+    :param device:
+        The device to use
     :returns:
         A result object with the trained model and evaluation results
     """
+    device = resolve_device(device)
+
     loader = dataset_resolver.make(dataset)
     train_generator, test_generator = loader.get_generators(
         batch_size=batch_size,
@@ -140,6 +147,7 @@ def pipeline(
     )
 
     model = model_resolver.make(model, model_kwargs)
+    model = model.to(device)
 
     optimizer = optimizer_cls(model.parameters(), **(optimizer_kwargs or {}))
 
@@ -151,6 +159,7 @@ def pipeline(
     train_start_time = time.time()
     for _epoch in trange(epochs):
         for batch in train_generator:
+            batch = batch.to(device)
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
@@ -164,6 +173,7 @@ def pipeline(
     evaluation_start_time = time.time()
     predictions = []
     for batch in test_generator:
+        batch = batch.to(device)
         prediction = model(*model.unpack(batch))
         if isinstance(prediction, collections.abc.Sequence):
             prediction = prediction[0]
