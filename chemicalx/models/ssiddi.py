@@ -2,6 +2,7 @@
 
 import torch
 import torch.nn.functional
+from torch import nn
 from torch.nn import LayerNorm
 from torch.nn.modules.container import ModuleList
 from torchdrug.layers import GraphAttentionConv, MeanReadout
@@ -146,6 +147,7 @@ class SSIDDI(Model):
 
         self.co_attention = DrugDrugAttentionLayer(channels)
         self.relational_embedding = EmbeddingLayer(channels)
+        self.final = nn.Sigmoid()
 
     def unpack(self, batch: DrugPairBatch):
         """Return the left molecular graph and right molecular graph."""
@@ -163,6 +165,10 @@ class SSIDDI(Model):
             molecules.node_feature = torch.nn.functional.elu(net_norm(molecules.node_feature))
         return torch.stack(representation, dim=-2)
 
+    def _combine_sides(self, features_left, features_right) -> torch.FloatTensor:
+        attentions = self.co_attention(features_left, features_right)
+        return self.relational_embedding(features_left, features_right, attentions)
+
     def forward(self, molecules_left: PackedGraph, molecules_right: PackedGraph) -> torch.FloatTensor:
         """Run a forward pass of the SSI-DDI model.
 
@@ -172,6 +178,5 @@ class SSIDDI(Model):
         """
         features_left = self._forward_molecules(molecules_left)
         features_right = self._forward_molecules(molecules_right)
-        attentions = self.co_attention(features_left, features_right)
-        scores = torch.sigmoid(self.relational_embedding(features_left, features_right, attentions))
-        return scores
+        hidden = self._combine_sides(features_left, features_right)
+        return self.final(hidden)
