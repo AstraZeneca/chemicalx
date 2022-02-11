@@ -1,7 +1,7 @@
 """A module for the drug pair batch class."""
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TypeVar
 
 import pandas as pd
 import torch
@@ -12,6 +12,8 @@ from chemicalx.compat import PackedGraph
 __all__ = [
     "DrugPairBatch",
 ]
+
+X = TypeVar("X", torch.FloatTensor, PackedGraph)
 
 
 @dataclass
@@ -38,21 +40,15 @@ class DrugPairBatch:
         return DrugPairBatch(
             identifiers=self.identifiers,
             drug_features_left=_move_tensor(self.drug_features_left, device),
-            drug_molecules_left=_move_graph(self.drug_molecules_left, device),
+            drug_molecules_left=_move_tensor(self.drug_molecules_left, device),
             drug_features_right=_move_tensor(self.drug_features_right, device),
-            drug_molecules_right=_move_graph(self.drug_molecules_right, device),
+            drug_molecules_right=_move_tensor(self.drug_molecules_right, device),
             context_features=_move_tensor(self.context_features, device),
             labels=_move_tensor(self.labels, device),
         )
 
 
-def _move_tensor(x: Optional[torch.FloatTensor], device: Device) -> Optional[torch.FloatTensor]:
-    if x is None:
-        return None
-    return x.to(device)
-
-
-def _move_graph(x: Optional[PackedGraph], device: Device) -> Optional[PackedGraph]:
+def _move_tensor(x: Optional[X], device: Device) -> Optional[X]:
     if x is None:
         return None
     return x.to(device)
