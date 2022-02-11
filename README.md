@@ -32,10 +32,13 @@
 If you find *ChemicalX* and the new datasets useful in your research, please consider adding the following citation:
 
 ```bibtex
-@inproceedings{chemicalx,
-               author = {Benedek Rozemberczki and Charles Tapley Hoyt and Anna Gogleva and Piotr Grabowski and Klas Karis and Andrej Lamov and Andriy Nikolov and Sebastian Nilsson and Michael Ughetto and Yu Wang and Tyler Derr and Benjamin Gyori},
-               title = {{ChemicalX: A Deep Learning Library fo Drug Pair Scoring}},
-               year = {2022},
+@article{chemicalx,
+  arxivId = {2202.05240},
+  author = {Rozemberczki, Benedek and Hoyt, Charles Tapley and Gogleva, Anna and Grabowski, Piotr and Karis, Klas and Lamov, Andrej and Nikolov, Andriy and Nilsson, Sebastian and Ughetto, Michael and Wang, Yu and Derr, Tyler and Gyori, Benjamin M},
+  month = {feb},
+  title = {{ChemicalX: A Deep Learning Library for Drug Pair Scoring}},
+  url = {http://arxiv.org/abs/2202.05240},
+  year = {2022}
 }
 ```
 --------------------------------------------------------------------------------
