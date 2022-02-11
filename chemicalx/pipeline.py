@@ -163,8 +163,8 @@ def pipeline(
             optimizer.zero_grad()
             prediction = model(*model.unpack(batch))
             loss_value = loss(prediction, batch.labels)
-            losses.append(loss_value.detach().cpu().item())
             loss_value.backward()
+            losses.append(loss_value.item())
             optimizer.step()
     train_time = time.time() - train_start_time
 
