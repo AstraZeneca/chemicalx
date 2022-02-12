@@ -96,10 +96,10 @@ def to_device(objects, device):
 
 
 @dataclass
-class Unaccelerator:
+class NopAccelerator:
     """An adaptor for normal training."""
 
-    devide: torch.device
+    device: torch.device
 
     def prepare(self, *args):
         """Return the arguments in order."""
@@ -183,10 +183,9 @@ def pipeline(
     """
     if accelerate:
         accelerator = Accelerator(**(accelerate_kwargs or {}))
-        device = accelerator.device
     else:
-        device = resolve_device(device)
-        accelerator = Unaccelerator(device)
+        accelerator = NopAccelerator(resolve_device(device))
+    device = accelerator.device
 
     loader = dataset_resolver.make(dataset)
     train_generator, test_generator = loader.get_generators(
