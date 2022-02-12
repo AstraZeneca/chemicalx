@@ -95,6 +95,21 @@ def to_device(objects, device):
     return device_objects
 
 
+@dataclass
+class Unaccelerator:
+    """An adaptor for normal training."""
+
+    devide: torch.device
+
+    def prepare(self, *args):
+        """Return the arguments in order."""
+        return args
+
+    def backward(self, loss: torch.Tensor) -> None:
+        """Run the typical backwards function."""
+        return loss.backward()
+
+
 def pipeline(
     *,
     dataset: HintOrType[DatasetLoader],
@@ -112,6 +127,9 @@ def pipeline(
     train_size: Optional[float] = None,
     random_state: Optional[int] = None,
     metrics: Optional[Sequence[str]] = None,
+    device: Device = None,
+    accelerate: bool = False,
+    accelerate_kwargs: Optional[Mapping[str, Any]] = None,
 ) -> Result:
     """Run the training and evaluation pipeline.
 
@@ -153,9 +171,23 @@ def pipeline(
         The random seed for splitting the triples. Default is 42. Set to none for no fixed seed.
     :param metrics:
         The list of metrics to use.
+    :param device:
+        The device to use
+    :param accelerate:
+        Should accelerate be used?
+    :param accelerate_kwargs:
+        Keyword arguments to pass to :class:`accelerate.Accelerator` if ``accelerate``
+        is set to ``True``.
     :returns:
         A result object with the trained model and evaluation results
     """
+    if accelerate:
+        accelerator = Accelerator(**(accelerate_kwargs or {}))
+        device = accelerator.device
+    else:
+        device = resolve_device(device)
+        accelerator = Unaccelerator(device)
+
     loader = dataset_resolver.make(dataset)
     train_generator, test_generator = loader.get_generators(
         batch_size=batch_size,
@@ -165,9 +197,6 @@ def pipeline(
         train_size=train_size,
         random_state=random_state,
     )
-
-    accelerator = Accelerator()
-    device = accelerator.device
 
     model = model_resolver.make(model, model_kwargs)
     model = model.to(device)
