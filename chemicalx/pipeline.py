@@ -217,10 +217,8 @@ def pipeline(
         for batch in train_generator:
             batch = batch.to(device)
             optimizer.zero_grad()
-
-            device_batch = to_device(model.unpack(batch), device)
-            prediction = model(*device_batch)
-            loss_value = loss(prediction, batch.labels.to(device))
+            prediction = model(*model.unpack(batch))
+            loss_value = loss(prediction, batch.labels)
             losses.append(loss_value.item())
             accelerator.backward(loss_value)
             optimizer.step()
