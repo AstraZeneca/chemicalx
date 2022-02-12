@@ -16,6 +16,7 @@ install_requires = [
     "pytdc",
     "more-itertools",
     "accelerate",
+    # FIXME what is packaging for?
     "packaging",
 ]
 
