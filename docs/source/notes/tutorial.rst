@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-In this lighweight tutorial we will overview an oncology use case.
+In this lightweight tutorial, we will overview an oncology use case.
 The same use case is discussed in detail in the ChemicalX design
 paper that accompanies the library. We recommend reading the design
 paper with the tutorial -- it can deepen the understanding of the users
@@ -15,13 +15,13 @@ Data Loading and Generator Definition
 
 We import the ``DatasetLoader`` and ``BatchGenerator`` from the ``data``
 namespace of ChemicalX. In the first step a DrugComDB DatasetLoader is
-instantiated -- it is an oncology related synergy scoring dataset.
+instantiated -- it is an oncology-related synergy scoring dataset.
 The task related to the dataset is to predict the synergistic nature of
 drug pair combinations. Using the ``get_context_features()``,
 ``get_drug_features()`` and ``get_labeled_triples()`` class methods we
-load the contex features, drug features and the triples used for training.
-Using the triples we generate training and test sets with using 50% of
-the triples for training. Finally we create a ``BatchGenerator`` instance
+load the context features, drug features, and the triples used for training.
+Using the triples we generate training and test sets by using 50% of
+the triples for training. Finally, we create a ``BatchGenerator`` instance
 this will generate drug pair batches of size 1024, while it will return
 the drug and context features for each labeled triple.
 
@@ -50,14 +50,14 @@ Model Training
 --------------
 
 We already have a generator to create batches of data. Now we
-will need a model, optimizer and appropriate loss function.
+will need a model, optimizer, and appropriate loss function.
 We import the ``torch`` library and ``DeepSynergy`` from the
 ``models`` namespace of the library. We create a ``DeepSynergy``
 model instance and set the number of input channels to be compatible
-wit the ``DrugCombdDB`` dataset. We define an ``Adam`` optimizer
-and a binary cross entropy instance to accumulate the loss values.
-Using these the model is trained for a single epoch. In each step
-we reset the gradients to be zero, make a predictions, calculate
+with the ``DrugCombdDB`` dataset. We define an ``Adam`` optimizer
+and a binary cross-entropy instance to accumulate the loss values.
+Using these the model is trained for a single epoch. In each step,
+we reset the gradients to be zero, make predictions, calculate
 the loss value, backpropagate and make a step with the optimizer.
 
 .. code-block:: python
@@ -84,6 +84,15 @@ the loss value, backpropagate and make a step with the optimizer.
 Model Scoring
 -------------
 
+We will store the predictions in the ``pandas`` data frames and because
+of this, we import the ``pandas`` library. We set the model to be in
+evaluation mode and we assign the test set triples to the generator.
+We accumulate the predictions in a ``list`` and iterate over the
+batches in the generator. In each step we make predictions for the
+drug pairs in the batch, these are detached from the computation
+graph and added the batch identifiers ``DataFrame``. This is
+appended to the predictions in each step. Finally, the predictions
+are turned into a ``DataFrame``.
 
 .. code-block:: python
 
