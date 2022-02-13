@@ -9,20 +9,6 @@ We do this for each of the datasets in the framework.
 .. contents::
     :local:
 
-DrugCombDB
--------------------
-
-*
-*
-*
-
-DrugComb
--------------------
-
-*
-*
-*
-
 Drugbank DDI
 -------------------
 
