@@ -34,8 +34,7 @@ Design Philosophy
 When ``ChemicalX`` was created we wanted to reuse the high level
 architectureal elements of ``torch`` and ``torchdrug``. We also wanted to
 conceptualize the ideas outlined in `A Unified View of Relational Deep
-Learning for Drug Pair Scoring`. 
-
+Learning for Drug Pair Scoring`.
 
 Drug Feature Set
 -----------------
@@ -67,10 +66,15 @@ Data Generators
 Model Layers
 ------------
 
-Drug pair scoring models in ChemicalX inherit from 
+Drug pair scoring models in ChemicalX inherit from
 
 Pipelines
 ---------
+
+Pipelines provide high level abstractions for the end-to-end
+training and evaluation of ChemicalX models. Given a dataset
+and model a pipeline can easily train and score the model on
+the dataset.
 
 .. code-block:: python
 
@@ -92,12 +96,6 @@ Pipelines
                        labels=True,
                        epochs=100)
 
-results.summarize()
+    results.summarize()
 
-results.save("~/test_results/")
-
-
-
-
-
-
+    results.save("~/test_results/")
