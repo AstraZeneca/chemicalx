@@ -31,32 +31,70 @@ through simple examples. These are the following:
 Design Philosophy
 -----------------
 
+When ``ChemicalX`` was created we wanted to reuse the high level
+architectureal elements of ``torch`` and ``torchdrug``. We also wanted to
+conceptualize the ideas outlined in `A Unified View of Relational Deep
+Learning for Drug Pair Scoring`. 
+
+
 Drug Feature Set
 -----------------
 
-Context Feature Set
---------------------
+.. code-block:: python
 
+    from chemicalx.data import DatasetLoader, BatchGenerator
+
+Context Feature Set
+-------------------
+
+.. code-block:: python
+
+    from chemicalx.data import DatasetLoader, BatchGenerator
 
 Labeled Triples
------------------
+---------------
 
+.. code-block:: python
 
-Drug Pair Batches
------------------
+    from chemicalx.data import DatasetLoader, BatchGenerator
 
+Data Loaders
+------------
 
 Data Generators
------------------
-
+---------------
 
 Model Layers
------------------
+------------
 
-
+Drug pair scoring models in ChemicalX inherit from 
 
 Pipelines
------------------
+---------
+
+.. code-block:: python
+
+    from chemicalx import pipeline
+    from chemicalx.models import DeepSynergy
+    from chemicalx.data import DrugCombDB
+
+    model = DeepSynergy(context_channels=112,
+                        drug_channels=256)
+
+    dataset = DrugCombDB()
+
+    results = pipeline(dataset=dataset,
+                       model=model,
+                       batch_size=1024,
+                       context_features=True,
+                       drug_features=True,
+                       drug_molecules=False,
+                       labels=True,
+                       epochs=100)
+
+results.summarize()
+
+results.save("~/test_results/")
 
 
 
