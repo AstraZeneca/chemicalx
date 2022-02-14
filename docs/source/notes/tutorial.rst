@@ -28,9 +28,9 @@ the drug and context features for each labeled triple.
 
 .. code-block:: python
 
-    from chemicalx.data import DatasetLoader, BatchGenerator
+    from chemicalx.data import DrugCombDB, BatchGenerator
 
-    loader = DatasetLoader("drugcombdb")
+    loader = DrugCombDB()
 
     context_set = loader.get_context_features()
     drug_set = loader.get_drug_features()
@@ -72,7 +72,7 @@ the loss value, backpropagate and make a step with the optimizer.
     model.train()
     loss = torch.nn.BCELoss()
 
-    for batch in train:
+    for batch in generator:
         optimizer.zero_grad()
         prediction = model(batch.context_features,
                            batch.drug_features_left,

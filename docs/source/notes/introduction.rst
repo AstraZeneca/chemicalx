@@ -73,9 +73,9 @@ a loader is initialized the class methods allow getting the respective
 
 .. code-block:: python
 
-    from chemicalx.data import DatasetLoader
+    from chemicalx.data import DrugCombDB
 
-    loader = DatasetLoader("drugcombdb")
+    loader = DrugCombDB()
 
     context_set = loader.get_context_features()
     drug_set = loader.get_drug_features()
