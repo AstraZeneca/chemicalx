@@ -78,7 +78,6 @@ results = pipeline(
     context_features=True,
     drug_features=True,
     drug_molecules=False,
-    labels=True,
     # Training arguments
     epochs=100,
 )
