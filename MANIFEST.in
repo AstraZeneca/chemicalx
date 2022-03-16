@@ -8,5 +8,5 @@ prune data_cleaning
 prune logo_font
 prune images
 
-include LICENSE README.md CONTRIBUTING.md
+include LICENSE README.md CONTRIBUTING.md CODE_OF_CONDUCT.md
 exclude tox.ini .pre-commit-config.yaml dev_setup.sh readthedocs.yaml pull_request_template.md
