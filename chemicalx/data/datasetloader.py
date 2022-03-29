@@ -189,7 +189,7 @@ class RemoteDatasetLoader(DatasetLoader):
         raw_data = pd.read_csv(io.BytesIO(data_bytes), encoding="utf8", sep=",", dtype=types)
         return raw_data
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_context_features(self) -> ContextFeatureSet:
         """Get the context feature set."""
         path = self.generate_path("context_set.json")
@@ -197,7 +197,7 @@ class RemoteDatasetLoader(DatasetLoader):
         raw_data = {k: torch.FloatTensor(np.array(v).reshape(1, -1)) for k, v in raw_data.items()}
         return ContextFeatureSet(raw_data)
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_drug_features(self) -> DrugFeatureSet:
         """Get the drug feature set."""
         path = self.generate_path("drug_set.json")
@@ -208,7 +208,7 @@ class RemoteDatasetLoader(DatasetLoader):
         }
         return DrugFeatureSet.from_dict(raw_data)
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_labeled_triples(self) -> LabeledTriples:
         """Get the labeled triples file from the storage."""
         path = self.generate_path("labeled_triples.csv")
@@ -279,7 +279,7 @@ class LocalDatasetLoader(DatasetLoader, ABC):
         :func:`write_contexts`, and :func:`write_labels`.
         """
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_drug_features(self) -> DrugFeatureSet:
         """Get the drug feature set."""
         with self.drug_structures_path.open() as struct_file, self.drug_features_path.open() as feat_file:
@@ -299,7 +299,7 @@ class LocalDatasetLoader(DatasetLoader, ABC):
                 print(drug, smiles, sep="\t", file=struct_file)
                 print(drug, *get_features(smiles), sep="\t", file=feat_file)
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_context_features(self) -> ContextFeatureSet:
         """Get the context feature set."""
         with self.contexts_path.open() as file:
@@ -313,7 +313,7 @@ class LocalDatasetLoader(DatasetLoader, ABC):
             for key, values in contexts.items():
                 print(key, *values, sep="\t", file=file)
 
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=1)  # noqa: B019
     def get_labeled_triples(self) -> LabeledTriples:
         """Get the labeled triples dataframe."""
         return LabeledTriples(pd.read_csv(self.labels_path, sep="\t"))
