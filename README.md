@@ -33,13 +33,21 @@
 If you find *ChemicalX* and the new datasets useful in your research, please consider adding the following citation:
 
 ```bibtex
-@article{chemicalx,
-  arxivId = {2202.05240},
-  author = {Rozemberczki, Benedek and Hoyt, Charles Tapley and Gogleva, Anna and Grabowski, Piotr and Karis, Klas and Lamov, Andrej and Nikolov, Andriy and Nilsson, Sebastian and Ughetto, Michael and Wang, Yu and Derr, Tyler and Gyori, Benjamin M},
-  month = {feb},
-  title = {{ChemicalX: A Deep Learning Library for Drug Pair Scoring}},
-  url = {http://arxiv.org/abs/2202.05240},
-  year = {2022}
+@inproceedings{10.1145/3534678.3539023,
+  author = {Rozemberczki, Benedek and Hoyt, Charles Tapley and Gogleva, Anna and Grabowski, Piotr and Karis, Klas and Lamov, Andrej and Nikolov, Andriy and Nilsson, Sebastian and Ughetto, Michael and Wang, Yu and Derr, Tyler and Gyori, Benjamin M.},
+  title = {ChemicalX: A Deep Learning Library for Drug Pair Scoring},
+  year = {2022},
+  isbn = {9781450393850},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3534678.3539023},
+  doi = {10.1145/3534678.3539023},
+  booktitle = {Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining},
+  pages = {3819–3828},
+  numpages = {10},
+  keywords = {chemistry, neural networks, deep learning},
+  location = {Washington DC, USA},
+  series = {KDD '22}
 }
 ```
 --------------------------------------------------------------------------------
