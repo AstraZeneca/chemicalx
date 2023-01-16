@@ -4,6 +4,7 @@ from setuptools import find_packages, setup
 
 install_requires = [
     "numpy",
+    "rdkit-pypi<=2021.9.5.1",
     "torch>=1.10.0",
     "torchdrug==0.1.2",
     "torch-scatter>=2.0.8",
