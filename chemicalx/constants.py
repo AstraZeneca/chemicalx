@@ -8,4 +8,4 @@ __all__ = [
 ]
 
 #: The default number of node features on a molecule in torchdrug
-TORCHDRUG_NODE_FEATURES = len(atom_default(Molecule.dummy_atom))
+TORCHDRUG_NODE_FEATURES = len(atom_default(Molecule.dummy_mol.GetAtomWithIdx(0)))
