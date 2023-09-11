@@ -12,10 +12,8 @@ formats:
    - htmlzip
 
 python:
-   version: "3.7"
-   system_packages: "True"
+   version: "3.8"
    install:
       - requirements: docs/requirements_1.txt
       - method: setuptools
         path: .
-   system_packages: true
